@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.foundly.app2.service.CategoryServiceTest
 -------------------------------------------------------------------------------
-Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.373 s -- in com.foundly.app2.service.CategoryServiceTest
+Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.222 s -- in com.foundly.app2.service.CategoryServiceTest

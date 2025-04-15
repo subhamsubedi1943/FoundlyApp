@@ -98,7 +98,10 @@ const MyActivity = () => {
           <p className="loading-message">Loading...</p>
         ) : activityData.length > 0 ? (
           activityData.map((item) => (
-            <ActivityCard key={item.id || item.itemId || item.transactionId} item={item} />
+            <ActivityCard
+              key={item.id || item.itemId || item.transactionId || Math.random()}
+              item={item}
+            />
           ))
         ) : (
           <p className="no-data">No items found for this category.</p>

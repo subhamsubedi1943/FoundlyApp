@@ -190,6 +190,10 @@
 
 /* Bottom Tab Buttons (centered, thinner, wider, lower, no animation) */
 .tab-buttons {
+  position: absolute;
+  left: 50%;
+  bottom: -20px;
+  transform: translateX(-50%);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -199,10 +203,7 @@
   border-radius: 30px;
   min-width: 480px;
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-  transform: translateX(-50%);
-  position: absolute;
-  left: 50%;
-  bottom: -20px;
+  z-index: 1;
 }
 
 .tab {
@@ -245,6 +246,7 @@
 /* Responsive tweaks */
 @media (max-width: 768px) {
   .App-header {
+    position: relative;
     flex-direction: column;
     align-items: center;
     text-align: center;
@@ -262,17 +264,13 @@
     flex-wrap: wrap;
   }
 
-  .tab-buttons {
-    flex-direction: column;
-    gap: 16px;
-    margin-top: 30px;
-    position: static;
-    transform: none;
-  }
+ 
+  
+    
 
   .report-btn {
-    width: 100%;
-    padding: 12px 0;
+    position: relative;
+  z-index: 2;
   }
 
   .hero-image {
@@ -289,4 +287,76 @@
   cursor: pointer;
   text-decoration: none;
   padding: 0;
+}
+
+.footer {
+  background-color: black;
+  color: white;
+  padding: 30px 50px;
+  border-top-left-radius: 30px;
+  border-top-right-radius: 30px;
+  margin-top: 40px;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.footer-logo {
+  font-size: 28px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+}
+
+.footer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 5px;
+}
+
+.footer-links a {
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+}
+
+.footer-links a:hover {
+  color: #ff3c3c;
+}
+
+.footer-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: right;
+  font-size: 16px;
+  margin-top: 5px;
+}
+
+.footer-contact p {
+  margin: 0;
+}
+
+/* Logo Colors */
+.logo-f {
+  color: #00c851;
+}
+
+.logo-icon {
+  color: white;
+  font-size: 22px;
+  margin: 0 2px;
+}
+
+.logo-rest {
+  color: white;
+}
+
+.logo-l {
+  color: #ff3c3c;
 }

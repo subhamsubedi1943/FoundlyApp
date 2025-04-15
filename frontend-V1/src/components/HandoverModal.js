@@ -96,21 +96,12 @@ export function HandoverModal({ isOpen, onClose, onSubmit, itemId }) {
     <div className="modal-overlay">
       <div className="modal-container">
         <div className="modal-header">
-          <h2>Handover Form</h2>
+          <h2>Handover</h2>
           <button className="close-button" onClick={onClose}>×</button>
         </div>
 
         <div className="modal-body">
           <form onSubmit={handleSubmit} className="modal-form">
-            <label>
-              Item ID
-              <input type="number" value={formData.itemId} disabled />
-            </label>
-
-            <label>
-              Requester ID
-              <input type="number" value={formData.requesterId} disabled />
-            </label>
 
             <label>
               Description
@@ -138,7 +129,7 @@ export function HandoverModal({ isOpen, onClose, onSubmit, itemId }) {
             </label>
 
             <div className="radio-group">
-              <span>Handling Option:</span>
+            
               <label>
                 <input
                   type="radio"
@@ -196,13 +187,7 @@ export function HandoverModal({ isOpen, onClose, onSubmit, itemId }) {
             )}
 
             <div className="modal-footer">
-              <button
-                type="submit"
-                className="submit-btn"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? 'Submitting...' : 'Submit'}
-              </button>
+              
               <button
                 type="button"
                 onClick={onClose}
@@ -210,6 +195,13 @@ export function HandoverModal({ isOpen, onClose, onSubmit, itemId }) {
                 disabled={isSubmitting}
               >
                 Cancel
+              </button>
+              <button
+                type="submit"
+                className="submit-btn"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? 'Submitting...' : 'Submit'}
               </button>
             </div>
           </form>

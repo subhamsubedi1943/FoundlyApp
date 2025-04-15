@@ -1,3 +1,10 @@
+com\foundly\app2\controller\UserControllerTest.class
 com\foundly\app2\FoundlyApplicationTests.class
-com\foundly\app2\service\CategoryServiceTest.class
 com\foundly\app2\service\UserServiceTest.class
+com\foundly\app2\controller\AdminControllerTest.class
+com\foundly\app2\controller\ItemReportsControllerTest.class
+com\foundly\app2\controller\TransactionsControllerTest.class
+com\foundly\app2\service\TransactionsServiceTest.class
+com\foundly\app2\controller\CategoryControllerTest.class
+com\foundly\app2\service\CategoryServiceTest.class
+com\foundly\app2\service\ItemReportsServiceTest.class

@@ -1,118 +1,138 @@
-import React, { useEffect, useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FaUserCircle } from 'react-icons/fa';
 import '../styles/EditProfile.css';
 
-function EditProfile() {
-  const { user } = useAuth();
+const EditProfile = () => {
+  const userFromStorage = JSON.parse(localStorage.getItem('user'));
+  const userId = userFromStorage?.userId;
 
-  const [name, setName] = useState('');
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
-  const [employeeId, setEmployeeId] = useState('');
-  const [userId, setUserId] = useState('');
-
-  const [message, setMessage] = useState('');
+  const [formData, setFormData] = useState({
+    userId: '',
+    employeeId: '',
+    name: '',
+    email: '',
+    username: '',
+    oldPassword: '',
+    newPassword: '',
+  });
 
   useEffect(() => {
-    if (user) {
-      setUserId(user.id || '');
-      setEmployeeId(user.employeeId || '');
-      setName(user.name || '');
-      setUsername(user.username || '');
-      setEmail(user.email || '');
-    }
-  }, [user]);
+    if (!userId) return;
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      const response = await axios.put(`/api/users/${user.id}`, {
-        name,
-        username,
-        email,
-        password,
+    axios.get(`http://localhost:8080/api/users/profile/${userId}`)
+      .then(response => {
+        const user = response.data;
+        setFormData(prev => ({
+          ...prev,
+          userId: user.userId || '',
+          employeeId: user.employeeId || '',
+          name: user.name || '',
+          email: user.email || '',
+          username: user.username || '',
+        }));
+      })
+      .catch(error => {
+        console.error('Failed to fetch user profile:', error);
       });
+  }, [userId]);
 
-      if (response.status === 200) {
-        setMessage('Profile updated successfully!');
-      } else {
-        setMessage('Update failed. Try again.');
-      }
-    } catch (error) {
-      console.error(error);
-      setMessage('An error occurred. Try again later.');
-    }
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleUpdate = () => {
+    axios.put('http://localhost:8080/api/users/profile/update', formData)
+      .then(response => {
+        alert('Profile updated successfully!');
+      })
+      .catch(error => {
+        console.error('Failed to update profile:', error);
+        alert(error.response?.data?.message || 'Update failed!');
+      });
   };
 
   return (
     <div className="edit-profile-container">
-      <div className="edit-profile-box">
-        <div className="profile-icon-box">
-          <FaUserCircle className="edit-profile-icon" />
-          <p className="edit-profile-label">Edit Name</p>
+      <div className="edit-profile-content">
+        <h2>Edit Profile</h2>
+
+        <input
+          className="input-field"
+          type="text"
+          name="userId"
+          value={formData.userId}
+          disabled
+          placeholder="User ID"
+        />
+        <input
+          className="input-field"
+          type="text"
+          name="employeeId"
+          value={formData.employeeId}
+          disabled
+          placeholder="Employee ID"
+        />
+        <input
+          className="input-field"
+          type="text"
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+          placeholder="Enter your full name"
+        />
+        <input
+          className="input-field"
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          placeholder="Enter your email"
+        />
+        <input
+          className="input-field"
+          type="text"
+          name="username"
+          value={formData.username}
+          onChange={handleChange}
+          placeholder="Enter your username"
+        />
+        <input
+          className="input-field"
+          type="password"
+          name="oldPassword"
+          value={formData.oldPassword}
+          onChange={handleChange}
+          placeholder="Enter current password"
+        />
+        <input
+          className="input-field"
+          type="password"
+          name="newPassword"
+          value={formData.newPassword}
+          onChange={handleChange}
+          placeholder="Enter new password (leave blank to keep current)"
+        />
+
+        <div className="button-group">
+          <button
+            type="button"
+            className="cancel-button"
+            onClick={() => window.history.back()}
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            className="update-button"
+            onClick={handleUpdate}
+          >
+            Update
+          </button>
         </div>
-        <form className="edit-profile-form" onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>User ID:</label>
-            <input type="text" value={userId} disabled />
-          </div>
-
-          <div className="form-group">
-            <label>Employee ID:</label>
-            <input type="text" value={employeeId} disabled />
-          </div>
-
-          <div className="form-group">
-            <label>Name:</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Username:</label>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Email:</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Password:</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-
-          <button type="submit" className="save-button">Save Changes</button>
-          {message && <p className="message">{message}</p>}
-        </form>
       </div>
     </div>
   );
-}
+};
 
 export default EditProfile;

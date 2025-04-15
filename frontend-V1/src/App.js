@@ -12,15 +12,16 @@ import AdminLogin from './components/AdminLogin';
 import AdminDashboard from './components/AdminDashboard';
 import UserManagement from './components/UserManagement';
 import { useAuth } from './context/AuthContext';
-import LostItems from './pages/LostItems';
+import LostItems from './components/LostItems';
+import FoundItems from './components/FoundItems';
 import CategoryManagement from './components/CategoryManagement';
+import EditProfile from './components/EditProfile';
 
 
 
 //import { LostItems } from './pages/LostItems';        
 //import { FoundItemReports } from './pages/FoundItemReports';
 
-import FoundItems from './pages/FoundItems';
 
 import './styles/HomePage.css';
 
@@ -57,6 +58,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/about" element={<AboutUs />} />
+        <Route path="/edit-profile" element={<EditProfile />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/report" element={<RequireAuth><ReportItem /></RequireAuth>} />
         <Route path="/my-activity" element={<RequireAuth><MyActivity /></RequireAuth>} />

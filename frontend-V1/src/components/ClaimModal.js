@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import '../styles/ClaimModal.css';
 
 const ClaimModal = ({ itemId, requesterId: initialRequesterId, onClose }) => {
@@ -8,21 +8,25 @@ const ClaimModal = ({ itemId, requesterId: initialRequesterId, onClose }) => {
   const [description, setDescription] = useState('');
   const [photoFile, setPhotoFile] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const modalRef = useRef(null);
 
   useEffect(() => {
-    if (!initialRequesterId) {
-      const user = JSON.parse(localStorage.getItem('user'));
-      if (user?.userId) {
-        setRequesterId(user.userId);
-      }
-    } else {
-      setRequesterId(initialRequesterId);
-    }
-
     const user = JSON.parse(localStorage.getItem('user'));
+    if (!initialRequesterId && user?.userId) setRequesterId(user.userId);
+    else setRequesterId(initialRequesterId);
+
     if (user?.employeeId) setEmployeeId(user.employeeId);
     if (user?.name) setName(user.name);
-  }, [initialRequesterId]);
+
+    const handleOutsideClick = (e) => {
+      if (modalRef.current && !modalRef.current.contains(e.target)) {
+        onClose();
+      }
+    };
+
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, [initialRequesterId, onClose]);
 
   const convertToBase64 = (file) => {
     return new Promise((resolve, reject) => {
@@ -39,7 +43,6 @@ const ClaimModal = ({ itemId, requesterId: initialRequesterId, onClose }) => {
 
     try {
       const base64Photo = await convertToBase64(photoFile);
-
       const claimData = {
         requesterId,
         employeeId,
@@ -58,7 +61,6 @@ const ClaimModal = ({ itemId, requesterId: initialRequesterId, onClose }) => {
       });
 
       if (!response.ok) throw new Error('Failed to submit claim');
-
       alert('Claim submitted successfully!');
       onClose();
     } catch (err) {
@@ -71,64 +73,55 @@ const ClaimModal = ({ itemId, requesterId: initialRequesterId, onClose }) => {
 
   return (
     <div className="claim-modal-overlay">
-      <div className="claim-modal">
-        <h2>Claim Found Item</h2>
+      <div className="claim-modal" ref={modalRef}>
+        <h2 className="modal-title">Claim</h2>
         <form onSubmit={handleSubmit}>
-          <label>
-            Item ID:
-            <input type="text" value={itemId} disabled readOnly />
-          </label>
 
-          <label>
-            Requester ID:
-            <input type="text" value={requesterId} disabled readOnly />
-          </label>
-
-          <label>
-            Employee ID:
+          <div className="form-group">
+            <label>Employee ID</label>
             <input
               type="text"
               value={employeeId}
               onChange={(e) => setEmployeeId(e.target.value)}
               required
             />
-          </label>
+          </div>
 
-          <label>
-            Name:
+          <div className="form-group">
+            <label>Name</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
             />
-          </label>
+          </div>
 
-          <label>
-            Description:
+          <div className="form-group">
+            <label>Description</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               required
             />
-          </label>
+          </div>
 
-          <label>
-            Upload Proof Image:
+          <div className="form-group">
+            <label>Upload Proof Image</label>
             <input
               type="file"
               accept="image/*"
               onChange={(e) => setPhotoFile(e.target.files[0])}
               required
             />
-          </label>
+          </div>
 
           <div className="claim-modal-buttons">
-            <button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'Submitting...' : 'Submit Claim'}
-            </button>
-            <button type="button" onClick={onClose}>
+            <button type="button" onClick={onClose} className="cancel-btn">
               Cancel
+            </button>
+            <button type="submit" disabled={isSubmitting} className="submit-btn">
+              {isSubmitting ? 'Submitting...' : 'Submit'}
             </button>
           </div>
         </form>

@@ -1,121 +1,158 @@
 .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    padding: 1rem;
-    overflow-y: auto;
-  }
-  
-  .modal-container {
-    background-color: #0f172a;
-    color: #fff;
-    border-radius: 0.5rem;
-    width: 100%;
-    max-width: 600px;
-    max-height: 90vh;
-    overflow-y: auto;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .modal-header {
-    padding: 1rem;
-    border-bottom: 1px solid #1e293b;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .modal-header h2 {
-    color: #f472b6;
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin: 0;
-  }
-  
-  .close-button {
-    background: transparent;
-    border: none;
-    font-size: 1.5rem;
-    color: #aaa;
-    cursor: pointer;
-  }
-  
-  .modal-body {
-    padding: 1rem;
-    overflow-y: auto;
-  }
-  
-  .modal-form label {
-    display: block;
-    margin-bottom: 1rem;
-    font-size: 0.9rem;
-  }
-  
-  .modal-form input,
-  .modal-form textarea {
-    width: 100%;
-    padding: 0.5rem;
-    background-color: #1e293b;
-    border: none;
-    border-radius: 0.375rem;
-    color: #fff;
-    margin-top: 0.25rem;
-    font-size: 0.9rem;
-  }
-  
-  .modal-form input[type="file"] {
-    background-color: #f1f5f9;
-    color: #000;
-  }
-  
-  .radio-group {
-    margin-bottom: 1rem;
-  }
-  
-  .radio-group label {
-    margin-right: 1rem;
-    font-size: 0.9rem;
-  }
-  
-  .modal-footer {
-    display: flex;
-    gap: 1rem;
-    padding: 1rem;
-    border-top: 1px solid #1e293b;
-  }
-  
-  .submit-btn,
-  .cancel-btn {
-    flex: 1;
-    padding: 0.5rem;
-    font-size: 0.95rem;
-    font-weight: 500;
-    border: none;
-    border-radius: 0.375rem;
-    cursor: pointer;
-  }
-  
-  .submit-btn {
-    background-color: #ec4899;
-    color: white;
-  }
-  
-  .submit-btn:hover {
-    background-color: #db2777;
-  }
-  
-  .cancel-btn {
-    background-color: #334155;
-    color: white;
-  }
-  
-  .cancel-btn:hover {
-    background-color: #475569;
-  }
-  
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 10px;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.modal-container {
+  background-color: #083b5c;
+  color: white;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 380px;
+  max-height: 90vh;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.modal-header {
+  padding: 10px 12px;
+  border-bottom: 1px solid #0a2c44;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h2 {
+  color: #ff007a;
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.close-button {
+  background: transparent;
+  border: none;
+  font-size: 1.3rem;
+  color: #ff1472;
+  cursor: pointer;
+}
+
+.modal-body {
+  padding: 10px 12px;
+  overflow-y: auto;
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.modal-form label {
+  font-weight: 500;
+  color: #b0c4de;
+  font-size: 13px;
+  margin-bottom: 2px;
+}
+
+.modal-form input[type="text"],
+.modal-form input[type="file"],
+.modal-form textarea {
+  width: 100%;
+  padding: 6px 10px;
+  background-color: #072d44;
+  border: 1px solid #4a90e2;
+  border-radius: 5px;
+  color: white;
+  font-size: 13px;
+  box-sizing: border-box;
+}
+
+.modal-form input[type="text"]::placeholder,
+.modal-form textarea::placeholder {
+  color: #b0c4de;
+}
+
+.modal-form input[type="file"] {
+  padding: 6px;
+  background-color: #0d3b57;
+  border: 1px dashed #4a90e2;
+  color: white;
+  font-size: 13px;
+}
+
+.modal-form textarea {
+  resize: vertical;
+  min-height: 50px;
+  max-height: 100px;
+}
+
+.radio-group {
+  margin-bottom: 8px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.radio-group label {
+  font-size: 13px;
+  color: #b0c4de;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  padding: 10px 12px;
+  border-top: 1px solid #0a2c44;
+  flex-wrap: wrap;
+}
+
+.submit-btn,
+.cancel-btn {
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 5px;
+  cursor: pointer;
+  min-width: 85px;
+  transition: 0.3s ease;
+  border: none;
+}
+
+.submit-btn {
+  background-color: #ff1472;
+  color: white;
+}
+
+.submit-btn:hover {
+  background-color: #e01365;
+}
+
+.cancel-btn {
+  background-color: transparent;
+  color: #ff1472;
+  border: 1.5px solid #ff1472;
+}
+
+.cancel-btn:hover {
+  background-color: #26182c;
+}
