@@ -11,7 +11,7 @@
 .title {
   font-size: 32px;
   font-weight: bold;
-  color: #fff;
+  color: #ffffff;
   margin-bottom: 20px;
   text-align: center;
 }
@@ -157,11 +157,12 @@
 }
 
 .flip-card-front {
-  background-color: #fff;
+  background-color: #000000dc;
+  
 }
 
 .flip-card-back {
-  background-color: #f9f9f9;
+  background-color: #000000;
   transform: rotateY(180deg);
   overflow-y: auto;
 }
@@ -175,6 +176,7 @@
 }
 
 .card-title {
+  color : #ff007a;
   margin-top: 12px;
   font-size: 20px;
   font-weight: bold;
@@ -192,7 +194,7 @@
 
 .description-text {
   font-size: 13px;
-  color: #555;
+  color: #ffffff;
   margin-top: 6px;
 }
 

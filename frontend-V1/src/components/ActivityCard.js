@@ -28,10 +28,8 @@ const ActivityCard = ({ item }) => {
         {/* Front Side */}
         <div className="flip-front">
           <div className="image-container">
-            <img
-              src={item.imageUrl || 'https://via.placeholder.com/300x200'}
-              alt={item.itemName}
-            />
+
+          <img src={item.photo || item.imageUrl || fallbackImage} alt="Activity Item" />
             <div className={`status-tag ${getStatusClass(item.transactionStatus)}`}>
               {item.transactionStatus}
             </div>
@@ -64,8 +62,8 @@ const ActivityCard = ({ item }) => {
               <span>Pickup Message:</span> {item.pickupMessage}
             </div>
           )}
-
-          <button className="handover-btn">Collected</button>
+{/* 
+          <button className="handover-btn">Collected</button> */}
         </div>
       </div>
     </div>

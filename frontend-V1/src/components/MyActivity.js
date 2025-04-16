@@ -3,7 +3,6 @@ import axios from "axios";
 import ActivityCard from "./ActivityCard";
 import "../styles/MyActivity.css";
 
-// Define display labels and corresponding enum values
 const filters = [
   { label: "Lost Reports", value: "LOST" },
   { label: "Found Reports", value: "FOUND" },
@@ -12,9 +11,14 @@ const filters = [
 ];
 
 const MyActivity = () => {
-  const [selectedFilter, setSelectedFilter] = useState(filters[0].value); // default to LOST
-  const [activityData, setActivityData] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [selectedFilter, setSelectedFilter] = useState("LOST");
+  const [allActivityData, setAllActivityData] = useState({
+    LOST: [],
+    FOUND: [],
+    CLAIM: [],
+    HANDOVER: [],
+  });
+  const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState(null);
 
   useEffect(() => {
@@ -28,49 +32,39 @@ const MyActivity = () => {
 
   useEffect(() => {
     if (!userId) return;
-    fetchData(selectedFilter);
-  }, [selectedFilter, userId]);
 
-  const fetchData = async (filterValue) => {
-    if (!userId) {
-      console.warn("User ID not available yet");
-      return;
-    }
+    const fetchAllData = async () => {
+      setLoading(true);
+      const endpoints = {
+        LOST: `http://localhost:8080/api/items/lost/user/${userId}`,
+        FOUND: `http://localhost:8080/api/items/found/user/${userId}`,
+        CLAIM: `http://localhost:8080/api/transactions/claims/${userId}`,
+        HANDOVER: `http://localhost:8080/api/transactions/handovers/${userId}`,
+      };
 
-    setLoading(true);
-    try {
-      let response;
+      const updatedData = {};
 
-      switch (filterValue) {
-        case "LOST":
-          response = await axios.get(`http://localhost:8080/api/items/lost/user/${userId}`);
-          break;
-        case "FOUND":
-          response = await axios.get(`http://localhost:8080/api/items/found/user/${userId}`);
-          break;
-        case "CLAIM":
-          response = await axios.get(`http://localhost:8080/api/transactions/claims/${userId}`);
-          break;
-        case "HANDOVER":
-          response = await axios.get(`http://localhost:8080/api/transactions/handovers/${userId}`);
-          break;
-        default:
-          response = { data: [] };
+      for (const key of Object.keys(endpoints)) {
+        try {
+          const res = await axios.get(endpoints[key]);
+          updatedData[key] = res.data.map((item) => ({
+            ...item,
+            type: key,
+          }));
+        } catch (error) {
+          console.error(`Error fetching ${key} data:`, error);
+          updatedData[key] = [];
+        }
       }
 
-      const typedData = response.data.map((item) => ({
-        ...item,
-        type: filterValue,
-      }));
-
-      setActivityData(typedData);
-    } catch (error) {
-      console.error(`Error fetching ${filterValue} data:`, error);
-      setActivityData([]);
-    } finally {
+      setAllActivityData(updatedData);
       setLoading(false);
-    }
-  };
+    };
+
+    fetchAllData();
+  }, [userId]);
+
+  const currentData = allActivityData[selectedFilter] || [];
 
   return (
     <div className="my-activity-container">
@@ -85,9 +79,7 @@ const MyActivity = () => {
             onClick={() => setSelectedFilter(filter.value)}
           >
             {filter.label}
-            <span className="count-badge">
-              {selectedFilter === filter.value ? activityData.length : 0}
-            </span>
+            <span className="count-badge">{allActivityData[filter.value]?.length || 0}</span>
           </button>
         ))}
       </div>
@@ -96,8 +88,8 @@ const MyActivity = () => {
       <div className="activity-cards-container">
         {loading ? (
           <p className="loading-message">Loading...</p>
-        ) : activityData.length > 0 ? (
-          activityData.map((item) => (
+        ) : currentData.length > 0 ? (
+          currentData.map((item) => (
             <ActivityCard
               key={item.id || item.itemId || item.transactionId || Math.random()}
               item={item}

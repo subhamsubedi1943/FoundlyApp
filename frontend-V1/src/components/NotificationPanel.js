@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/NotificationPanel.css';
+import { useAuth } from '../context/AuthContext';
 
 function NotificationPanel() {
+  const { currentUser } = useAuth();
   const [open, setOpen] = useState(false);
   const [selectedNote, setSelectedNote] = useState(null);
   const [activeTab, setActiveTab] = useState('all');
@@ -10,14 +12,13 @@ function NotificationPanel() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (!user?.userId) {
+    const userId = currentUser?.userId;
+    console.log('UserId from currentUser context:', userId);
+    if (!userId) {
       setError('User not logged in.');
       setLoading(false);
       return;
     }
-
-    const userId = user.userId;
 
     fetch(`http://localhost:8080/api/transactions/notifications/${userId}`)
       .then((res) => {
@@ -25,6 +26,7 @@ function NotificationPanel() {
         return res.json();
       })
       .then((data) => {
+        console.log('Fetched notifications:', data);
         setNotificationData(data);
         setError(null);
       })
@@ -35,7 +37,7 @@ function NotificationPanel() {
       .finally(() => {
         setLoading(false);
       });
-  }, []);
+  }, [currentUser]);
 
   const openDetails = (note) => setSelectedNote(note);
   const closeDetails = () => setSelectedNote(null);

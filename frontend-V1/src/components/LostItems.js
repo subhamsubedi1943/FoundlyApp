@@ -130,15 +130,9 @@ const LostItems = () => {
             <div className="flip-card" key={index}>
               <div className="flip-card-inner">
                 <div className="flip-card-front">
-                  {item.imageUrl ? (
-                    <img
-                      src={`data:image/jpeg;base64,${item.imageUrl}`}
-                      alt={item.itemName}
-                      className="card-image"
-                    />
-                  ) : (
-                    <div className="no-image">No Image</div>
-                  )}
+                {item.imageUrl && (
+                  <img src={item.imageUrl} alt={item.itemName} className="card-image" />
+                )}
                   <p className="card-category">{item.categoryName}</p>
                   <h2 className="card-title">{item.itemName}</h2>
                   <p className="card-location">{item.location}</p>

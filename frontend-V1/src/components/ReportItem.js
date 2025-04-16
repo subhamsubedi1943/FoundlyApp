@@ -158,9 +158,16 @@ import React, { useState } from "react";
 import "../styles/ReportItem.css";
 
 const categoryMap = {
-  Electronics: 1,
-  Clothing: 2,
-  Documents: 3,
+  Electronics : 1,
+  Phone : 2,
+  Wallet : 3,
+  Keys : 4,
+  Bags : 5,
+  Watch : 6,
+  Documents : 7,
+	FashionAccessories : 8,
+  Jewellery : 9,
+  Others : 10
 };
 
 const ReportItem = () => {
@@ -186,9 +193,20 @@ const ReportItem = () => {
     setItemType((prev) => (prev === "Found" ? "Lost" : "Found"));
   };
 
+  // const handleFileChange = (e) => {
+  //   const files = Array.from(e.target.files);
+  //   setUploadedFiles((prev) => [...prev, ...files]);
+  // };
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
-    setUploadedFiles((prev) => [...prev, ...files]);
+  
+    files.forEach((file) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setUploadedFiles((prev) => [...prev, { file, base64: reader.result }]);
+      };
+      reader.readAsDataURL(file); // converts to base64
+    });
   };
 
   const removeFile = (index) => {
@@ -210,7 +228,8 @@ const ReportItem = () => {
       itemName: formData.itemName,
       description: formData.description,
       dateLostOrFound: dateTime,
-      imageUrl: uploadedFiles.length ? uploadedFiles[0].name : "",
+      // imageUrl: uploadedFiles.length ? uploadedFiles[0].name : "",
+      imageUrl: uploadedFiles.length ? uploadedFiles[0].base64 : "",
       handoverToSecurity: itemType === "Found" && handoverOption === "security",
       pickupMessage: itemType === "Found" && handoverOption === "keep" ? formData.pickupMessage : null,
       securityId: itemType === "Found" && handoverOption === "security" ? formData.securityId : null,
@@ -302,16 +321,28 @@ const ReportItem = () => {
               }))
             }
           >
-            <option>Select category</option>
-            <option>Electronics</option>
-            <option>Clothing</option>
-            <option>Documents</option>
-            <option>keys</option>
-            <option>Wallet</option>
-            <option>Bag</option>
-            <option>Accesories</option>
-            <option>Jewellery</option>
-            <option>Others</option>
+
+Electronics : 1,
+  Phone : 2,
+  Wallet : 3,
+  Keys : 4,
+  Bags : 5,
+  Watch : 6,
+  Documents : 7,
+	FashionAccessories : 8,
+  Jewellery : 9,
+  Others : 10
+            <option >Select category</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Phone" >Phone</option>
+            <option value="Wallet">Wallet</option>
+            <option value="Keys">Keys</option>
+            <option value="Bags">Bags</option>
+            <option value="Watch">Watch</option>
+            <option value="Documents">Documents</option>
+            <option value="FashionAccessories">Fashion Accessories</option>
+            <option value="Jewellery">Jewellery</option>
+            <option value="Others">Others</option>
           </select>
           <input
             type="text"
@@ -363,14 +394,28 @@ const ReportItem = () => {
         </div>
 
         {/* Uploaded Files Preview */}
-        <div className="uploaded-files">
+        {/* <div className="uploaded-files">
           {uploadedFiles.map((file, index) => (
             <div className="file-tag" key={index}>
               <span>{file.name}</span>
               <button onClick={() => removeFile(index)}>×</button>
             </div>
           ))}
-        </div>
+        </div> */}
+
+<div className="uploaded-files">
+  {uploadedFiles.map((fileObj, index) => (
+    <div className="file-tag" key={index}>
+      <span>{fileObj.file.name}</span>
+      <button onClick={() => removeFile(index)}>×</button>
+      <img
+        src={fileObj.base64}
+        alt="preview"
+        style={{ width: "100px", marginTop: "5px", borderRadius: "8px" }}
+      />
+    </div>
+  ))}
+</div>
 
         <hr className="section-divider" />
 
