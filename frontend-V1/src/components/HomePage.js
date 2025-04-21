@@ -18,7 +18,7 @@ function HomePage() {
   const { isLoggedIn, setShowAuthBox } = useAuth();
   const [isScrolledUp, setIsScrolledUp] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
-  const [activeTab, setActiveTab] = useState('lost-items');
+  const [activeTab, setActiveTab] = useState(null);  // Start with no active tab
   const tabRefs = useRef([]);
 
   const aboutRef = useRef(null);
@@ -47,17 +47,19 @@ function HomePage() {
   };
 
   useEffect(() => {
-    const activeTabIndex = ['lost-items', 'found-items', 'my-activity'].indexOf(activeTab);
-    const activeTabElement = tabRefs.current[activeTabIndex];
+    if (activeTab) {
+      const activeTabIndex = ['lost-items', 'found-items', 'my-activity'].indexOf(activeTab);
+      const activeTabElement = tabRefs.current[activeTabIndex];
 
-    if (activeTabElement) {
-      const tabWidth = activeTabElement.offsetWidth;
-      const tabLeft = activeTabElement.offsetLeft;
+      if (activeTabElement) {
+        const tabWidth = activeTabElement.offsetWidth;
+        const tabLeft = activeTabElement.offsetLeft;
 
-      const slider = document.querySelector('.tab-slider');
-      if (slider) {
-        slider.style.width = `${tabWidth}px`;
-        slider.style.left = `${tabLeft}px`;
+        const slider = document.querySelector('.tab-slider');
+        if (slider) {
+          slider.style.width = `${tabWidth}px`;
+          slider.style.left = `${tabLeft}px`;
+        }
       }
     }
   }, [activeTab]);

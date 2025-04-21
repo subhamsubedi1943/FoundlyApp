@@ -13,7 +13,7 @@ function NotificationPanel() {
 
   useEffect(() => {
     const userId = currentUser?.userId;
-    console.log('UserId from currentUser context:', userId);  // Debug log to verify userId presence
+    console.log('UserId from currentUser context:', userId);
     if (!userId) {
       setError('User not logged in.');
       setLoading(false);
@@ -26,7 +26,7 @@ function NotificationPanel() {
         return res.json();
       })
       .then((data) => {
-        console.log('Fetched notifications:', data);  // Debug log to verify data
+        console.log('Fetched notifications:', data);
         setNotificationData(data);
         setError(null);
       })
