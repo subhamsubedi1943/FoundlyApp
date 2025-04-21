@@ -161,6 +161,12 @@ const categoryMap = {
   Electronics: 1,
   Clothing: 2,
   Documents: 3,
+  keys: 4,
+  Wallet: 5,
+  Bag: 6,
+  Accesories: 7,
+  Jewellery: 8,
+  Others: 9,
 };
 
 const ReportItem = () => {

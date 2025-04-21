@@ -22,6 +22,21 @@ const ActivityCard = ({ item }) => {
     }
   };
 
+  // Helper function to check if string is base64
+  const isBase64 = (str) => {
+    try {
+      return btoa(atob(str)) === str;
+    } catch (err) {
+      return false;
+    }
+  };
+
+  const imageSrc = item.imageUrl
+    ? isBase64(item.imageUrl)
+      ? `data:image/jpeg;base64,${item.imageUrl}`
+      : item.imageUrl
+    : 'https://via.placeholder.com/300x200';
+
   return (
     <div className={`flip-card ${getBorderClass(item.itemType)}`}>
       <div className="flip-inner">
@@ -29,7 +44,7 @@ const ActivityCard = ({ item }) => {
         <div className="flip-front">
           <div className="image-container">
             <img
-              src={item.imageUrl || 'https://via.placeholder.com/300x200'}
+              src={imageSrc}
               alt={item.itemName}
             />
             <div className={`status-tag ${getStatusClass(item.transactionStatus)}`}>

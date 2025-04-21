@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-//import java.time.LocalDateTime;
 import java.time.Duration;
 
 @Service
@@ -47,8 +46,7 @@ public class TransactionsService {
         return transactionsRepository.findById(transactionId);
     }
 
- // Claim an item
- // Claim an item
+    // Claim an item
     @Transactional
     public Transactions claimItem(ClaimRequest request) {
         // Fetch item
@@ -161,50 +159,70 @@ public class TransactionsService {
         }
     }
 
+    public List<NotificationDTO> getNotificationsForUser(Integer userId) {
+        List<Transactions> reporterTransactions = transactionsRepository.findByReporterUserId(userId);
+        List<Transactions> requesterTransactions = transactionsRepository.findByRequesterUserId(userId.longValue());
 
+        List<NotificationDTO> notifications = new ArrayList<>();
 
-        
+        for (Transactions tx : reporterTransactions) {
+            NotificationDTO dto = new NotificationDTO();
+            dto.setTransactionId(tx.getTransactionId());
+            dto.setType(tx.getTransactionType().toString());
+            dto.setTime(getTimeAgo(tx.getDateUpdated()));
+            dto.setDescription(tx.getDescription());
+            dto.setPhoto(tx.getPhoto());
+            dto.setItemStatus(tx.getItem().getItemStatus().toString());
 
-        public List<NotificationDTO> getNotificationsForUser(Integer userId) {
-            List<Transactions> transactions = transactionsRepository.findByReporterUserId(userId);
-
-            List<NotificationDTO> notifications = new ArrayList<>();
-
-            for (Transactions tx : transactions) {
-                NotificationDTO dto = new NotificationDTO();
-                dto.setTransactionId(tx.getTransactionId());
-                dto.setType(tx.getTransactionType().toString());
-                dto.setTime(getTimeAgo(tx.getDateUpdated()));
-                dto.setDescription(tx.getDescription());
-                dto.setPhoto(tx.getPhoto());
-                dto.setItemStatus(tx.getItem().getItemStatus().toString());
-
-                if (tx.getTransactionType() == Transactions.TransactionType.CLAIM) {
-                    dto.setTitle("Claim Request: " + tx.getItem().getItemName());
-                    dto.setMessage("A user has claimed the item you reported. Review the claim and respond.");
-                } else if (tx.getTransactionType() == Transactions.TransactionType.HANDOVER) {
-                    dto.setTitle("Good news! " + tx.getItem().getItemName() + " found");
-                    dto.setMessage("A user found your lost item and wants to hand it over.");
-                    dto.setPickupMessage(tx.getPickupMessage());
-                    dto.setSecurityId(tx.getSecurityId());
-                    dto.setSecurityName(tx.getSecurityName());
-                }
-
-                notifications.add(dto);
+            if (tx.getTransactionType() == Transactions.TransactionType.CLAIM) {
+                dto.setTitle("Claim Request: " + tx.getItem().getItemName());
+                dto.setMessage("A user has claimed the item you reported. Review the claim and respond.");
+            } else if (tx.getTransactionType() == Transactions.TransactionType.HANDOVER) {
+                dto.setTitle("Good news! " + tx.getItem().getItemName() + " found");
+                dto.setMessage("A user found your lost item and wants to hand it over.");
+                dto.setPickupMessage(tx.getPickupMessage());
+                dto.setSecurityId(tx.getSecurityId());
+                dto.setSecurityName(tx.getSecurityName());
             }
 
-            return notifications;
+            notifications.add(dto);
         }
 
-        private String getTimeAgo(LocalDateTime dateTime) {
-            // Optional helper - returns string like "2h ago", or "1d ago"
-            Duration duration = Duration.between(dateTime, LocalDateTime.now());
-            long hours = duration.toHours();
-            if (hours < 24) return hours + "h ago";
-            return (hours / 24) + "d ago";
+        for (Transactions tx : requesterTransactions) {
+            NotificationDTO dto = new NotificationDTO();
+            dto.setTransactionId(tx.getTransactionId());
+            dto.setType(tx.getTransactionType().toString());
+            dto.setTime(getTimeAgo(tx.getDateUpdated()));
+            dto.setDescription(tx.getDescription());
+            dto.setPhoto(tx.getPhoto());
+            dto.setItemStatus(tx.getItem().getItemStatus().toString());
+
+            if (tx.getTransactionType() == Transactions.TransactionType.CLAIM) {
+                dto.setTitle("Your claim request: " + tx.getItem().getItemName());
+                dto.setMessage("You have claimed an item. Await response from the reporter.");
+            } else if (tx.getTransactionType() == Transactions.TransactionType.HANDOVER) {
+                dto.setTitle("Your handover request: " + tx.getItem().getItemName());
+                dto.setMessage("You have requested to hand over an item.");
+                dto.setPickupMessage(tx.getPickupMessage());
+                dto.setSecurityId(tx.getSecurityId());
+                dto.setSecurityName(tx.getSecurityName());
+            }
+
+            notifications.add(dto);
         }
-    
-    
+
+        return notifications;
+    }
+
+    private String getTimeAgo(LocalDateTime dateTime) {
+        // Optional helper - returns string like "2h ago", or "1d ago"
+        Duration duration = Duration.between(dateTime, LocalDateTime.now());
+        long hours = duration.toHours();
+        if (hours < 24) return hours + "h ago";
+        return (hours / 24) + "d ago";
+    }
+
+
     public List<TransactionResponse> getClaimsByUserId(Long userId) {
         List<Transactions> transactions = transactionsRepository.findByRequesterUserIdAndTransactionType(userId, Transactions.TransactionType.CLAIM);
         return transactions.stream()
@@ -236,6 +254,25 @@ public class TransactionsService {
             transaction.getSecurityId(),
             transaction.getSecurityName()
         );
+    }
+
+    @Transactional
+    public void deleteTransactionsByItemIds(List<Integer> itemIds) {
+        if (itemIds == null || itemIds.isEmpty()) {
+            return;
+        }
+        List<Transactions> transactions = transactionsRepository.findByItem_ItemIdIn(itemIds);
+        if (transactions != null && !transactions.isEmpty()) {
+            transactionsRepository.deleteAll(transactions);
+        }
+    }
+
+    @Transactional
+    public void deleteTransactionsByRequesterUserId(Integer userId) {
+        List<Transactions> transactions = transactionsRepository.findByRequesterUserId(userId.longValue());
+        if (transactions != null && !transactions.isEmpty()) {
+            transactionsRepository.deleteAll(transactions);
+        }
     }
 
 }

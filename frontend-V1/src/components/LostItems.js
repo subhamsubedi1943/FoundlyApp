@@ -71,6 +71,15 @@ const LostItems = () => {
     return matchesSearch && matchesCategory && matchesLocation && matchesDate;
   });
 
+  // Helper function to check if string is base64
+  const isBase64 = (str) => {
+    try {
+      return btoa(atob(str)) === str;
+    } catch (err) {
+      return false;
+    }
+  };
+
   return (
     <div className="items-page">
       <h1 className="title">Lost Item Reports</h1>
@@ -132,7 +141,7 @@ const LostItems = () => {
                 <div className="flip-card-front">
                   {item.imageUrl ? (
                     <img
-                      src={`data:image/jpeg;base64,${item.imageUrl}`}
+                  src={isBase64(item.imageUrl) ? `data:image/jpeg;base64,${item.imageUrl}` : (item.imageUrl.startsWith('http') ? item.imageUrl : `http://localhost:8080/${item.imageUrl}`)}
                       alt={item.itemName}
                       className="card-image"
                     />

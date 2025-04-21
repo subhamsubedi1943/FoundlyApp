@@ -66,8 +66,19 @@ public class UserService {
     }
 
 
+    @Autowired
+    private ItemReportsService itemReportsService;
+
+    @Autowired
+    private TransactionsService transactionsService;
+
     // Delete a user
     public void deleteUser (Integer userId) {
+        // Delete dependent transactions first to avoid foreign key constraint error
+        transactionsService.deleteTransactionsByRequesterUserId(userId);
+        // Delete dependent item reports
+        itemReportsService.deleteItemReportsByUserId(userId);
+        // Delete user
         userRepository.deleteById(userId);
     }
 

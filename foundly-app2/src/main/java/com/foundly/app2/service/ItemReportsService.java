@@ -24,6 +24,8 @@ import com.foundly.app2.repository.FoundItemDetailsRepository;
 import com.foundly.app2.repository.ItemReportsRepository;
 import com.foundly.app2.repository.UserRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class ItemReportsService {
 
@@ -214,7 +216,22 @@ public class ItemReportsService {
                       .collect(Collectors.toList());
     }
 
+    @Autowired
+    private TransactionsService transactionsService;
 
+    @Transactional
+    public void deleteItemReportsByUserId(Integer userId) {
+        List<ItemReports> reports = itemReportsRepository.findByUserId(userId.longValue());
+        if (reports != null && !reports.isEmpty()) {
+            // Extract item IDs
+            List<Integer> itemIds = reports.stream()
+                                           .map(ItemReports::getItemId)
+                                           .collect(java.util.stream.Collectors.toList());
+            // Delete dependent transactions first
+            transactionsService.deleteTransactionsByItemIds(itemIds);
+            // Delete item reports
+            itemReportsRepository.deleteAll(reports);
+        }
+    }
 
 }
-
