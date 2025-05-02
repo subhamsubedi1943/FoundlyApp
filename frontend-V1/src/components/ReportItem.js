@@ -158,16 +158,16 @@ import React, { useState } from "react";
 import "../styles/ReportItem.css";
 
 const categoryMap = {
-  Electronics : 1,
-  Phone : 2,
-  Wallet : 3,
-  Keys : 4,
-  Bags : 5,
-  Watch : 6,
-  Documents : 7,
-	FashionAccessories : 8,
-  Jewellery : 9,
-  Others : 10
+  Electronics: 1,
+  Phone: 2,
+  Wallet: 3,
+  Keys: 4,
+  Bags: 5,
+  Watch: 6,
+  Documents: 7,
+  FashionAccessories: 8,
+  Jewellery: 9,
+  Others: 10,
 };
 
 const ReportItem = () => {
@@ -193,13 +193,9 @@ const ReportItem = () => {
     setItemType((prev) => (prev === "Found" ? "Lost" : "Found"));
   };
 
-  // const handleFileChange = (e) => {
-  //   const files = Array.from(e.target.files);
-  //   setUploadedFiles((prev) => [...prev, ...files]);
-  // };
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
-  
+
     files.forEach((file) => {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -228,7 +224,6 @@ const ReportItem = () => {
       itemName: formData.itemName,
       description: formData.description,
       dateLostOrFound: dateTime,
-      // imageUrl: uploadedFiles.length ? uploadedFiles[0].name : "",
       imageUrl: uploadedFiles.length ? uploadedFiles[0].base64 : "",
       handoverToSecurity: itemType === "Found" && handoverOption === "security",
       pickupMessage: itemType === "Found" && handoverOption === "keep" ? formData.pickupMessage : null,
@@ -249,6 +244,26 @@ const ReportItem = () => {
 
       if (response.ok) {
         alert("Item reported successfully!");
+
+        // Reset the form fields after successful submission
+        setFormData({
+          userId: "",
+          name: "",
+          location: "",
+          categoryId: "",
+          itemName: "",
+          description: "",
+          date: "",
+          time: "",
+          pickupMessage: "",
+          securityId: "",
+          securityName: "",
+        });
+
+        setUploadedFiles([]); // Clear uploaded files
+
+        setItemType("Found"); // Reset item type to "Found"
+        setHandoverOption("keep"); // Reset handover option
       } else {
         alert("Failed to report item.");
       }
@@ -321,20 +336,9 @@ const ReportItem = () => {
               }))
             }
           >
-
-Electronics : 1,
-  Phone : 2,
-  Wallet : 3,
-  Keys : 4,
-  Bags : 5,
-  Watch : 6,
-  Documents : 7,
-	FashionAccessories : 8,
-  Jewellery : 9,
-  Others : 10
-            <option >Select category</option>
+            <option>Select category</option>
             <option value="Electronics">Electronics</option>
-            <option value="Phone" >Phone</option>
+            <option value="Phone">Phone</option>
             <option value="Wallet">Wallet</option>
             <option value="Keys">Keys</option>
             <option value="Bags">Bags</option>
@@ -394,28 +398,19 @@ Electronics : 1,
         </div>
 
         {/* Uploaded Files Preview */}
-        {/* <div className="uploaded-files">
-          {uploadedFiles.map((file, index) => (
+        <div className="uploaded-files">
+          {uploadedFiles.map((fileObj, index) => (
             <div className="file-tag" key={index}>
-              <span>{file.name}</span>
+              <span>{fileObj.file.name}</span>
               <button onClick={() => removeFile(index)}>×</button>
+              <img
+                src={fileObj.base64}
+                alt="preview"
+                style={{ width: "100px", marginTop: "5px", borderRadius: "8px" }}
+              />
             </div>
           ))}
-        </div> */}
-
-<div className="uploaded-files">
-  {uploadedFiles.map((fileObj, index) => (
-    <div className="file-tag" key={index}>
-      <span>{fileObj.file.name}</span>
-      <button onClick={() => removeFile(index)}>×</button>
-      <img
-        src={fileObj.base64}
-        alt="preview"
-        style={{ width: "100px", marginTop: "5px", borderRadius: "8px" }}
-      />
-    </div>
-  ))}
-</div>
+        </div>
 
         <hr className="section-divider" />
 
@@ -483,7 +478,9 @@ Electronics : 1,
         {/* Buttons */}
         <div className="form-buttons">
           <button className="cancel-btn">Cancel</button>
-          <button className="submit-btn" onClick={handleSubmit}>Submit</button>
+          <button className="submit-btn" onClick={handleSubmit}>
+            Submit
+          </button>
         </div>
       </div>
     </div>
@@ -491,3 +488,4 @@ Electronics : 1,
 };
 
 export default ReportItem;
+

@@ -1,85 +1,174 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer 
 } from 'recharts';
+import axios from 'axios';
 import '../styles/Dashboard.css';
 import { AlertCircle, CheckCircle, Database, Shield } from 'lucide-react';
 
 const Dashboard = () => {
-  // Sample data for stats
-  const stats = [
-    { 
-      id: 1, 
-      title: 'Total Lost Items Reported', 
-      count: 38, 
-      icon: <AlertCircle className="stat-icon lost-icon" />,
-      change: '+8% this week',
-      type: 'lost'
-    },
-    { 
-      id: 2, 
-      title: 'Total Found Itemss Reported', 
-      count: 26, 
-      icon: <CheckCircle className="stat-icon found-icon" />,
-      change: '+12% this week',
-      type: 'found'
-    },
-    { 
-      id: 3, 
-      title: 'Items Successfully Returned', 
-      count: 19, 
-      icon: <Database className="stat-icon neutral-icon" />,
-      change: '',
-      type: 'neutral'
-    }
-  ];
+  const [stats, setStats] = useState([]);
+  const [monthlyData, setMonthlyData] = useState([]);
+  const [categoryData, setCategoryData] = useState([]);
+  const [locationData, setLocationData] = useState([]);
+  const [claimStatusData, setClaimStatusData] = useState([]);
 
-  // Sample data for monthly trends
-  const monthlyData = [
-    { name: 'Jan', lost: 14, found: 6 },
-    { name: 'Feb', lost: 23, found: 12 },
-    { name: 'Mar', lost: 13, found: 20 },
-    { name: 'Apr', lost: 15, found: 30 },
-    { name: 'Jun', lost: 13, found: 33 },
-  ];
-
-  // Sample data for item categories
-  const categoryData = [
-    { name: 'Electronics', value: 45 },
-    { name: 'ID Cards', value: 30 },
-    { name: 'Wallets', value: 25 },
-  ];
-
-  // Sample data for claim status
-  const claimStatusData = [
-    { name: 'Requested', value: 35 },
-    { name: 'Pending', value: 24 },
-    { name: 'Completed', value: 25 },
-    { name: 'Handed Over', value: 16 },
-  ];
-
-  // Sample data for locations
-  const locationData = [
-    { name: 'Library', value: 18 },
-    { name: 'Cafeteria', value: 25 },
-    { name: 'Gym', value: 20 },
-    { name: 'Lecture Hall', value: 28 },
-  ];
-
-  // Sample data for notifications
-  const notifications = [
-    { id: 1, message: 'You have 2 pending claims to review', time: '21' },
-    { id: 2, message: 'New claim submitted for your item', time: '2h ago' },
-    { id: 3, message: 'Item handed over to owner', time: '1d' },
-  ];
-
-  // Colors for charts
   const COLORS = ['#0088FE', '#FF8042', '#82ca9d', '#8884d8'];
   const LOST_COLOR = '#ff6b6b';
   const FOUND_COLOR = '#69db7c';
 
-  // Render stat cards
+  useEffect(() => {
+    fetchStats();
+    fetchMonthlyTrends();
+    fetchCategories();
+    fetchLocations();
+    fetchClaimStatus();
+  }, []);
+
+  const fetchStats = async () => {
+    try {
+      const [lostRes, foundRes, allTransactionsRes] = await Promise.all([
+        axios.get('http://localhost:8080/api/items/lost-items'),
+        axios.get('http://localhost:8080/api/items/found-items'),
+        axios.get('http://localhost:8080/api/transactions')
+      ]);
+
+      const totalLost = lostRes.data.length;
+      const totalFound = foundRes.data.length;
+      const totalReturned = allTransactionsRes.data.filter(t => 
+        t.transactionStatus === 'COMPLETED' && t.transactionType === 'HANDOVER'
+      ).length;
+
+      setStats([
+        { 
+          id: 1, 
+          title: 'Total Lost Items Reported', 
+          count: totalLost, 
+          icon: <AlertCircle className="stat-icon lost-icon" />, 
+          change: '+8% this week', 
+          type: 'lost' 
+        },
+        { 
+          id: 2, 
+          title: 'Total Found Items Reported', 
+          count: totalFound, 
+          icon: <CheckCircle className="stat-icon found-icon" />, 
+          change: '+12% this week', 
+          type: 'found' 
+        },
+        { 
+          id: 3, 
+          title: 'Items Successfully Returned', 
+          count: totalReturned, 
+          icon: <Database className="stat-icon neutral-icon" />, 
+          change: '', 
+          type: 'neutral' 
+        }
+      ]);
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+    }
+  };
+
+  const fetchMonthlyTrends = async () => {
+    try {
+      const res = await axios.get('http://localhost:8080/api/items');
+      const data = res.data;
+
+      const monthlyCounts = {};
+
+      data.forEach(item => {
+        const month = new Date(item.dateReported).toLocaleString('default', { month: 'short' });
+        if (!monthlyCounts[month]) monthlyCounts[month] = { lost: 0, found: 0 };
+        if (item.type === 'LOST') monthlyCounts[month].lost += 1;
+        if (item.type === 'FOUND') monthlyCounts[month].found += 1;
+      });
+
+      const formatted = Object.keys(monthlyCounts).map(month => ({
+        name: month,
+        ...monthlyCounts[month]
+      }));
+
+      setMonthlyData(formatted);
+    } catch (error) {
+      console.error('Error fetching monthly trends:', error);
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const res = await axios.get('http://localhost:8080/api/items');
+      const data = res.data;
+
+      const categoryCounts = {};
+
+      data.forEach(item => {
+        const category = item.category ? item.category.name : 'Others';
+        if (!categoryCounts[category]) categoryCounts[category] = 0;
+        categoryCounts[category]++;
+      });
+
+      const formatted = Object.keys(categoryCounts).map(category => ({
+        name: category,
+        value: categoryCounts[category]
+      }));
+
+      setCategoryData(formatted);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
+  };
+
+  const fetchLocations = async () => {
+    try {
+      const res = await axios.get('http://localhost:8080/api/items');
+      const data = res.data;
+
+      const locationCounts = {};
+
+      data.forEach(item => {
+        const location = item.location || 'Unknown';
+        if (!locationCounts[location]) locationCounts[location] = 0;
+        locationCounts[location]++;
+      });
+
+      const formatted = Object.keys(locationCounts).map(location => ({
+        name: location,
+        value: locationCounts[location]
+      }));
+
+      setLocationData(formatted);
+    } catch (error) {
+      console.error('Error fetching locations:', error);
+    }
+  };
+
+  const fetchClaimStatus = async () => {
+    try {
+      const res = await axios.get('http://localhost:8080/api/transactions');
+      const data = res.data;
+
+      const claimCounts = { Requested: 0, Pending: 0, Completed: 0, HandedOver: 0 };
+
+      data.forEach(txn => {
+        if (txn.transactionStatus === 'REQUESTED') claimCounts.Requested++;
+        else if (txn.transactionStatus === 'PENDING') claimCounts.Pending++;
+        else if (txn.transactionStatus === 'COMPLETED') claimCounts.Completed++;
+        else if (txn.transactionStatus === 'HANDOVER') claimCounts.HandedOver++;
+      });
+
+      const formatted = Object.keys(claimCounts).map(status => ({
+        name: status,
+        value: claimCounts[status]
+      }));
+
+      setClaimStatusData(formatted);
+    } catch (error) {
+      console.error('Error fetching claim status:', error);
+    }
+  };
+
   const renderStatCards = () => {
     return stats.map(stat => (
       <div key={stat.id} className={`stat-card ${stat.type}-card`}>
@@ -97,7 +186,7 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard-container">
-      {/* Key Statistics Section */}
+      {/* Stats */}
       <div className="stats-container">
         {renderStatCards()}
         <div className="stat-card security-card">
@@ -109,9 +198,9 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Analytics Section - Charts */}
+      {/* Charts */}
       <div className="charts-container">
-        {/* Monthly Trends Chart */}
+        {/* Monthly Trends */}
         <div className="chart-card">
           <h3>Monthly Activity Trends</h3>
           <ResponsiveContainer width="100%" height={250}>
@@ -121,24 +210,13 @@ const Dashboard = () => {
               <YAxis />
               <Tooltip />
               <Legend />
-              <Line 
-                type="monotone" 
-                dataKey="lost" 
-                stroke={LOST_COLOR} 
-                activeDot={{ r: 8 }} 
-                name="Lost Items" 
-              />
-              <Line 
-                type="monotone" 
-                dataKey="found" 
-                stroke={FOUND_COLOR} 
-                name="Found Items" 
-              />
+              <Line type="monotone" dataKey="lost" stroke={LOST_COLOR} activeDot={{ r: 8 }} name="Lost Items" />
+              <Line type="monotone" dataKey="found" stroke={FOUND_COLOR} name="Found Items" />
             </LineChart>
           </ResponsiveContainer>
         </div>
 
-        {/* Item Categories Chart */}
+        {/* Categories */}
         <div className="chart-card">
           <h3>Item Categories Distribution</h3>
           <ResponsiveContainer width="100%" height={250}>
@@ -152,7 +230,7 @@ const Dashboard = () => {
                 innerRadius={40}
                 fill="#8884d8"
                 dataKey="value"
-                label={({name, percent}) => `${name} ${(percent * 100).toFixed(0)}%`}
+                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
               >
                 {categoryData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -164,7 +242,7 @@ const Dashboard = () => {
           </ResponsiveContainer>
         </div>
 
-        {/* Top Locations Chart */}
+        {/* Locations */}
         <div className="chart-card">
           <h3>Top Locations with Most Reports</h3>
           <ResponsiveContainer width="100%" height={250}>
@@ -178,7 +256,7 @@ const Dashboard = () => {
           </ResponsiveContainer>
         </div>
 
-        {/* Claim Status Chart */}
+        {/* Claim Status */}
         <div className="chart-card">
           <h3>Claim Status Distribution</h3>
           <ResponsiveContainer width="100%" height={250}>
@@ -191,22 +269,6 @@ const Dashboard = () => {
               <Bar dataKey="value" fill="#4dabf7" />
             </BarChart>
           </ResponsiveContainer>
-        </div>
-      </div>
-
-      {/* Notifications Panel */}
-      <div className="notifications-panel">
-        <div className="notifications-header">
-          <h3>Notifications</h3>
-          <button className="settings-button">···</button>
-        </div>
-        <div className="notifications-list">
-          {notifications.map(notification => (
-            <div key={notification.id} className="notification-item">
-              <p className="notification-message">{notification.message}</p>
-              <span className="notification-time">{notification.time}</span>
-            </div>
-          ))}
         </div>
       </div>
     </div>
