@@ -211,6 +211,7 @@ public class TransactionsService {
     private String formatTimeAgo(LocalDateTime dateTime) {
         Duration duration = Duration.between(dateTime, LocalDateTime.now());
         long hours = duration.toHours();
+        int a=0;
 
         if (hours < 24) {
             return hours + "h ago";
@@ -264,6 +265,8 @@ public class TransactionsService {
         return statusCounts;
     }
     //com
+    //sync
+
 
 
 }
