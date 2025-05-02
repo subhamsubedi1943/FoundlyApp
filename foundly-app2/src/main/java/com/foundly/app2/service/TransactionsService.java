@@ -204,8 +204,6 @@ public class TransactionsService {
 
             notifications.add(dto);
         }
-            notifications.add(dto);
-        }
 
         return notifications;
     }
@@ -213,8 +211,6 @@ public class TransactionsService {
     private String formatTimeAgo(LocalDateTime dateTime) {
         Duration duration = Duration.between(dateTime, LocalDateTime.now());
         long hours = duration.toHours();
-        int a=0;
-        int b=0;
 
         if (hours < 24) {
             return hours + "h ago";
@@ -267,9 +263,23 @@ public class TransactionsService {
 
         return statusCounts;
     }
-    //com
-    //sync
 
+    @Transactional
+    public void deleteTransactionsByItemIds(List<Integer> itemIds) {
+        if (itemIds == null || itemIds.isEmpty()) {
+            return;
+        }
+        List<Transactions> transactions = transactionsRepository.findByItem_ItemIdIn(itemIds);
+        if (transactions != null && !transactions.isEmpty()) {
+            transactionsRepository.deleteAll(transactions);
+        }
+    }
 
-
+    @Transactional
+    public void deleteTransactionsByRequesterUserId(Integer userId) {
+        List<Transactions> transactions = transactionsRepository.findByRequesterUserId(userId.longValue());
+        if (transactions != null && !transactions.isEmpty()) {
+            transactionsRepository.deleteAll(transactions);
+        }
+    }
 }

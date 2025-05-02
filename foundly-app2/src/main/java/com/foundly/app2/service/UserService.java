@@ -1,28 +1,28 @@
 package com.foundly.app2.service;
 
-import com.foundly.app2.dto.EditUserDTO;
-import com.foundly.app2.dto.UserLoginRequest;
-import com.foundly.app2.dto.UserRegistrationRequest;
-import com.foundly.app2.dto.UserRequestDTO;
-import com.foundly.app2.entity.User;
-import com.foundly.app2.exception.DuplicateItemException;
-import com.foundly.app2.exception.InvalidRequestException;
-import com.foundly.app2.exception.UserNotFoundException;
-import com.foundly.app2.repository.UserRepository;
-import com.foundly.app2.repository.EmployeeRepository;
-import com.foundly.app2.entity.Employee;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-import jakarta.transaction.Transactional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import com.foundly.app2.dto.EditUserDTO;
+import com.foundly.app2.dto.UserLoginRequest;
+import com.foundly.app2.dto.UserRegistrationRequest;
+import com.foundly.app2.dto.UserRequestDTO;
+import com.foundly.app2.entity.Employee;
+import com.foundly.app2.entity.User;
+import com.foundly.app2.exception.DuplicateItemException;
+import com.foundly.app2.exception.InvalidRequestException;
+import com.foundly.app2.exception.UserNotFoundException;
+import com.foundly.app2.repository.EmployeeRepository;
+import com.foundly.app2.repository.UserRepository;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class UserService {
