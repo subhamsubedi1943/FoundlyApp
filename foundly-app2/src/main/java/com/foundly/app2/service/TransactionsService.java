@@ -1,29 +1,29 @@
 package com.foundly.app2.service;
 
-import com.foundly.app2.entity.Transactions;
-import com.foundly.app2.entity.ItemReports;
-import com.foundly.app2.entity.User;
-import com.foundly.app2.repository.TransactionsRepository;
-import com.foundly.app2.repository.ItemReportsRepository;
-import com.foundly.app2.repository.UserRepository;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
-import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.foundly.app2.dto.ClaimRequest;
 import com.foundly.app2.dto.HandoverRequest;
 import com.foundly.app2.dto.NotificationDTO;
 import com.foundly.app2.dto.TransactionResponse;
+import com.foundly.app2.entity.ItemReports;
+import com.foundly.app2.entity.Transactions;
+import com.foundly.app2.entity.User;
+import com.foundly.app2.repository.ItemReportsRepository;
+import com.foundly.app2.repository.TransactionsRepository;
+import com.foundly.app2.repository.UserRepository;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-//import java.time.LocalDateTime;
-import java.time.Duration;
+import jakarta.transaction.Transactional;
 
 @Service
 public class TransactionsService {
@@ -37,39 +37,22 @@ public class TransactionsService {
     @Autowired
     private UserRepository userRepository;
 
-    // Get all transactions
     public List<Transactions> getAllTransactions() {
         return transactionsRepository.findAll();
     }
 
-    // Get a transaction by ID
     public Optional<Transactions> getTransactionById(Integer transactionId) {
         return transactionsRepository.findById(transactionId);
     }
 
- // Claim an item
- // Claim an item
     @Transactional
     public Transactions claimItem(ClaimRequest request) {
-        // Fetch item
         ItemReports item = itemReportsRepository.findById(request.getItemId())
-                .orElseThrow(() -> new RuntimeException("Item not found"));
+                .orElseThrow(() -> new RuntimeException("Item not found with ID: " + request.getItemId()));
 
-        // Fetch user
         User requester = userRepository.findById(request.getRequesterId())
-                .orElseThrow(() -> new RuntimeException("Requester not found"));
+                .orElseThrow(() -> new RuntimeException("Requester not found with ID: " + request.getRequesterId()));
 
-        // Determine transaction status based on itemStatus
-        Transactions.TransactionStatus status;
-        if (item.getItemStatus() == ItemReports.ItemStatus.WITH_SECURITY) {
-            status = Transactions.TransactionStatus.PENDING_COMPLETION;
-        } else if (item.getItemStatus() == ItemReports.ItemStatus.WITH_FINDER) {
-            status = Transactions.TransactionStatus.REQUESTED;
-        } else {
-            throw new IllegalStateException("Item is not available for claiming");
-        }
-
-        // Build transaction
         Transactions transaction = new Transactions();
         transaction.setItem(item);
         transaction.setRequester(requester);
@@ -79,20 +62,31 @@ public class TransactionsService {
         transaction.setPhoto(request.getPhoto());
         transaction.setDescription(request.getDescription());
         transaction.setTransactionType(Transactions.TransactionType.CLAIM);
-        transaction.setTransactionStatus(status);
         transaction.setDateUpdated(LocalDateTime.now());
+
+        // Determine the transaction status based on the item's status
+        if (item.getItemStatus() == ItemReports.ItemStatus.WITH_SECURITY) {
+            transaction.setTransactionStatus(Transactions.TransactionStatus.PENDING_COMPLETION);
+            transaction.setReporterCompleted(true);
+        } else if (item.getItemStatus() == ItemReports.ItemStatus.WITH_FINDER) {
+            transaction.setTransactionStatus(Transactions.TransactionStatus.REQUESTED);
+            transaction.setReporterCompleted(false);
+        } else {
+            throw new IllegalStateException("Item is not available for claiming.");
+        }
+
+        transaction.setRequesterCompleted(false);
 
         return transactionsRepository.save(transaction);
     }
 
-    // Handover an item
     @Transactional
     public Transactions handoverItem(HandoverRequest request) {
         ItemReports item = itemReportsRepository.findById(request.getItemId())
-            .orElseThrow(() -> new RuntimeException("Item not found"));
+                .orElseThrow(() -> new RuntimeException("Item not found with ID: " + request.getItemId()));
 
         User requester = userRepository.findById(request.getRequesterId())
-            .orElseThrow(() -> new RuntimeException("Requester not found"));
+                .orElseThrow(() -> new RuntimeException("Requester not found with ID: " + request.getRequesterId()));
 
         Transactions transaction = new Transactions();
         transaction.setItem(item);
@@ -109,6 +103,7 @@ public class TransactionsService {
             item.setItemStatus(ItemReports.ItemStatus.WITH_SECURITY);
             transaction.setTransactionStatus(Transactions.TransactionStatus.PENDING_COMPLETION);
             transaction.setHandedOverToSecurity(true);
+            transaction.setRequesterCompleted(true);
             transaction.setSecurityId(request.getSecurityId());
             transaction.setSecurityName(request.getSecurityName());
         } else {
@@ -116,126 +111,158 @@ public class TransactionsService {
             transaction.setTransactionStatus(Transactions.TransactionStatus.REQUESTED);
             transaction.setHandedOverToSecurity(false);
             transaction.setPickupMessage(request.getPickupMessage());
+            transaction.setRequesterCompleted(false);
         }
+
+        transaction.setReporterCompleted(false);
 
         itemReportsRepository.save(item);
         return transactionsRepository.save(transaction);
     }
-    @Transactional
-    public Transactions updateReporterCompletion(Integer transactionId) {
-        Transactions transaction = transactionsRepository.findById(transactionId)
-            .orElseThrow(() -> new RuntimeException("Transaction not found"));
 
-        transaction.setReporterCompleted(true);
-        transaction.setDateUpdated(LocalDateTime.now());
-
-        checkAndMarkCompletion(transaction);
-
-        return transactionsRepository.save(transaction);
-    }
     @Transactional
     public Transactions updateRequesterCompletion(Integer transactionId) {
         Transactions transaction = transactionsRepository.findById(transactionId)
-            .orElseThrow(() -> new RuntimeException("Transaction not found"));
+                .orElseThrow(() -> new RuntimeException("Transaction not found with ID: " + transactionId));
 
         transaction.setRequesterCompleted(true);
         transaction.setDateUpdated(LocalDateTime.now());
 
+        // Check and update the transaction's status based on completion status
         checkAndMarkCompletion(transaction);
 
+        itemReportsRepository.save(transaction.getItem());
         return transactionsRepository.save(transaction);
     }
+
+    @Transactional
+    public Transactions updateReporterCompletion(Integer transactionId) {
+        Transactions transaction = transactionsRepository.findById(transactionId)
+                .orElseThrow(() -> new RuntimeException("Transaction not found with ID: " + transactionId));
+
+        transaction.setReporterCompleted(true);
+        transaction.setDateUpdated(LocalDateTime.now());
+
+        // Check and update the transaction's status based on completion status
+        checkAndMarkCompletion(transaction);
+
+        itemReportsRepository.save(transaction.getItem());
+        return transactionsRepository.save(transaction);
+    }
+
     private void checkAndMarkCompletion(Transactions transaction) {
-        boolean toSecurity = transaction.isHandedOverToSecurity();
+        boolean handedToSecurity = transaction.isHandedOverToSecurity();
 
-        if (toSecurity && transaction.isRequesterCompleted()) {
-            transaction.setTransactionStatus(Transactions.TransactionStatus.COMPLETED);
-            transaction.getItem().setItemStatus(ItemReports.ItemStatus.RECEIVED);
-            itemReportsRepository.save(transaction.getItem());
-        }
-
-        if (!toSecurity && transaction.isRequesterCompleted() && transaction.isReporterCompleted()) {
-            transaction.setTransactionStatus(Transactions.TransactionStatus.COMPLETED);
-            transaction.getItem().setItemStatus(ItemReports.ItemStatus.RECEIVED);
-            itemReportsRepository.save(transaction.getItem());
+        if (handedToSecurity) {
+            if (transaction.isRequesterCompleted()) {
+                transaction.setTransactionStatus(Transactions.TransactionStatus.COMPLETED);
+                transaction.getItem().setItemStatus(ItemReports.ItemStatus.RECEIVED);
+            } else {
+                transaction.setTransactionStatus(Transactions.TransactionStatus.PENDING_COMPLETION);
+            }
+        } else {
+            if (transaction.isRequesterCompleted() && transaction.isReporterCompleted()) {
+                transaction.setTransactionStatus(Transactions.TransactionStatus.COMPLETED);
+                transaction.getItem().setItemStatus(ItemReports.ItemStatus.RECEIVED);
+            } else {
+                transaction.setTransactionStatus(Transactions.TransactionStatus.PENDING_COMPLETION);
+            }
         }
     }
 
+    public List<NotificationDTO> getNotificationsForUser(Integer userId) {
+        List<Transactions> transactions = transactionsRepository.findByReporterUserId(userId);
+        List<NotificationDTO> notifications = new ArrayList<>();
 
+        for (Transactions tx : transactions) {
+            NotificationDTO dto = new NotificationDTO();
+            dto.setTransactionId(tx.getTransactionId());
+            dto.setType(tx.getTransactionType().toString());
+            dto.setTime(formatTimeAgo(tx.getDateUpdated()));
+            dto.setDescription(tx.getDescription());
+            dto.setPhoto(tx.getPhoto());
+            dto.setItemStatus(tx.getItem().getItemStatus().toString());
+            dto.setReporterCompleted(tx.isReporterCompleted());
+            dto.setRequesterCompleted(tx.isRequesterCompleted());
+            dto.setSecurityId(tx.getSecurityId());
+            dto.setSecurityName(tx.getSecurityName());
 
-        
+            // Set notification title and message
+            dto.setTitle(tx.getTransactionType() == Transactions.TransactionType.CLAIM
+                    ? "Claim Request: " + tx.getItem().getItemName()
+                    : "Found Item: " + tx.getItem().getItemName());
 
-        public List<NotificationDTO> getNotificationsForUser(Integer userId) {
-            List<Transactions> transactions = transactionsRepository.findByReporterUserId(userId);
+            dto.setMessage(tx.getTransactionType() == Transactions.TransactionType.CLAIM
+                    ? "A user has claimed the item you reported. Review and confirm."
+                    : "Someone found your item and wants to hand it over.");
 
-            List<NotificationDTO> notifications = new ArrayList<>();
-
-            for (Transactions tx : transactions) {
-                NotificationDTO dto = new NotificationDTO();
-                dto.setTransactionId(tx.getTransactionId());
-                dto.setType(tx.getTransactionType().toString());
-                dto.setTime(getTimeAgo(tx.getDateUpdated()));
-                dto.setDescription(tx.getDescription());
-                dto.setPhoto(tx.getPhoto());
-                dto.setItemStatus(tx.getItem().getItemStatus().toString());
-
-                if (tx.getTransactionType() == Transactions.TransactionType.CLAIM) {
-                    dto.setTitle("Claim Request: " + tx.getItem().getItemName());
-                    dto.setMessage("A user has claimed the item you reported. Review the claim and respond.");
-                } else if (tx.getTransactionType() == Transactions.TransactionType.HANDOVER) {
-                    dto.setTitle("Good news! " + tx.getItem().getItemName() + " found");
-                    dto.setMessage("A user found your lost item and wants to hand it over.");
-                    dto.setPickupMessage(tx.getPickupMessage());
-                    dto.setSecurityId(tx.getSecurityId());
-                    dto.setSecurityName(tx.getSecurityName());
-                }
-
-                notifications.add(dto);
+            if (tx.getTransactionType() == Transactions.TransactionType.HANDOVER) {
+                dto.setPickupMessage(tx.getPickupMessage());
             }
 
-            return notifications;
+            dto.setTransactionStatus(tx.getTransactionStatus().name());
+
+            notifications.add(dto);
         }
 
-        private String getTimeAgo(LocalDateTime dateTime) {
-            // Optional helper - returns string like "2h ago", or "1d ago"
-            Duration duration = Duration.between(dateTime, LocalDateTime.now());
-            long hours = duration.toHours();
-            if (hours < 24) return hours + "h ago";
+        return notifications;
+    }
+
+    private String formatTimeAgo(LocalDateTime dateTime) {
+        Duration duration = Duration.between(dateTime, LocalDateTime.now());
+        long hours = duration.toHours();
+
+        if (hours < 24) {
+            return hours + "h ago";
+        } else {
             return (hours / 24) + "d ago";
         }
-    
-    
+    }
+
     public List<TransactionResponse> getClaimsByUserId(Long userId) {
         List<Transactions> transactions = transactionsRepository.findByRequesterUserIdAndTransactionType(userId, Transactions.TransactionType.CLAIM);
-        return transactions.stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+        return transactions.stream().map(this::mapToTransactionResponse).collect(Collectors.toList());
     }
 
     public List<TransactionResponse> getHandoversByUserId(Long userId) {
         List<Transactions> transactions = transactionsRepository.findByRequesterUserIdAndTransactionType(userId, Transactions.TransactionType.HANDOVER);
-        return transactions.stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+        return transactions.stream().map(this::mapToTransactionResponse).collect(Collectors.toList());
     }
 
-    private TransactionResponse mapToResponse(Transactions transaction) {
+    private TransactionResponse mapToTransactionResponse(Transactions transaction) {
         return new TransactionResponse(
-            transaction.getTransactionId(),
-            transaction.getItem().getItemId(),
-            transaction.getItem().getItemName(),
-            transaction.getItem().getType().toString(),
-            transaction.getItem().getCategory().getCategoryName(),
-            transaction.getItem().getLocation(),
-            transaction.getTransactionType(),
-            transaction.getTransactionStatus(),
-            transaction.getDescription(),
-            transaction.getPhoto(),
-            transaction.isHandedOverToSecurity(),
-            transaction.getPickupMessage(),
-            transaction.getSecurityId(),
-            transaction.getSecurityName()
+                transaction.getTransactionId(),
+                transaction.getItem().getItemId(),
+                transaction.getItem().getItemName(),
+                transaction.getItem().getType().toString(),
+                transaction.getItem().getCategory().getCategoryName(),
+                transaction.getItem().getLocation(),
+                transaction.getTransactionType(),
+                transaction.getTransactionStatus(),
+                transaction.getDescription(),
+                transaction.getPhoto(),
+                transaction.isHandedOverToSecurity(),
+                transaction.getPickupMessage(),
+                transaction.getSecurityId(),
+                transaction.getSecurityName(),
+                transaction.isRequesterCompleted() // ✅ Add this line to include requesterCompleted
         );
     }
+    public long countByTransactionType(Transactions.TransactionType type) {
+        return transactionsRepository.countByTransactionType(type);
+    }
+    public Map<String, Long> countTransactionsGroupedByStatus() {
+        List<Object[]> results = transactionsRepository.countGroupedByTransactionStatus();
+        Map<String, Long> statusCounts = new HashMap<>();
+
+        for (Object[] result : results) {
+            String status = (String) result[0];
+            Long count = (Long) result[1];
+            statusCounts.put(status, count);
+        }
+
+        return statusCounts;
+    }
+
 
 }

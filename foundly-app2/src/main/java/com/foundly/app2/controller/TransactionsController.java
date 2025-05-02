@@ -1,19 +1,27 @@
 package com.foundly.app2.controller;
 
-import com.foundly.app2.entity.Transactions;
-import com.foundly.app2.service.TransactionsService;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.foundly.app2.dto.ClaimRequest;
 import com.foundly.app2.dto.HandoverRequest;
 import com.foundly.app2.dto.NotificationDTO;
 import com.foundly.app2.dto.TransactionResponse;
 import com.foundly.app2.dto.TransactionResponseDTO;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import com.foundly.app2.entity.Transactions;
+import com.foundly.app2.service.TransactionsService;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -45,6 +53,7 @@ public class TransactionsController {
         return new ResponseEntity<>(createdTransaction, HttpStatus.CREATED);
     }
 
+    // Handover an item
     @PostMapping("/handover")
     public ResponseEntity<TransactionResponseDTO> handoverItem(@RequestBody HandoverRequest request) {
         Transactions createdTransaction = transactionsService.handoverItem(request);
@@ -61,33 +70,54 @@ public class TransactionsController {
 
         return new ResponseEntity<>(dto, HttpStatus.CREATED);
     }
+
+    // Get claims by user ID
     @GetMapping("/claims/{userId}")
     public ResponseEntity<List<TransactionResponse>> getClaimsByUserId(@PathVariable Long userId) {
         return ResponseEntity.ok(transactionsService.getClaimsByUserId(userId));
     }
 
+    // Get handovers by user ID
     @GetMapping("/handovers/{userId}")
     public ResponseEntity<List<TransactionResponse>> getHandoversByUserId(@PathVariable Long userId) {
         return ResponseEntity.ok(transactionsService.getHandoversByUserId(userId));
     }
+
+    // Mark the reporter as completed for a transaction
     @PutMapping("/reporter-completed/{transactionId}")
     public ResponseEntity<Transactions> reporterCompleted(@PathVariable Integer transactionId) {
-        return ResponseEntity.ok(transactionsService.updateReporterCompletion(transactionId));
+        Transactions updatedTransaction = transactionsService.updateReporterCompletion(transactionId);
+        return ResponseEntity.ok(updatedTransaction);
     }
-    
 
+    // Mark the requester as completed for a transaction
     @PutMapping("/requester-completed/{transactionId}")
     public ResponseEntity<Transactions> requesterCompleted(@PathVariable Integer transactionId) {
-        return ResponseEntity.ok(transactionsService.updateRequesterCompletion(transactionId));
+        Transactions updatedTransaction = transactionsService.updateRequesterCompletion(transactionId);
+        return ResponseEntity.ok(updatedTransaction);
     }
 
+    // Get notifications for a user based on their ID
     @GetMapping("/notifications/{userId}")
     public ResponseEntity<List<NotificationDTO>> getUserNotifications(@PathVariable Integer userId) {
         List<NotificationDTO> notifications = transactionsService.getNotificationsForUser(userId);
         return ResponseEntity.ok(notifications);
     }
+    @GetMapping("/count/claims")
+    public ResponseEntity<Long> getTotalClaimsCount() {
+        long count = transactionsService.countByTransactionType(Transactions.TransactionType.CLAIM);
+        return ResponseEntity.ok(count);
+    }
+    @GetMapping("/count/handovers")
+    public ResponseEntity<Long> getTotalHandoversCount() {
+        long count = transactionsService.countByTransactionType(Transactions.TransactionType.HANDOVER);
+        return ResponseEntity.ok(count);
+    }
+    @GetMapping("/count/status")
+    public ResponseEntity<Map<String, Long>> getTransactionCountByStatus() {
+        Map<String, Long> statusCounts = transactionsService.countTransactionsGroupedByStatus();
+        return ResponseEntity.ok(statusCounts);
+    }
 
 
-
-    // Additional methods for handling transaction status updates can be added here
 }

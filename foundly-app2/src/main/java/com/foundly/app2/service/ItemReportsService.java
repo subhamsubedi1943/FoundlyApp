@@ -2,7 +2,9 @@ package com.foundly.app2.service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -213,6 +215,7 @@ public class ItemReportsService {
                       .map(ItemReportResponse::fromEntity)
                       .collect(Collectors.toList());
     }
+   
 
 
 
