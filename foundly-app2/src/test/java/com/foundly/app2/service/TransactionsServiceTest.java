@@ -2,7 +2,7 @@ package com.foundly.app2.service;
 
 import com.foundly.app2.dto.ClaimRequest;
 import com.foundly.app2.dto.HandoverRequest;
-import com.foundly.app2.dto.TransactionResponse;
+import com.foundly.app2.dto.NotificationDTO;
 import com.foundly.app2.entity.ItemReports;
 import com.foundly.app2.entity.Transactions;
 import com.foundly.app2.entity.User;
@@ -17,6 +17,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -114,6 +115,61 @@ public class TransactionsServiceTest {
     }
 
     @Test
+    public void testClaimItem_ItemNotFound() {
+        ClaimRequest request = new ClaimRequest();
+        request.setItemId(1);
+        request.setRequesterId(1);
+
+        when(itemReportsRepository.findById(1)).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            transactionsService.claimItem(request);
+        });
+
+        assertEquals("Item not found", exception.getMessage());
+    }
+
+    @Test
+    public void testClaimItem_RequesterNotFound() {
+        ClaimRequest request = new ClaimRequest();
+        request.setItemId(1);
+        request.setRequesterId(1);
+
+        ItemReports item = new ItemReports();
+        item.setItemId(1);
+        item.setItemStatus(ItemReports.ItemStatus.WITH_SECURITY);
+
+        when(itemReportsRepository.findById(1)).thenReturn(Optional.of(item));
+        when(userRepository.findById(1)).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            transactionsService.claimItem(request);
+        });
+
+        assertEquals("Requester not found", exception.getMessage());
+    }
+
+    @Test
+    public void testClaimItem_IllegalState() {
+        ClaimRequest request = new ClaimRequest();
+        request.setItemId(1);
+        request.setRequesterId(1);
+
+        ItemReports item = new ItemReports();
+        item.setItemId(1);
+        item.setItemStatus(null); // Invalid status
+
+        when(itemReportsRepository.findById(1)).thenReturn(Optional.of(item));
+        when(userRepository.findById(1)).thenReturn(Optional.of(new User()));
+
+        Exception exception = assertThrows(IllegalStateException.class, () -> {
+            transactionsService.claimItem(request);
+        });
+
+        assertEquals("Item is not available for claiming", exception.getMessage());
+    }
+
+    @Test
     public void testHandoverItem() {
         HandoverRequest request = new HandoverRequest();
         request.setItemId(1);
@@ -148,66 +204,187 @@ public class TransactionsServiceTest {
     }
 
     @Test
-    public void testGetClaimsByUserId() {
-        Transactions transaction = new Transactions();
-        ItemReports item = new ItemReports();
-        item.setItemId(1);
-        item.setType(ItemReports.Type.LOST);
-        // Provide a non-null Category object to avoid NullPointerException
-        com.foundly.app2.entity.Category category = new com.foundly.app2.entity.Category();
-        category.setCategoryName("Lost Category");
-        item.setCategory(category);
-        item.setLocation("Location");
-        transaction.setItem(item);
-        transaction.setTransactionId(1);
-        transaction.setTransactionType(Transactions.TransactionType.CLAIM);
-        transaction.setTransactionStatus(Transactions.TransactionStatus.REQUESTED);
-        transaction.setDescription("desc");
-        transaction.setPhoto("photo.jpg");
-        transaction.setHandedOverToSecurity(false);
-        transaction.setPickupMessage(null);
-        transaction.setSecurityId(null);
-        transaction.setSecurityName(null);
+    public void testHandoverItem_ItemNotFound() {
+        HandoverRequest request = new HandoverRequest();
+        request.setItemId(1);
+        request.setRequesterId(1);
 
-        when(transactionsRepository.findByRequesterUserIdAndTransactionType(1L, Transactions.TransactionType.CLAIM))
-                .thenReturn(Arrays.asList(transaction));
+        when(itemReportsRepository.findById(1)).thenReturn(Optional.empty());
 
-        List<TransactionResponse> responses = transactionsService.getClaimsByUserId(1L);
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            transactionsService.handoverItem(request);
+        });
 
-        assertNotNull(responses);
-        assertEquals(1, responses.size());
-        verify(transactionsRepository, times(1)).findByRequesterUserIdAndTransactionType(1L, Transactions.TransactionType.CLAIM);
+        assertEquals("Item not found", exception.getMessage());
     }
 
     @Test
-    public void testGetHandoversByUserId() {
-        Transactions transaction = new Transactions();
+    public void testHandoverItem_RequesterNotFound() {
+        HandoverRequest request = new HandoverRequest();
+        request.setItemId(1);
+        request.setRequesterId(1);
+
         ItemReports item = new ItemReports();
         item.setItemId(1);
-        item.setType(ItemReports.Type.FOUND);
-        // Provide a non-null Category object to avoid NullPointerException
-        com.foundly.app2.entity.Category category = new com.foundly.app2.entity.Category();
-        category.setCategoryName("Found Category");
-        item.setCategory(category);
-        item.setLocation("Location");
-        transaction.setItem(item);
+
+        when(itemReportsRepository.findById(1)).thenReturn(Optional.of(item));
+        when(userRepository.findById(1)).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            transactionsService.handoverItem(request);
+        });
+
+        assertEquals("Requester not found", exception.getMessage());
+    }
+
+    @Test
+    public void testUpdateReporterCompletion() {
+        Transactions transaction = new Transactions();
         transaction.setTransactionId(1);
-        transaction.setTransactionType(Transactions.TransactionType.HANDOVER);
-        transaction.setTransactionStatus(Transactions.TransactionStatus.REQUESTED);
-        transaction.setDescription("desc");
-        transaction.setPhoto("photo.jpg");
         transaction.setHandedOverToSecurity(true);
-        transaction.setPickupMessage("Pickup");
-        transaction.setSecurityId("100");
-        transaction.setSecurityName("SecurityName");
+        transaction.setRequesterCompleted(true);
+        transaction.setReporterCompleted(false);
+        transaction.setTransactionStatus(Transactions.TransactionStatus.PENDING_COMPLETION);
+        ItemReports item = new ItemReports();
+        item.setItemStatus(ItemReports.ItemStatus.WITH_SECURITY);
+        transaction.setItem(item);
 
-        when(transactionsRepository.findByRequesterUserIdAndTransactionType(1L, Transactions.TransactionType.HANDOVER))
-                .thenReturn(Arrays.asList(transaction));
+        when(transactionsRepository.findById(1)).thenReturn(Optional.of(transaction));
+        when(transactionsRepository.save(any(Transactions.class))).thenAnswer(i -> i.getArguments()[0]);
+        when(itemReportsRepository.save(any(ItemReports.class))).thenReturn(item);
 
-        List<TransactionResponse> responses = transactionsService.getHandoversByUserId(1L);
+        Transactions updated = transactionsService.updateReporterCompletion(1);
 
-        assertNotNull(responses);
-        assertEquals(1, responses.size());
-        verify(transactionsRepository, times(1)).findByRequesterUserIdAndTransactionType(1L, Transactions.TransactionType.HANDOVER);
+        assertTrue(updated.isReporterCompleted());
+        assertEquals(Transactions.TransactionStatus.COMPLETED, updated.getTransactionStatus());
+        verify(transactionsRepository, times(1)).save(any(Transactions.class));
+    }
+
+    @Test
+    public void testUpdateReporterCompletion_TransactionNotFound() {
+        when(transactionsRepository.findById(1)).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            transactionsService.updateReporterCompletion(1);
+        });
+
+        assertEquals("Transaction not found", exception.getMessage());
+    }
+
+    @Test
+    public void testUpdateRequesterCompletion() {
+        Transactions transaction = new Transactions();
+        transaction.setTransactionId(1);
+        transaction.setHandedOverToSecurity(false);
+        transaction.setRequesterCompleted(false);
+        transaction.setReporterCompleted(false);
+        transaction.setTransactionStatus(Transactions.TransactionStatus.PENDING_COMPLETION);
+        ItemReports item = new ItemReports();
+        item.setItemStatus(ItemReports.ItemStatus.WITH_FINDER);
+        transaction.setItem(item);
+
+        when(transactionsRepository.findById(1)).thenReturn(Optional.of(transaction));
+        when(transactionsRepository.save(any(Transactions.class))).thenAnswer(i -> i.getArguments()[0]);
+        when(itemReportsRepository.save(any(ItemReports.class))).thenReturn(item);
+
+        Transactions updated = transactionsService.updateRequesterCompletion(1);
+
+        assertTrue(updated.isRequesterCompleted());
+        assertEquals(Transactions.TransactionStatus.PENDING_COMPLETION, updated.getTransactionStatus());
+        verify(transactionsRepository, times(1)).save(any(Transactions.class));
+    }
+
+    @Test
+    public void testUpdateRequesterCompletion_TransactionNotFound() {
+        when(transactionsRepository.findById(1)).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            transactionsService.updateRequesterCompletion(1);
+        });
+
+        assertEquals("Transaction not found", exception.getMessage());
+    }
+
+    @Test
+    public void testGetNotificationsForUser() {
+        Transactions tx1 = new Transactions();
+        tx1.setTransactionId(1);
+        tx1.setTransactionType(Transactions.TransactionType.CLAIM);
+        tx1.setDateUpdated(LocalDateTime.now().minusHours(2));
+        tx1.setDescription("desc1");
+        tx1.setPhoto("photo1");
+        ItemReports item1 = new ItemReports();
+        item1.setItemStatus(ItemReports.ItemStatus.WITH_SECURITY);
+        item1.setItemName("Item1");
+        tx1.setItem(item1);
+
+        Transactions tx2 = new Transactions();
+        tx2.setTransactionId(2);
+        tx2.setTransactionType(Transactions.TransactionType.HANDOVER);
+        tx2.setDateUpdated(LocalDateTime.now().minusDays(1));
+        tx2.setDescription("desc2");
+        tx2.setPhoto("photo2");
+        tx2.setPickupMessage("Pickup");
+        tx2.setSecurityId("100");
+        tx2.setSecurityName("SecurityName");
+        ItemReports item2 = new ItemReports();
+        item2.setItemStatus(ItemReports.ItemStatus.WITH_FINDER);
+        item2.setItemName("Item2");
+        tx2.setItem(item2);
+
+        when(transactionsRepository.findByReporterUserId(1)).thenReturn(Arrays.asList(tx1));
+        when(transactionsRepository.findByRequesterUserId(1L)).thenReturn(Arrays.asList(tx2));
+
+        List<NotificationDTO> notifications = transactionsService.getNotificationsForUser(1);
+
+        assertNotNull(notifications);
+        assertEquals(2, notifications.size());
+    }
+
+    @Test
+    public void testDeleteTransactionsByItemIds() {
+        Transactions transaction = new Transactions();
+        transaction.setTransactionId(1);
+
+        when(transactionsRepository.findByItem_ItemIdIn(Arrays.asList(1, 2))).thenReturn(Arrays.asList(transaction));
+
+        transactionsService.deleteTransactionsByItemIds(Arrays.asList(1, 2));
+
+        verify(transactionsRepository, times(1)).deleteAll(anyList());
+    }
+
+    @Test
+    public void testDeleteTransactionsByItemIds_EmptyList() {
+        transactionsService.deleteTransactionsByItemIds(Collections.emptyList());
+
+        verify(transactionsRepository, never()).deleteAll(anyList());
+    }
+
+    @Test
+    public void testDeleteTransactionsByItemIds_NullList() {
+        transactionsService.deleteTransactionsByItemIds(null);
+
+        verify(transactionsRepository, never()).deleteAll(anyList());
+    }
+
+    @Test
+    public void testDeleteTransactionsByRequesterUserId() {
+        Transactions transaction = new Transactions();
+        transaction.setTransactionId(1);
+
+        when(transactionsRepository.findByRequesterUserId(1L)).thenReturn(Arrays.asList(transaction));
+
+        transactionsService.deleteTransactionsByRequesterUserId(1);
+
+        verify(transactionsRepository, times(1)).deleteAll(anyList());
+    }
+
+    @Test
+    public void testDeleteTransactionsByRequesterUserId_NoTransactions() {
+        when(transactionsRepository.findByRequesterUserId(1L)).thenReturn(Collections.emptyList());
+
+        transactionsService.deleteTransactionsByRequesterUserId(1);
+
+        verify(transactionsRepository, never()).deleteAll(anyList());
     }
 }

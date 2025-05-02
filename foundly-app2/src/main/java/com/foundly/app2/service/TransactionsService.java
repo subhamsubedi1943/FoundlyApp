@@ -204,6 +204,8 @@ public class TransactionsService {
 
             notifications.add(dto);
         }
+            notifications.add(dto);
+        }
 
         return notifications;
     }

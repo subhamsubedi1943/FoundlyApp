@@ -76,11 +76,11 @@ public class UserController {
 
     // Update an existing user
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Integer id, @RequestBody User user) {
+    public ResponseEntity<User> updateUser(@PathVariable Integer id, @RequestBody com.foundly.app2.dto.UserRequestDTO userRequestDTO) {
         Optional<User> existingUser = userService.getUserById(id);
         if (existingUser.isPresent()) {
-            user.setUserId(id);
-            User updatedUser = userService.saveUser(user);
+            userRequestDTO.setUserId(id);
+            User updatedUser = userService.updateUser(userRequestDTO);
             return new ResponseEntity<>(updatedUser, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);

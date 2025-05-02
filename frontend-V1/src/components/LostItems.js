@@ -71,6 +71,15 @@ const LostItems = () => {
     return matchesSearch && matchesCategory && matchesLocation && matchesDate;
   });
 
+  // Helper function to check if string is base64
+  const isBase64 = (str) => {
+    try {
+      return btoa(atob(str)) === str;
+    } catch (err) {
+      return false;
+    }
+  };
+
   return (
     <div className="items-page">
       <h1 className="title">Lost Item Reports</h1>
