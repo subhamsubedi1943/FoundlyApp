@@ -248,21 +248,30 @@
   border-radius: 4px;
 }
 
-/* Button */
-.handover-btn {
-  margin-top: auto;
-  background: #ff2975;
-  border: none;
+.status-finder {
+  background-color: #f0ad4e; /* Example color for "With Finder" */
   color: white;
-  padding: 8px 14px;
-  font-size: 13px;
-  font-weight: 600;
-  border-radius: 8px;
-  cursor: pointer;
-  align-self: center;
-  transition: background 0.3s ease;
 }
 
-.handover-btn:hover {
-  background: #e60059;
+.handover-btn {
+  background-color: #e91e63; /* Pink color for the button */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.handover-btn.disabled,
+.handover-btn:disabled {
+  background-color: grey;  /* Grey out the button when disabled */
+  cursor: not-allowed;
+}
+
+.handover-btn.active {
+  background-color: #ff2975; /* Active state - the same as 'handover-btn' */
+}
+
+.handover-btn:hover:not(.disabled) {
+  background-color: #ff1f66;  /* Slightly darker pink on hover */
 }

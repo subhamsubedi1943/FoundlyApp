@@ -19,5 +19,9 @@ public class NotificationDTO {
     private String securityId;
     private String securityName;
     private String itemStatus;
+    private boolean reporterCompleted;
+    private boolean requesterCompleted;
+    private String transactionStatus;
+
     //private String DateUpdated;// FROM: tx.getItem().getStatus()
 }

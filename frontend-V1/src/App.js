@@ -16,6 +16,7 @@ import LostItems from './components/LostItems';
 import FoundItems from './components/FoundItems';
 import CategoryManagement from './components/CategoryManagement';
 import EditProfile from './components/EditProfile';
+import EmployeeManagement from './components/EmployeeManagement';
 
 
 
@@ -69,7 +70,9 @@ const App = () => {
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<RequireAdminAuth><AdminDashboard /></RequireAdminAuth>} />
         <Route path="/users" element={<UserManagement />} />
+        <Route path="/employees" element={<EmployeeManagement />} />
         <Route path="/categories" element={<CategoryManagement />} />
+       
        
 
         </Routes>

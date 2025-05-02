@@ -11,6 +11,13 @@ import java.util.List;
 
 @Repository
 public interface TransactionsRepository extends JpaRepository<Transactions, Integer> {
+	// Simple count by transaction type
+	long countByTransactionType(Transactions.TransactionType transactionType);
+
+	// Group count by transaction status (JPQL)
+	@Query("SELECT t.transactionStatus, COUNT(t) FROM Transactions t GROUP BY t.transactionStatus")
+	List<Object[]> countGroupedByTransactionStatus();
+
 
     // Custom query method to find Transactions by TransactionStatus
     List<Transactions> findByTransactionStatus(Transactions.TransactionStatus transactionStatus);

@@ -30,37 +30,37 @@ const MyActivity = () => {
     }
   }, []);
 
-  useEffect(() => {
+  const fetchAllData = async () => {
     if (!userId) return;
+    setLoading(true);
 
-    const fetchAllData = async () => {
-      setLoading(true);
-      const endpoints = {
-        LOST: `http://localhost:8080/api/items/lost/user/${userId}`,
-        FOUND: `http://localhost:8080/api/items/found/user/${userId}`,
-        CLAIM: `http://localhost:8080/api/transactions/claims/${userId}`,
-        HANDOVER: `http://localhost:8080/api/transactions/handovers/${userId}`,
-      };
-
-      const updatedData = {};
-
-      for (const key of Object.keys(endpoints)) {
-        try {
-          const res = await axios.get(endpoints[key]);
-          updatedData[key] = res.data.map((item) => ({
-            ...item,
-            type: key,
-          }));
-        } catch (error) {
-          console.error(`Error fetching ${key} data:`, error);
-          updatedData[key] = [];
-        }
-      }
-
-      setAllActivityData(updatedData);
-      setLoading(false);
+    const endpoints = {
+      LOST: `http://localhost:8080/api/items/lost/user/${userId}`,
+      FOUND: `http://localhost:8080/api/items/found/user/${userId}`,
+      CLAIM: `http://localhost:8080/api/transactions/claims/${userId}`,
+      HANDOVER: `http://localhost:8080/api/transactions/handovers/${userId}`,
     };
 
+    const updatedData = {};
+
+    for (const key of Object.keys(endpoints)) {
+      try {
+        const res = await axios.get(endpoints[key]);
+        updatedData[key] = res.data.map((item) => ({
+          ...item,
+          itemType: key,
+        }));
+      } catch (error) {
+        console.error(`Error fetching ${key} data:`, error);
+        updatedData[key] = [];
+      }
+    }
+
+    setAllActivityData(updatedData);
+    setLoading(false);
+  };
+
+  useEffect(() => {
     fetchAllData();
   }, [userId]);
 
@@ -91,8 +91,9 @@ const MyActivity = () => {
         ) : currentData.length > 0 ? (
           currentData.map((item) => (
             <ActivityCard
-              key={item.id || item.itemId || item.transactionId || Math.random()}
+              key={item.transactionId || item.id || item.itemId}
               item={item}
+              onTransactionUpdate={fetchAllData}  // Pass fetchAllData to refresh the list after update
             />
           ))
         ) : (

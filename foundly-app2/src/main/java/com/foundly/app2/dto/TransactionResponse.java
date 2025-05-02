@@ -25,4 +25,5 @@ public class TransactionResponse {
     private String pickupMessage;
     private String securityId;
     private String securityName;
+    private boolean requesterCompleted; // <-- Add this field
 }

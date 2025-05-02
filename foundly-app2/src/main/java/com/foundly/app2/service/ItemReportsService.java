@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.foundly.app2.dto.FoundItemReportRequest;
 import com.foundly.app2.dto.ItemReportResponse;
@@ -22,16 +23,18 @@ import com.foundly.app2.entity.User;
 import com.foundly.app2.repository.CategoryRepository;
 import com.foundly.app2.repository.FoundItemDetailsRepository;
 import com.foundly.app2.repository.ItemReportsRepository;
+import com.foundly.app2.repository.TransactionsRepository;
 import com.foundly.app2.repository.UserRepository;
-
-import jakarta.transaction.Transactional;
 
 @Service
 public class ItemReportsService {
 
     @Autowired
     private ItemReportsRepository itemReportsRepository;
-
+    
+    @Autowired
+    private TransactionsService transactionsService;
+    
     @Autowired
     private UserRepository userRepository;
     
@@ -215,10 +218,7 @@ public class ItemReportsService {
                       .map(ItemReportResponse::fromEntity)
                       .collect(Collectors.toList());
     }
-
-    @Autowired
-    private TransactionsService transactionsService;
-
+   
     @Transactional
     public void deleteItemReportsByUserId(Integer userId) {
         List<ItemReports> reports = itemReportsRepository.findByUserId(userId.longValue());
@@ -234,4 +234,6 @@ public class ItemReportsService {
         }
     }
 
+
 }
+

@@ -290,3 +290,33 @@
   .view-btn:hover {
     background: #ff3390;
   }
+
+  .collected-btn {
+    display: inline-block;
+    margin-top: 18px;
+    padding: 8px 20px;
+    background: #ff007a;
+    border: none;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s ease, opacity 0.3s ease;
+  }
+  
+  .collected-btn:hover {
+    background: #ff3390;
+  }
+  
+  /* Disabled state */
+  .collected-btn:disabled {
+    background: #555;
+    color: #aaa;
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+  
+  .collected-btn:disabled:hover {
+    background: #555; /* no hover color change */
+  }
+  

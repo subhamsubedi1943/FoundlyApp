@@ -1,19 +1,59 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import "../styles/MyActivity.css";
 
-const ActivityCard = ({ item }) => {
+const fallbackImage = 'https://via.placeholder.com/300x200';
+
+const ActivityCard = ({ item, onTransactionUpdate }) => {
+  const [collected, setCollected] = useState(item.requesterCompleted === true);
+  const [status, setStatus] = useState(item.transactionStatus);
+  const [handoverToSecurity, setHandoverToSecurity] = useState(item.handedOverToSecurity);
+
+  useEffect(() => {
+    setCollected(item.requesterCompleted === true);
+    setStatus(item.transactionStatus);
+    setHandoverToSecurity(item.handedOverToSecurity);
+  }, [item]);
+
+  const handleCollectedClick = async () => {
+    try {
+      console.log("Collected button clicked!");
+
+      const response = await axios.put(
+        `http://localhost:8080/api/transactions/requester-completed/${item.transactionId}`
+      );
+
+      if (response.data) {
+        console.log("Marked as completed:", response.data);
+        setCollected(true);
+        setStatus(response.data.transactionStatus || "PENDING_COMPLETION");
+
+        if (onTransactionUpdate) {
+          onTransactionUpdate(); // Refresh parent component
+        }
+      }
+    } catch (error) {
+      console.error("Error marking as collected:", error);
+      alert("Something went wrong. Please try again.");
+    }
+  };
+
   const getStatusClass = (status) => {
     switch (status) {
       case 'Not Found': return 'status-missing';
       case 'With Security': return 'status-security';
       case 'Received': return 'status-received';
-      case 'Requested': return 'status-pending';
+      case 'With Finder': return 'status-finder';
+      case 'Requested':
+      case 'PENDING':
+      case 'PENDING_COMPLETION': return 'status-pending';
+      case 'COMPLETED': return 'status-completed';
       default: return 'status-missing';
     }
   };
 
   const getBorderClass = (type) => {
-    switch (type) {
+    switch (type?.toUpperCase()) {
       case 'LOST': return 'border-lost';
       case 'FOUND': return 'border-found';
       case 'CLAIM': return 'border-claim';
@@ -22,31 +62,21 @@ const ActivityCard = ({ item }) => {
     }
   };
 
-  // Helper function to check if string is base64
-  const isBase64 = (str) => {
-    try {
-      return btoa(atob(str)) === str;
-    } catch (err) {
-      return false;
-    }
-  };
-
-  const imageSrc = item.imageUrl
-    ? isBase64(item.imageUrl)
-      ? `data:image/jpeg;base64,${item.imageUrl}`
-      : item.imageUrl
-    : 'https://via.placeholder.com/300x200';
+  const shouldDisableButton = collected || status === 'COMPLETED' || (handoverToSecurity && status !== 'COMPLETED');
 
   return (
     <div className={`flip-card ${getBorderClass(item.itemType)}`}>
       <div className="flip-inner">
+
         {/* Front Side */}
         <div className="flip-front">
           <div className="image-container">
-
-          <img src={item.photo || item.imageUrl || fallbackImage} alt="Activity Item" />
-            <div className={`status-tag ${getStatusClass(item.transactionStatus)}`}>
-              {item.transactionStatus}
+            <img 
+              src={item.photo || item.imageUrl || fallbackImage} 
+              alt="Activity Item" 
+            />
+            <div className={`status-tag ${getStatusClass(status)}`}>
+              {status}
             </div>
           </div>
           <div className="card-info">
@@ -58,13 +88,21 @@ const ActivityCard = ({ item }) => {
         {/* Back Side */}
         <div className="flip-back">
           <div className="back-heading">{item.itemName}</div>
-          <div className="info-row"><span>Category:</span> {item.category}</div>
-          <div className="info-row"><span>Date:</span> {item.dateReported}</div>
 
-          <div className="description">
-            <span>Description:</span>
-            <p>{item.description}</p>
+          <div className="info-row">
+            <span>Category:</span> {item.category}
           </div>
+
+          <div className="info-row">
+            <span>Date:</span> {item.dateReported}
+          </div>
+
+          {item.description && (
+            <div className="description">
+              <span>Description:</span>
+              <p>{item.description}</p>
+            </div>
+          )}
 
           {item.securityName && item.securityId && (
             <div className="info-row">
@@ -77,8 +115,16 @@ const ActivityCard = ({ item }) => {
               <span>Pickup Message:</span> {item.pickupMessage}
             </div>
           )}
-{/* 
-          <button className="handover-btn">Collected</button> */}
+
+          {(item.itemType === 'CLAIM' || item.itemType === 'HANDOVER') && (
+            <button
+              className={`handover-btn ${shouldDisableButton ? 'disabled' : 'active'}`}
+              onClick={handleCollectedClick}
+              disabled={shouldDisableButton}
+            >
+              {collected || status === 'COMPLETED' ? "Completed" : "Mark as Collected"}
+            </button>
+          )}
         </div>
       </div>
     </div>
