@@ -22,7 +22,7 @@ const FoundItems = () => {
   useEffect(() => {
     const fetchFoundItems = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/items/found-items');
+        const response = await axios.get('http://localhost:8081/api/items/found-items');
         setItems(response.data);
       } catch (error) {
         console.error('Error fetching lost items:', error);
@@ -63,6 +63,9 @@ const FoundItems = () => {
       <h1 className="title">Found Item Reports</h1>
 
       <div className="search-container">
+      <div className="search-icon">
+
+      </div>
         <input
           type="text"
           placeholder="Search found items..."

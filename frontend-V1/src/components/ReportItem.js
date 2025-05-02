@@ -239,13 +239,16 @@ const ReportItem = () => {
     const endpoint = itemType === "Found" ? "/api/items/found" : "/api/items/lost";
 
     try {
-      const response = await fetch(`http://localhost:8080${endpoint}`, {
+      const response = await fetch(`http://localhost:8081${endpoint}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(payload),
       });
+
+      console.log("Response "+response.data);
+      
 
       if (response.ok) {
         alert("Item reported successfully!");
@@ -257,22 +260,76 @@ const ReportItem = () => {
       alert("Something went wrong!");
     }
   };
+  const [reportType, setReportType] = useState("");
+
+  const handleSubmit1 = async () => {
+    if (itemType === "Found" && uploadedFiles.length === 0) {
+      alert("Please upload at least one media file.");
+      return;
+    }
+  
+    const dateTime = `${formData.date} ${formData.time}`;
+    const payload = {
+      userId: parseInt(formData.userId),
+      name: formData.name,
+      location: formData.location,
+      categoryId: parseInt(formData.categoryId),
+      itemName: formData.itemName,
+      description: formData.description,
+      dateLostOrFound: dateTime,
+      imageUrl: uploadedFiles.length > 0 ? uploadedFiles[0].base64 : null, // only first file used
+      handoverToSecurity: itemType === "Found" && handoverOption === "security",
+      pickupMessage: itemType === "Found" && handoverOption === "keep" ? formData.pickupMessage : null,
+      securityId: itemType === "Found" && handoverOption === "security" ? formData.securityId : null,
+      securityName: itemType === "Found" && handoverOption === "security" ? formData.securityName : null,
+    };
+  
+    const endpoint = itemType === "Found" ? "/api/items/found" : "/api/items/lost";
+  
+    try {
+      const response = await fetch(`http://localhost:8081${endpoint}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+  
+      if (response.ok) {
+        alert("Item reported successfully!");
+      } else {
+        alert("Failed to report item.");
+      }
+    } catch (error) {
+      console.error("Error reporting item:", error);
+      alert("Something went wrong!");
+    }
+  };
+  
 
   return (
+    
     <div className="report-container">
       <div className="report-box">
         <h2 className="report-title">Report Item</h2>
-
+       {/*{Toggle button switch} */}
+       <div className="toggle-tooltip-wrapper">
+        <button
+          type="button"
+          className={`toggle-btn ${itemType === "Found" ? "found" : "lost"}`}
+          onClick={handleToggleItemType}
+        
+        >
+          {itemType}
+        </button>
+        <span className="tooltip-text">
+          {itemType === "Found" ? "Toggle to Lost" : "Toggle to Found"}
+        </span>
+      </div>
         {/* Row 1: Toggle + Location */}
         <div className="form-row">
-          <button
-            type="button"
-            className={`toggle-btn ${itemType === "Found" ? "found" : "lost"}`}
-            onClick={handleToggleItemType}
-          >
-            {itemType}
-          </button>
           <select
+          
             name="location"
             value={formData.location}
             onChange={handleInputChange}
@@ -288,6 +345,8 @@ const ReportItem = () => {
             <option>Others</option>
           </select>
         </div>
+
+
 
         {/* Row 2: User ID and Name */}
         <div className="form-row">
@@ -309,7 +368,7 @@ const ReportItem = () => {
           />
         </div>
 
-        {/* Row 3: Category and Item Name */}
+       {/* Row 3: Category and Item Name
         <div className="form-row">
           <select
             name="categoryId"
@@ -352,7 +411,42 @@ Electronics : 1,
             onChange={handleInputChange}
             className="input-field"
           />
-        </div>
+        </div> */
+        <div className="form-row flex gap-2">
+  <select
+    name="categoryId"
+    className="flex-1 px-4 py-3 border  rounded-lg input-field text-white text-sm"
+    onChange={(e) =>
+      setFormData((prev) => ({
+        ...prev,
+        categoryId: categoryMap[e.target.value],
+      }))
+      
+    }
+  >
+    <option value="" >Select category</option>
+    <option value="Electronics">Electronics</option>
+    <option value="Phone">Phone</option>
+    <option value="Wallet">Wallet</option>
+    <option value="Keys">Keys</option>
+    <option value="Bags">Bags</option>
+    <option value="Watch">Watch</option>
+    <option value="Documents">Documents</option>
+    <option value="FashionAccessories">Fashion Accessories</option>
+    <option value="Jewellery">Jewellery</option>
+    <option value="Others">Others</option>
+  </select>
+
+  <input
+    type="text"
+    name="itemName"
+    placeholder="Enter item name"
+    value={formData.itemName}
+    onChange={handleInputChange}
+    className="input-field"
+  />
+</div>
+}
 
         {/* Description */}
         <textarea
@@ -360,7 +454,7 @@ Electronics : 1,
           placeholder="Enter description"
           value={formData.description}
           onChange={handleInputChange}
-          className="description-field"
+          className="description-field input-field"
         ></textarea>
 
         {/* Date and Time */}
@@ -383,15 +477,32 @@ Electronics : 1,
 
         {/* Upload Media */}
         <div className="upload-box">
-          <label htmlFor="file-upload">⬆ Upload media</label>
-          <input
-            id="file-upload"
-            type="file"
-            multiple
-            onChange={handleFileChange}
-            style={{ display: "none" }}
-          />
-        </div>
+  <label htmlFor="file-upload">
+    ⬆ Upload media {itemType === "Found" && <span style={{ color: "red" }}>*</span>}
+  </label>
+  <input
+    id="file-upload"
+    type="file"
+    multiple
+    onChange={handleFileChange}
+    style={{ display: "none" }}
+  />
+</div>
+        {/* Upload Media */}
+    {/* <div className="upload-box">
+      <label htmlFor="file-upload">
+        ⬆ Upload media {reportType === "found" && <span style={{ color: "red" }}>*</span>}
+      </label>
+      <input
+        id="file-upload"
+        type="file"
+        multiple
+        onChange={handleFileChange}
+        style={{ display: "none" }}
+        required={reportType === "found"}
+      />
+    </div> */}
+
 
         {/* Uploaded Files Preview */}
         {/* <div className="uploaded-files">

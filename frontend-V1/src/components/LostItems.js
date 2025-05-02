@@ -23,7 +23,7 @@ const LostItems = () => {
   useEffect(() => {
     const fetchLostItems = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/items/lost-items');
+        const response = await axios.get('http://localhost:8081/api/items/lost-items');
         const data = response.data.map(item => ({
           id: item.itemId,
           itemName: item.itemName,
@@ -43,6 +43,23 @@ const LostItems = () => {
 
     fetchLostItems();
   }, []);
+
+  // useEffect(() => {
+  //   const inputElement = document.querySelector('.search-input');
+  //   const iconButton = document.querySelector('.filter-icon-button');
+  
+  //   if (inputElement && iconButton) {
+  //     const parent = inputElement.parentElement;
+  //     const wrapper = document.createElement('div');
+  //     wrapper.style.display = 'flex';
+  //     wrapper.style.alignItems = 'center';
+  //     wrapper.style.width = 'fit-content';
+  //     wrapper.style.gap = '8px';
+  //     parent.insertBefore(wrapper, inputElement);
+  //     wrapper.appendChild(inputElement);
+  //     wrapper.appendChild(iconButton);
+  //   }x
+  // }, []);
 
   const handleFilterChange = (e) => {
     setFilters({ ...filters, [e.target.name]: e.target.value });
@@ -84,7 +101,7 @@ const LostItems = () => {
     <div className="items-page">
       <h1 className="title">Lost Item Reports</h1>
 
-      <div className="search-container">
+      {/* <div className="search-container">
         <input
           type="text"
           placeholder="Search lost items..."
@@ -99,7 +116,27 @@ const LostItems = () => {
         >
           <FiFilter className="filter-icon" />
         </button>
-      </div>
+      </div> */}
+      <div className="search-container">
+        <div className="search-icon">
+
+        </div>
+      <input
+        type="text"
+        placeholder="Search lost items..."
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        className="search-input"
+      />
+      <button
+        onClick={() => setFilterOpen(!filterOpen)}
+        className="filter-icon-button"
+        title="Toggle filters"
+      >
+        <FiFilter className="filter-icon" />
+      </button>
+    </div>
+
 
       {filterOpen && (
         <div className="filters-inline">

@@ -20,7 +20,7 @@ function NotificationPanel() {
       return;
     }
 
-    fetch(`http://localhost:8080/api/transactions/notifications/${userId}`)
+    fetch(`http://localhost:8081/api/transactions/notifications/${userId}`)
       .then((res) => {
         if (!res.ok) throw new Error('Failed to fetch notifications');
         return res.json();

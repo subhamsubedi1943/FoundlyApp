@@ -48,7 +48,7 @@
   cursor: pointer;
 }
 
-/* Profile Dropdown */
+ Profile Dropdown 
 .profile-dropdown {
   position: relative;
   display: inline-block;
@@ -60,7 +60,20 @@
   background: white;
   padding: 8px;
   border-radius: 50%;
-  transition: background 0.2s;
+  transition: background 0.2s; 
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 24px;
+  height: 24px;
+}
+.profile-icon,
+.profile-icon:hover,
+.profile-icon:active {
+  padding: 8px;
+  margin: 0;
+  transform: none;
 }
 
 .profile-icon:hover {
@@ -83,12 +96,13 @@
   cursor: pointer;
   font-size: 14px;
   transition: background 0.2s;
-  color: #333;
+  color: #333; 
   text-align: left;
 }
 
 .dropdown-item:hover {
-  background-color: #f2f2f2;
+   background-color: #f2f2f2; 
+  background-color: black;
 }
 
 /* Hero Section */

@@ -2,10 +2,11 @@
 .navbar {
   height: 48px;
   background-color: black;
-  color: white;
+  /* color: white; */
+  color: black; 
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-between; 
   padding: 0 16px;
   position: fixed;
   top: 0;
@@ -67,7 +68,8 @@
 /* PROFILE SECTION */
 .profile-container {
   position: relative;
-  display: flex;
+  display: flex; 
+  /* display: inline-block; */
   align-items: center;
 }
 
@@ -90,6 +92,19 @@
   width: 160px;
   overflow: hidden;
 }
+/* .profile-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 10px;
+  background-color: #082e40;
+  border: 1px solid #0c3e56;
+  border-radius: 6px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  min-width: 150px;
+  z-index: 1000;
+} */
+
 
 .dropdown-item {
   padding: 10px 15px;
