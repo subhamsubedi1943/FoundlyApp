@@ -13,6 +13,11 @@ function AdminDashboard() {
           <h3>Manage Users</h3>
           <p>Add, edit, and manage system users</p>
         </Link>
+        <Link to="/employees" className="dashboard-card">
+          <div className="card-icon">🧑‍💼</div>
+          <h3>Manage Employees</h3>
+          <p>Add, edit, and manage employee list</p>
+        </Link>
         <Link to="/categories" className="dashboard-card">
           <div className="card-icon">📂</div>
           <h3>Manage Categories</h3>

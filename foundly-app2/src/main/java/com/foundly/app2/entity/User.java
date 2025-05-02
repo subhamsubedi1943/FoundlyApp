@@ -3,6 +3,8 @@ package com.foundly.app2.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 
 @Entity
 @Table(name = "users")
@@ -16,6 +18,11 @@ public class User {
 
     @Column(name = "employee_id", unique = true, nullable = false)
     private String employeeId;
+
+    @OneToOne
+    @JoinColumn(name = "employee_id", referencedColumnName = "emp_id", insertable = false, updatable = false)
+    @JsonBackReference
+    private Employee employee;
 
     @Column(name = "name", nullable = false)
     private String name;

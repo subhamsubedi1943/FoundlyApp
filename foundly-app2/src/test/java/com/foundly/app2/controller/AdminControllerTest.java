@@ -95,15 +95,26 @@ public class AdminControllerTest {
         User user = new User();
         user.setUserId(1);
 
-        when(userService.createUserWithRole(any(User.class))).thenReturn(user);
+        // Use UserRequestDTO instead of User for createUserWithRole
+        com.foundly.app2.dto.UserRequestDTO userRequestDTO = new com.foundly.app2.dto.UserRequestDTO();
+        userRequestDTO.setUserId(1);
+        userRequestDTO.setName("Test User");
+        userRequestDTO.setEmail("test@example.com");
+        userRequestDTO.setUsername("testuser");
+        userRequestDTO.setPassword("password");
+        userRequestDTO.setRole("USER");
+        userRequestDTO.setSecurity(false);
+        userRequestDTO.setEmployeeId("EMP001");
+
+        when(userService.createUserWithRole(any(com.foundly.app2.dto.UserRequestDTO.class))).thenReturn(user);
 
         mockMvc.perform(post("/api/admin/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(user)))
+                .content(objectMapper.writeValueAsString(userRequestDTO)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value(1));
 
-        verify(userService, times(1)).createUserWithRole(any(User.class));
+        verify(userService, times(1)).createUserWithRole(any(com.foundly.app2.dto.UserRequestDTO.class));
     }
 
     @Test
@@ -111,15 +122,26 @@ public class AdminControllerTest {
         User user = new User();
         user.setUserId(1);
 
-        when(userService.updateUser(any(User.class))).thenReturn(user);
+        // Use UserRequestDTO instead of User for updateUser
+        com.foundly.app2.dto.UserRequestDTO userRequestDTO = new com.foundly.app2.dto.UserRequestDTO();
+        userRequestDTO.setUserId(1);
+        userRequestDTO.setName("Updated Name");
+        userRequestDTO.setEmail("updatedemail@example.com");
+        userRequestDTO.setUsername("updatedusername");
+        userRequestDTO.setPassword("newpassword");
+        userRequestDTO.setRole("ADMIN");
+        userRequestDTO.setSecurity(true);
+        userRequestDTO.setEmployeeId("EMP002");
+
+        when(userService.updateUser(any(com.foundly.app2.dto.UserRequestDTO.class))).thenReturn(user);
 
         mockMvc.perform(put("/api/admin/users/1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(user)))
+                .content(objectMapper.writeValueAsString(userRequestDTO)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value(1));
 
-        verify(userService, times(1)).updateUser(any(User.class));
+        verify(userService, times(1)).updateUser(any(com.foundly.app2.dto.UserRequestDTO.class));
     }
 
     @Test
