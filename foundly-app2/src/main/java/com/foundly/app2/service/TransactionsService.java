@@ -212,6 +212,7 @@ public class TransactionsService {
         Duration duration = Duration.between(dateTime, LocalDateTime.now());
         long hours = duration.toHours();
         int a=0;
+        int b=0;
 
         if (hours < 24) {
             return hours + "h ago";
