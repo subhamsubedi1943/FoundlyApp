@@ -23,7 +23,7 @@ const LostItems = () => {
   useEffect(() => {
     const fetchLostItems = async () => {
       try {
-        const response = await axios.get('http://localhost:8081/api/items/lost-items');
+        const response = await axios.get('http://localhost:8080/api/items/lost-items');
         const data = response.data.map(item => ({
           id: item.itemId,
           itemName: item.itemName,

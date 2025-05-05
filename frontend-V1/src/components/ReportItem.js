@@ -234,7 +234,7 @@ const ReportItem = () => {
     const endpoint = itemType === "Found" ? "/api/items/found" : "/api/items/lost";
 
     try {
-      const response = await fetch(`http://localhost:8081${endpoint}`, {
+      const response = await fetch(`http://localhost:8080${endpoint}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -302,7 +302,7 @@ const ReportItem = () => {
     const endpoint = itemType === "Found" ? "/api/items/found" : "/api/items/lost";
   
     try {
-      const response = await fetch(`http://localhost:8081${endpoint}`, {
+      const response = await fetch(`http://localhost:8080${endpoint}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

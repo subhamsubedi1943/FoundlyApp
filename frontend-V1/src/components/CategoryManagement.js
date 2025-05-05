@@ -7,7 +7,7 @@ function CategoryManagement() {
   const [editCategory, setEditCategory] = useState({ id: null, name: '' });
 
   useEffect(() => {
-    fetch('http://localhost:8081/api/admin/categories')
+    fetch('http://localhost:8080/api/admin/categories')
       .then(res => res.json())
       .then(data => setCategories(data))
       .catch(error => console.error('Error fetching categories:', error));
@@ -16,7 +16,7 @@ function CategoryManagement() {
  // When adding a new category
 const handleSubmit = (e) => {
     e.preventDefault();
-    fetch('http://localhost:8081/api/admin/categories', {
+    fetch('http://localhost:8080/api/admin/categories', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ categoryName: newCategory.name }) // Match backend field name
@@ -30,7 +30,7 @@ const handleSubmit = (e) => {
   
   // When updating a category
   const handleUpdate = (id) => {
-    fetch(`http://localhost:8081/api/admin/categories/${id}`, {
+    fetch(`http://localhost:8080/api/admin/categories/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ categoryName: editCategory.name }) // Match backend field name
@@ -45,7 +45,7 @@ const handleSubmit = (e) => {
   };
 
   const handleDelete = (id) => {
-    fetch(`http://localhost:8081/api/admin/categories/${id}`, { method: 'DELETE' })
+    fetch(`http://localhost:8080/api/admin/categories/${id}`, { method: 'DELETE' })
       .then(() => setCategories(categories.filter(cat => cat.categoryId !== id)));
   };
 
