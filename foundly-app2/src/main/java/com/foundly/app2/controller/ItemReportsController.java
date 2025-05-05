@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 // import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 import com.foundly.app2.dto.FoundItemReportRequest;
 import com.foundly.app2.dto.ItemReportResponse;
@@ -43,9 +44,12 @@ public class ItemReportsController {
 
     // Get all item reports
     @GetMapping
-    public ResponseEntity<List<ItemReports>> getAllItemReports() {
+    public ResponseEntity<List<ItemReportResponse>> getAllItemReports() {
         List<ItemReports> itemReports = itemReportsService.getAllItemReports();
-        return new ResponseEntity<>(itemReports, HttpStatus.OK);
+        List<ItemReportResponse> responseList = itemReports.stream()
+                .map(ItemReportResponse::fromEntity)
+                .toList();
+        return new ResponseEntity<>(responseList, HttpStatus.OK);
     }
     @GetMapping("/lost-items")
     public List<ItemReports> getAllLostItems() {
@@ -126,6 +130,13 @@ public class ItemReportsController {
     public ResponseEntity<List<ItemReportResponse>> getFoundReportsByUserId(@PathVariable Long userId) {
         List<ItemReportResponse> reports = itemReportsService.getFoundReportsByUserId(userId);
         return ResponseEntity.ok(reports);
+    }
+
+    // Delete an item report by ID
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteItemReport(@PathVariable Integer id) {
+        itemReportsService.deleteItemReportById(id);
+        return ResponseEntity.noContent().build();
     }
    
 

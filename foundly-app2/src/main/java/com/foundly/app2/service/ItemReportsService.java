@@ -27,6 +27,7 @@ import com.foundly.app2.repository.TransactionsRepository;
 import com.foundly.app2.repository.UserRepository;
 
 @Service
+
 public class ItemReportsService {
 
     @Autowired
@@ -53,6 +54,14 @@ public class ItemReportsService {
     // Get an item report by ID
     public Optional<ItemReports> getItemReportById(Integer itemId) {
         return itemReportsRepository.findById(itemId);
+    }
+
+    @Transactional
+    public void deleteItemReportById(Integer itemId) {
+        // Delete dependent transactions first
+        transactionsService.deleteTransactionsByItemIds(java.util.Collections.singletonList(itemId));
+        // Delete the item report
+        itemReportsRepository.deleteById(itemId);
     }
 
     // Filter item reports based on various criteria

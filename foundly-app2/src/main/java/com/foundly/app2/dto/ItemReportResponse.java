@@ -28,6 +28,7 @@ public class ItemReportResponse {
     private String itemStatus;
     private String type;
     private String transactionStatus;
+    private String employeeId;  // Added employeeId field
 
     // FoundItemDetails (included only if type is FOUND)
     private String securityId;
@@ -49,6 +50,7 @@ public class ItemReportResponse {
                 .itemStatus(item.getItemStatus() != null ? item.getItemStatus().toString() : "UNKNOWN")
                 .type(item.getType() != null ? item.getType().toString() : "UNKNOWN")
                 .transactionStatus(transaction != null ? transaction.getTransactionStatus().toString() : null)
+                .employeeId(item.getUser() != null ? item.getUser().getEmployeeId() : null)  // Set employeeId
                 .securityId(details != null ? details.getSecurityId() : null)
                 .securityName(details != null ? details.getSecurityName() : null)
                 .pickupMessage(details != null ? details.getPickupMessage() : null)

@@ -26,4 +26,5 @@ public class TransactionResponse {
     private String securityId;
     private String securityName;
     private boolean requesterCompleted; // <-- Add this field
+    private String employeeId; // Added employeeId field
 }

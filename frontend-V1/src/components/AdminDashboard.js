@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/AdminStyles.css';
 
@@ -23,9 +23,19 @@ function AdminDashboard() {
           <h3>Manage Categories</h3>
           <p>Create and organize product categories</p>
         </Link>
-        {/* Additional cards can be added here */}
+        <Link to="/transactions" className="dashboard-card">
+          <div className="card-icon">💰</div>
+          <h3>Transaction Management</h3>
+          <p>View and delete transactions</p>
+        </Link>
+        <Link to="/item-reports" className="dashboard-card">
+          <div className="card-icon">📋</div>
+          <h3>Item Reports Management</h3>
+          <p>View and delete item reports</p>
+        </Link>
       </div>
     </div>
   );
 };
+
 export default AdminDashboard;

@@ -17,6 +17,8 @@ import FoundItems from './components/FoundItems';
 import CategoryManagement from './components/CategoryManagement';
 import EditProfile from './components/EditProfile';
 import EmployeeManagement from './components/EmployeeManagement';
+import TransactionManagement from './components/TransactionManagement';
+import ItemReportsManagement from './components/ItemReportsManagement';
 
 
 
@@ -72,6 +74,8 @@ const App = () => {
         <Route path="/users" element={<UserManagement />} />
         <Route path="/employees" element={<EmployeeManagement />} />
         <Route path="/categories" element={<CategoryManagement />} />
+        <Route path="/transactions" element={<RequireAdminAuth><TransactionManagement /></RequireAdminAuth>} />
+        <Route path="/item-reports" element={<RequireAdminAuth><ItemReportsManagement /></RequireAdminAuth>} />
        
        
 

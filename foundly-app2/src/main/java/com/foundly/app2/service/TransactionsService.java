@@ -46,6 +46,11 @@ public class TransactionsService {
     }
 
     @Transactional
+    public void deleteTransactionById(Integer transactionId) {
+        transactionsRepository.deleteById(transactionId);
+    }
+
+    @Transactional
     public Transactions claimItem(ClaimRequest request) {
         ItemReports item = itemReportsRepository.findById(request.getItemId())
                 .orElseThrow(() -> new RuntimeException("Item not found with ID: " + request.getItemId()));
@@ -245,7 +250,8 @@ public class TransactionsService {
                 transaction.getPickupMessage(),
                 transaction.getSecurityId(),
                 transaction.getSecurityName(),
-                transaction.isRequesterCompleted() // ✅ Add this line to include requesterCompleted
+                transaction.isRequesterCompleted(), // ✅ Add this line to include requesterCompleted
+                transaction.getEmployeeId() // Added employeeId field
         );
     }
     public long countByTransactionType(Transactions.TransactionType type) {

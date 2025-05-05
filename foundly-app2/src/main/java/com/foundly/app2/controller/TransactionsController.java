@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 import com.foundly.app2.dto.ClaimRequest;
 import com.foundly.app2.dto.HandoverRequest;
@@ -117,6 +118,13 @@ public class TransactionsController {
     public ResponseEntity<Map<String, Long>> getTransactionCountByStatus() {
         Map<String, Long> statusCounts = transactionsService.countTransactionsGroupedByStatus();
         return ResponseEntity.ok(statusCounts);
+    }
+
+    // Delete a transaction by ID
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTransaction(@PathVariable Integer id) {
+        transactionsService.deleteTransactionById(id);
+        return ResponseEntity.noContent().build();
     }
 
 
