@@ -23,7 +23,6 @@ import com.foundly.app2.entity.User;
 import com.foundly.app2.repository.CategoryRepository;
 import com.foundly.app2.repository.FoundItemDetailsRepository;
 import com.foundly.app2.repository.ItemReportsRepository;
-import com.foundly.app2.repository.TransactionsRepository;
 import com.foundly.app2.repository.UserRepository;
 
 @Service
