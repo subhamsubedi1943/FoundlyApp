@@ -6,7 +6,6 @@ import { useAuth } from '../context/AuthContext';
 import NotificationPanel from './NotificationPanel';
 import ProfileDropdown from './ProfileDropdown';
 
-
 function Navbar({ onAboutClick, activeSection }) {
   const { isLoggedIn, isAdmin, setShowAuthBox, handleLogout } = useAuth();
   const [showDropdown, setShowDropdown] = useState(false);
@@ -69,20 +68,6 @@ function Navbar({ onAboutClick, activeSection }) {
     setShowDropdown(false);
   };
 
-  // useEffect(() => {
-  //   const handleClickOutside = (event) => {
-  //     const dropdown = document.querySelector('.profile-container');
-  //     if (dropdown && !dropdown.contains(event.target)) {
-  //       setShowDropdown(false);
-  //     }
-  //   };
-  
-  //   document.addEventListener('mousedown', handleClickOutside);
-  //   return () => {
-  //     document.removeEventListener('mousedown', handleClickOutside);
-  //   };
-  // }, []);  
-
   return (
     <nav className="navbar">
       <div className="navbar-logo" onClick={handleHomeClick}>
@@ -119,29 +104,10 @@ function Navbar({ onAboutClick, activeSection }) {
 
         <div className="auth-button-container">
           {isLoggedIn ? (
-            // <div className="profile-container">
-            //   <FaUserCircle
-            //     className="profile-icon"
-            //     title="My Profile"
-            //     onClick={() => setShowDropdown((prev) => !prev)}
-            //   />
-            //   {showDropdown && (
-            //     <div className="profile-dropdown">
-            //       <div className="dropdown-item" onClick={handleEditProfile}>
-            //         Edit Profile
-            //       </div>
-            //       <div className="dropdown-item" onClick={onLogoutClick}>
-            //         Logout
-            //       </div>
-            //     </div>
-            //   )}
-            // </div>
             <ProfileDropdown
-            onEditProfile={handleEditProfile}
-            onLogout={onLogoutClick}
-          />
-          
-
+              onEditProfile={handleEditProfile}
+              onLogout={onLogoutClick}
+            />
           ) : (
             <button className="navbar-auth-button" onClick={() => setShowAuthBox(true)}>
               Sign In / Sign Up
@@ -152,4 +118,5 @@ function Navbar({ onAboutClick, activeSection }) {
     </nav>
   );
 }
+
 export default Navbar;

@@ -1,35 +1,36 @@
+/* === PROFILE ICON AND DROPDOWN === */
 .profile-container {
-  position: relative;
-  display: inline-block;
-}
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 100%;
+  }
+  
+  .profile-icon {
+    font-size: 24px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+  }
+  
+  /* Profile dropdown positioned below the icon and outside navbar */
 
-.profile-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  cursor: pointer;
-}
-
-.profile-dropdown {
-  position: absolute;
-  top: 110%;
-  right: 0;
-  background-color: #1a1a1a;
-  border-radius: 5px;
-  padding: 10px 0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  z-index: 100;
-  width: 150px;
-}
-
-.profile-dropdown a {
-  display: block;
-  padding: 10px 20px;
-  color: white;
-  text-decoration: none;
-  transition: background 0.2s ease-in-out;
-}
-
-.profile-dropdown a:hover {
-  background-color: #333;
-}
+  
+  /* Dropdown item style */
+  .dropdown-item {
+    top : 40;
+    padding: 20px 15px;
+    color: white;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    width: 100%;
+  }
+  
+  .dropdown-item:hover {
+    background-color: #ff007f;
+  }
+  

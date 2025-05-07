@@ -63,9 +63,9 @@ const FoundItems = () => {
       <h1 className="title">Found Item Reports</h1>
 
       <div className="search-container">
-      <div className="search-icon">
+        <div className="search-icon">
 
-      </div>
+        </div>
         <input
           type="text"
           placeholder="Search found items..."
@@ -85,7 +85,7 @@ const FoundItems = () => {
       {filterOpen && (
         <div className="filters-inline">
           <select name="category" value={filters.category} onChange={handleFilterChange}>
-          <option value="">Category</option>
+            <option value="">Category</option>
             <option value="Phone">Phone</option>
             <option value="Wallet">Wallet</option>
             <option value="Watch">Watch</option>

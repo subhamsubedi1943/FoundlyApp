@@ -321,10 +321,14 @@
 }
 
 .footer-logo {
-  font-size: 28px;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
+    font-size: 1rem;
+    font-weight: bold;
+    margin: 0;
+    cursor: pointer;
+    color: white;
+    text-decoration: none;
+    transition: color 0.3s ease;
+
 }
 
 .footer-links {
@@ -341,7 +345,7 @@
 }
 
 .footer-links a:hover {
-  color: #ff3c3c;
+  color: #ff2f7e;
 }
 
 .footer-contact {
@@ -357,21 +361,3 @@
   margin: 0;
 }
 
-/* Logo Colors */
-.logo-f {
-  color: #00c851;
-}
-
-.logo-icon {
-  color: white;
-  font-size: 22px;
-  margin: 0 2px;
-}
-
-.logo-rest {
-  color: white;
-}
-
-.logo-l {
-  color: #ff3c3c;
-}

@@ -44,23 +44,6 @@ const LostItems = () => {
     fetchLostItems();
   }, []);
 
-  // useEffect(() => {
-  //   const inputElement = document.querySelector('.search-input');
-  //   const iconButton = document.querySelector('.filter-icon-button');
-  
-  //   if (inputElement && iconButton) {
-  //     const parent = inputElement.parentElement;
-  //     const wrapper = document.createElement('div');
-  //     wrapper.style.display = 'flex';
-  //     wrapper.style.alignItems = 'center';
-  //     wrapper.style.width = 'fit-content';
-  //     wrapper.style.gap = '8px';
-  //     parent.insertBefore(wrapper, inputElement);
-  //     wrapper.appendChild(inputElement);
-  //     wrapper.appendChild(iconButton);
-  //   }x
-  // }, []);
-
   const handleFilterChange = (e) => {
     setFilters({ ...filters, [e.target.name]: e.target.value });
   };
@@ -88,55 +71,29 @@ const LostItems = () => {
     return matchesSearch && matchesCategory && matchesLocation && matchesDate;
   });
 
-  // Helper function to check if string is base64
-  const isBase64 = (str) => {
-    try {
-      return btoa(atob(str)) === str;
-    } catch (err) {
-      return false;
-    }
-  };
-
   return (
     <div className="items-page">
       <h1 className="title">Lost Item Reports</h1>
 
-      {/* <div className="search-container">
-        <input
-          type="text"
-          placeholder="Search lost items..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="search-input"
-        />
-        <button
-          onClick={() => setFilterOpen(!filterOpen)}
-          className="filter-icon-button"
-          title="Toggle filters"
-        >
-          <FiFilter className="filter-icon" />
-        </button>
-      </div> */}
       <div className="search-container">
-        <div className="search-icon">
-
-        </div>
-      <input
-        type="text"
-        placeholder="Search lost items..."
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        className="search-input"
-      />
-      <button
-        onClick={() => setFilterOpen(!filterOpen)}
-        className="filter-icon-button"
-        title="Toggle filters"
-      >
-        <FiFilter className="filter-icon" />
-      </button>
-    </div>
-
+              <div className="search-icon">
+      
+              </div>
+              <input
+                type="text"
+                placeholder="Search lost items..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="search-input"
+              />
+              <button
+                onClick={() => setFilterOpen(!filterOpen)}
+                className="filter-icon-button"
+                title="Toggle filters"
+              >
+                <FiFilter className="filter-icon" />
+              </button>
+            </div>
 
       {filterOpen && (
         <div className="filters-inline">
@@ -176,19 +133,42 @@ const LostItems = () => {
             <div className="flip-card" key={index}>
               <div className="flip-card-inner">
                 <div className="flip-card-front">
-                {item.imageUrl && (
-                  <img src={item.imageUrl} alt={item.itemName} className="card-image" />
-                )}
-                  <p className="card-category">{item.categoryName}</p>
+                  {item.imageUrl && (
+                    <img src={item.imageUrl} alt={item.itemName} className="card-image" />
+                  )}
                   <h2 className="card-title">{item.itemName}</h2>
-                  <p className="card-location">{item.location}</p>
-                  <p className="card-date">{new Date(item.dateReported).toLocaleDateString()}</p>
                 </div>
                 <div className="flip-card-back">
-                  <p className="card-description">{item.description}</p>
-                  <button className="claim-button" onClick={() => handleHandoverClick(item)}>
-                    Handover
-                  </button>
+                  <table className="item-details-table">
+                    <tbody>
+                      <tr>
+                        <td><strong>Category</strong></td>
+                        <td>{item.categoryName}</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Location</strong></td>
+                        <td>{item.location}</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Date</strong></td>
+                        <td>{new Date(item.dateReported).toLocaleDateString()}</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Time</strong></td>
+                        <td>{new Date(item.dateReported).toLocaleTimeString()}</td>
+                      </tr>
+                      <tr>
+                        <td colSpan="2"><strong>Description:</strong><br />{item.description}</td>
+                      </tr>
+                      <tr>
+                        <td colSpan="2" style={{ textAlign: 'center' }}>
+                          <button className="claim-button" onClick={() => handleHandoverClick(item)}>
+                            Handover
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>

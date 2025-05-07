@@ -1,14 +1,17 @@
-
+/* Dashboard Styles */
 .dashboard-container {
+  min-height: 100vh;
+  
     padding: 20px;
     max-width: 1400px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: 3fr 1fr;
-    grid-template-areas:
-      "stats stats"
-      "charts notifications";
-    gap: 20px;
+    grid-template-columns: 1fr;
+grid-template-areas:
+  "stats"
+  "charts"
+  "notifications";
+
   }
   
   /* Stats Section */
@@ -50,11 +53,22 @@
   }
   
   .security-card {
-    text-align: center;
     background-color: #212529;
     color: white;
-    border-left: none;
+    border-left: 4px solid #69db7c; /* optional for uniformity */
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
+  
+  .security-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  }
+  
   
   .security-content {
     width: 100%;
@@ -120,7 +134,7 @@
   .charts-container {
     grid-area: charts;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 20px;
   }
   

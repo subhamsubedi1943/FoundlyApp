@@ -5,6 +5,7 @@ import Testimonials from '../components/Testimonials';
 import Navbar from '../components/Navbar';
 import '../styles/HomePage.css';
 import '../styles/About.css';
+
 import backgroundImage from '../assets/img.png';
 
 import signupImg from '../assets/signup.jpg';
@@ -178,11 +179,7 @@ function HomePage() {
       <footer className="footer">
         <div className="footer-content">
           <div className="footer-logo">
-            <span className="logo-f">F</span>
-            <span className="logo-icon">🔍</span>
-            <span className="logo-rest">ound</span>
-            <span className="logo-l">l</span>
-            <span className="logo-rest">y</span>
+            Foundly
           </div>
 
           <div className="footer-links">

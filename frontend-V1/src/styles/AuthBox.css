@@ -99,9 +99,11 @@ form {
 }
 
 .input-box {
+  color : white;
   position: relative;
   margin: 20px 0;
 }
+
 
 .input-box input {
   width: 100%;
@@ -113,6 +115,10 @@ form {
   font-size: 14px;
   color: #fff;
   font-weight: 500;
+}
+.input-box input[name="name"],
+.input-box input[name="employeeId"] {
+  color: #fff; /* Set text color to white */
 }
 
 .input-box input::placeholder {

@@ -1,159 +1,4 @@
-// import React, { useState } from "react";
-// import "../styles/ReportItem.css";
 
-// const ReportItem = () => {
-//   const [itemType, setItemType] = useState("Found");
-//   const [handoverOption, setHandoverOption] = useState("keep");
-//   const [uploadedFiles, setUploadedFiles] = useState([]);
-
-//   const handleToggleItemType = () => {
-//     setItemType((prev) => (prev === "Found" ? "Lost" : "Found"));
-//   };
-
-//   const handleFileChange = (e) => {
-//     const files = Array.from(e.target.files);
-//     setUploadedFiles((prev) => [...prev, ...files]);
-//   };
-
-//   const removeFile = (index) => {
-//     setUploadedFiles((prev) => prev.filter((_, i) => i !== index));
-//   };
-
-//   return (
-//     <div className="report-container">
-//       <div className="report-box">
-//         <h2 className="report-title">Report Item</h2>
-
-//         {/* Row 1: Toggle + Location */}
-//         <div className="form-row">
-//           <button
-//             type="button"
-//             className={`toggle-btn ${itemType === "Found" ? "found" : "lost"}`}
-//             onClick={handleToggleItemType}
-//           >
-//             {itemType}
-//           </button>
-//           <select className="input-field">
-//             <option>Select location</option>
-//             <option>Location 1</option>
-//             <option>Location 2</option>
-//             <option>Location 3</option>
-//           </select>
-//         </div>
-
-//         {/* Row 2: User ID and Name (optional) */}
-//         <div className="form-row">
-//           <input type="text" placeholder="Enter user ID" className="input-field" />
-//           <input type="text" placeholder="Enter name (optional)" className="input-field" />
-//         </div>
-
-//         {/* Row 3: Category and Item Name */}
-//         <div className="form-row">
-//           <select className="input-field">
-//             <option>Select category</option>
-//             <option>Electronics</option>
-//             <option>Clothing</option>
-//             <option>Documents</option>
-//           </select>
-//           <input type="text" placeholder="Enter item name" className="input-field" />
-//         </div>
-
-//         {/* Description */}
-//         <textarea placeholder="Enter description" className="description-field"></textarea>
-
-//         {/* Date and Time */}
-//         <div className="form-row">
-//           <input type="date" className="input-field" />
-//           <input type="time" className="input-field" />
-//         </div>
-
-//         {/* Upload Media */}
-//         <div className="upload-box">
-//           <label htmlFor="file-upload">⬆ Upload media</label>
-//           <input
-//             id="file-upload"
-//             type="file"
-//             multiple
-//             onChange={handleFileChange}
-//             style={{ display: "none" }}
-//           />
-//         </div>
-
-//         {/* Uploaded Files Preview */}
-//         <div className="uploaded-files">
-//           {uploadedFiles.map((file, index) => (
-//             <div className="file-tag" key={index}>
-//               <span>{file.name}</span>
-//               <button onClick={() => removeFile(index)}>×</button>
-//             </div>
-//           ))}
-//         </div>
-
-//         <hr className="section-divider" />
-
-//         {/* Found Item Extra Fields */}
-//         {itemType === "Found" && (
-//           <>
-//             <div className="handover-options">
-//               <label className={`radio-option ${handoverOption === "keep" ? "active" : ""}`}>
-//                 <input
-//                   type="radio"
-//                   name="handover"
-//                   value="keep"
-//                   checked={handoverOption === "keep"}
-//                   onChange={() => setHandoverOption("keep")}
-//                 />
-//                 Keep it with me
-//               </label>
-
-//               <label className={`radio-option ${handoverOption === "security" ? "active" : ""}`}>
-//                 <input
-//                   type="radio"
-//                   name="handover"
-//                   value="security"
-//                   checked={handoverOption === "security"}
-//                   onChange={() => setHandoverOption("security")}
-//                 />
-//                 Handover to security
-//               </label>
-//             </div>
-
-//             {handoverOption === "keep" && (
-//               <input
-//                 type="text"
-//                 placeholder="Enter pickup message"
-//                 className="input-field full-width"
-//               />
-//             )}
-
-//             {handoverOption === "security" && (
-//               <>
-//                 <input
-//                   type="text"
-//                   placeholder="Enter security ID"
-//                   className="input-field full-width"
-//                 />
-//                 <input
-//                   type="text"
-//                   placeholder="Enter security name"
-//                   className="input-field full-width"
-//                 />
-//               </>
-//             )}
-//           </>
-//         )}
-
-//         {/* Buttons */}
-//         <div className="form-buttons">
-//           <button className="cancel-btn">Cancel</button>
-//           <button className="submit-btn">Submit</button>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default ReportItem;
 import React, { useState } from "react";
 import "../styles/ReportItem.css";
 
@@ -242,8 +87,8 @@ const ReportItem = () => {
         body: JSON.stringify(payload),
       });
 
-      console.log("Response "+response.data);
-      
+      console.log("Response " + response.data);
+
 
       if (response.ok) {
         alert("Item reported successfully!");
@@ -282,7 +127,7 @@ const ReportItem = () => {
       alert("Please upload at least one media file.");
       return;
     }
-  
+
     const dateTime = `${formData.date} ${formData.time}`;
     const payload = {
       userId: parseInt(formData.userId),
@@ -298,9 +143,26 @@ const ReportItem = () => {
       securityId: itemType === "Found" && handoverOption === "security" ? formData.securityId : null,
       securityName: itemType === "Found" && handoverOption === "security" ? formData.securityName : null,
     };
-  
+    <div className="toggle-switch">
+      <input
+        type="checkbox"
+        id="report-toggle"
+        className="toggle-input"
+        checked={itemType === "Found"}
+        onChange={handleToggle}
+      />
+      <label htmlFor="report-toggle" className="toggle-label">
+        <span className="toggle-text lost">
+          <i className="toggle-icon">❌</i> Lost
+        </span>
+        <span className="toggle-text found">
+          <i className="toggle-icon">✔️</i> Found
+        </span>
+      </label>
+    </div>
+
     const endpoint = itemType === "Found" ? "/api/items/found" : "/api/items/lost";
-  
+
     try {
       const response = await fetch(`http://localhost:8080${endpoint}`, {
         method: "POST",
@@ -309,7 +171,7 @@ const ReportItem = () => {
         },
         body: JSON.stringify(payload),
       });
-  
+
       if (response.ok) {
         alert("Item reported successfully!");
       } else {
@@ -320,31 +182,38 @@ const ReportItem = () => {
       alert("Something went wrong!");
     }
   };
-  
+
 
   return (
-    
+
     <div className="report-container">
       <div className="report-box">
         <h2 className="report-title">Report Item</h2>
-       {/*{Toggle button switch} */}
-       <div className="toggle-tooltip-wrapper">
-        <button
-          type="button"
-          className={`toggle-btn ${itemType === "Found" ? "found" : "lost"}`}
-          onClick={handleToggleItemType}
-        
-        >
-          {itemType}
-        </button>
-        <span className="tooltip-text">
-          {itemType === "Found" ? "Toggle to Lost" : "Toggle to Found"}
-        </span>
-      </div>
+        {/* Capsule-shaped toggle switch */}
+        <div className="toggle-container">
+          <input
+            type="checkbox"
+            id="toggleSwitch"
+            className="toggle-input"
+            checked={itemType === "Found"}
+            onChange={() => setItemType(itemType === "Lost" ? "Found" : "Lost")}
+          />
+          <label htmlFor="toggleSwitch" className="toggle-label">
+            <span className={`toggle-text lost ${itemType === "Lost" ? "active" : ""}`}>
+              Lost
+            </span>
+            <span className={`toggle-text found ${itemType === "Found" ? "active" : ""}`}>
+              Found
+            </span>
+            <span className="toggle-knob"></span>
+          </label>
+        </div>
+
+
         {/* Row 1: Toggle + Location */}
         <div className="form-row">
           <select
-          
+
             name="location"
             value={formData.location}
             onChange={handleInputChange}
@@ -383,7 +252,7 @@ const ReportItem = () => {
           />
         </div>
 
-       {/* Row 3: Category and Item Name
+        {/* Row 3: Category and Item Name
         <div className="form-row">
           <select
             name="categoryId"
@@ -416,41 +285,41 @@ const ReportItem = () => {
             className="input-field"
           />
         </div> */
-        <div className="form-row flex gap-2">
-  <select
-    name="categoryId"
-    className="flex-1 px-4 py-3 border  rounded-lg input-field text-white text-sm"
-    onChange={(e) =>
-      setFormData((prev) => ({
-        ...prev,
-        categoryId: categoryMap[e.target.value],
-      }))
-      
-    }
-  >
-    <option value="" >Select category</option>
-    <option value="Electronics">Electronics</option>
-    <option value="Phone">Phone</option>
-    <option value="Wallet">Wallet</option>
-    <option value="Keys">Keys</option>
-    <option value="Bags">Bags</option>
-    <option value="Watch">Watch</option>
-    <option value="Documents">Documents</option>
-    <option value="FashionAccessories">Fashion Accessories</option>
-    <option value="Jewellery">Jewellery</option>
-    <option value="Others">Others</option>
-  </select>
+          <div className="form-row flex gap-2">
+            <select
+              name="categoryId"
+              className="flex-1 px-4 py-3 border  rounded-lg input-field text-white text-sm"
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  categoryId: categoryMap[e.target.value],
+                }))
 
-  <input
-    type="text"
-    name="itemName"
-    placeholder="Enter item name"
-    value={formData.itemName}
-    onChange={handleInputChange}
-    className="input-field"
-  />
-</div>
-}
+              }
+            >
+              <option value="" >Select category</option>
+              <option value="Electronics">Electronics</option>
+              <option value="Phone">Phone</option>
+              <option value="Wallet">Wallet</option>
+              <option value="Keys">Keys</option>
+              <option value="Bags">Bags</option>
+              <option value="Watch">Watch</option>
+              <option value="Documents">Documents</option>
+              <option value="FashionAccessories">Fashion Accessories</option>
+              <option value="Jewellery">Jewellery</option>
+              <option value="Others">Others</option>
+            </select>
+
+            <input
+              type="text"
+              name="itemName"
+              placeholder="Enter item name"
+              value={formData.itemName}
+              onChange={handleInputChange}
+              className="input-field"
+            />
+          </div>
+        }
 
         {/* Description */}
         <textarea
@@ -481,19 +350,19 @@ const ReportItem = () => {
 
         {/* Upload Media */}
         <div className="upload-box">
-  <label htmlFor="file-upload">
-    ⬆ Upload media {itemType === "Found" && <span style={{ color: "red" }}>*</span>}
-  </label>
-  <input
-    id="file-upload"
-    type="file"
-    multiple
-    onChange={handleFileChange}
-    style={{ display: "none" }}
-  />
-</div>
+          <label htmlFor="file-upload">
+            ⬆ Upload media {itemType === "Found" && <span style={{ color: "red" }}>*</span>}
+          </label>
+          <input
+            id="file-upload"
+            type="file"
+            multiple
+            onChange={handleFileChange}
+            style={{ display: "none" }}
+          />
+        </div>
         {/* Upload Media */}
-    {/* <div className="upload-box">
+        {/* <div className="upload-box">
       <label htmlFor="file-upload">
         ⬆ Upload media {reportType === "found" && <span style={{ color: "red" }}>*</span>}
       </label>
