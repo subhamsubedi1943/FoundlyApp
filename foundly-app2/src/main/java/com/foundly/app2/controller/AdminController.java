@@ -1,15 +1,20 @@
+
 package com.foundly.app2.controller;
 
 import com.foundly.app2.entity.Category;
-import com.foundly.app2.service.CategoryService;
-import com.foundly.app2.entity.User;
-import com.foundly.app2.service.UserService;
 import com.foundly.app2.entity.Employee;
+import com.foundly.app2.entity.User;
+import com.foundly.app2.service.CategoryService;
 import com.foundly.app2.service.EmployeeService;
+import com.foundly.app2.service.ItemReportsService;
+import com.foundly.app2.service.TransactionsService;
+import com.foundly.app2.service.UserService;
+import com.foundly.app2.dto.DashboardSummaryDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/admin")
@@ -17,14 +22,32 @@ public class AdminController {
 
     @Autowired
     private UserService userService;
+
     @Autowired
     private CategoryService categoryService;
+
     @Autowired
     private EmployeeService employeeService;
+
+    @Autowired
+    private ItemReportsService itemReportsService;
+
+    @Autowired
+    private TransactionsService transactionsService;
 
     @GetMapping("/users")
     public List<User> getAllUsers() {
         return userService.getAllUsers();
+    }
+
+    @GetMapping("/dashboard/summary")
+    public DashboardSummaryDTO getDashboardSummary() {
+        long totalUsers = userService.getTotalUsersCount();
+        long totalEmployees = employeeService.getTotalEmployeesCount();
+        long totalItemReports = itemReportsService.getTotalItemReportsCount();
+        long totalTransactions = transactionsService.getAllTransactions().size();
+
+        return new DashboardSummaryDTO(totalUsers, totalEmployees, totalItemReports, totalTransactions);
     }
 
     @PostMapping("/users/{userId}/promote")
@@ -52,6 +75,7 @@ public class AdminController {
         userRequestDTO.setUserId(userId);
         return userService.updateUser(userRequestDTO);
     }
+
     @GetMapping("/categories")
     public List<Category> getAllCategories() {
         return categoryService.getAllCategories();

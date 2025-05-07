@@ -152,20 +152,35 @@ public class UserControllerTest {
 
     @Test
     public void testUpdateUser_Found() throws Exception {
-        User user = new User();
-        user.setUserId(1);
+        com.foundly.app2.dto.UserRequestDTO userRequestDTO = new com.foundly.app2.dto.UserRequestDTO();
+        userRequestDTO.setUserId(1);
+        userRequestDTO.setEmail("test@example.com");
+        userRequestDTO.setUsername("testuser");
+        userRequestDTO.setName("Test User");
+        userRequestDTO.setEmployeeId("EMP001");
+        userRequestDTO.setRole("USER");
+        userRequestDTO.setSecurity(false);
 
-        when(userService.getUserById(1)).thenReturn(Optional.of(user));
-        when(userService.saveUser(any(User.class))).thenReturn(user);
+        User updatedUser = new User();
+        updatedUser.setUserId(1);
+        updatedUser.setEmail("test@example.com");
+        updatedUser.setUsername("testuser");
+        updatedUser.setName("Test User");
+        updatedUser.setEmployeeId("EMP001");
+        updatedUser.setRole(User.Role.USER);
+        updatedUser.setSecurity(false);
+
+        when(userService.getUserById(1)).thenReturn(Optional.of(updatedUser));
+        when(userService.updateUser(any(com.foundly.app2.dto.UserRequestDTO.class))).thenReturn(updatedUser);
 
         mockMvc.perform(put("/api/users/1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(user)))
+                .content(objectMapper.writeValueAsString(userRequestDTO)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value(1));
 
         verify(userService, times(1)).getUserById(1);
-        verify(userService, times(1)).saveUser(any(User.class));
+        verify(userService, times(1)).updateUser(any(com.foundly.app2.dto.UserRequestDTO.class));
     }
 
     @Test

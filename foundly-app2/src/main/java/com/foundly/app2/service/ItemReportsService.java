@@ -23,7 +23,6 @@ import com.foundly.app2.entity.User;
 import com.foundly.app2.repository.CategoryRepository;
 import com.foundly.app2.repository.FoundItemDetailsRepository;
 import com.foundly.app2.repository.ItemReportsRepository;
-import com.foundly.app2.repository.TransactionsRepository;
 import com.foundly.app2.repository.UserRepository;
 
 @Service
@@ -49,6 +48,10 @@ public class ItemReportsService {
     // Get all item reports
     public List<ItemReports> getAllItemReports() {
         return itemReportsRepository.findAll();
+    }
+
+    public long getTotalItemReportsCount() {
+        return itemReportsRepository.count();
     }
 
     // Get an item report by ID

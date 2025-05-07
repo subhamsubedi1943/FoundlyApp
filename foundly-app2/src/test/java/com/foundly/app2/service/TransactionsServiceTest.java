@@ -126,7 +126,7 @@ public class TransactionsServiceTest {
             transactionsService.claimItem(request);
         });
 
-        assertEquals("Item not found", exception.getMessage());
+        assertEquals("Item not found with ID: 1", exception.getMessage());
     }
 
     @Test
@@ -146,7 +146,7 @@ public class TransactionsServiceTest {
             transactionsService.claimItem(request);
         });
 
-        assertEquals("Requester not found", exception.getMessage());
+        assertEquals("Requester not found with ID: 1", exception.getMessage());
     }
 
     @Test
@@ -166,7 +166,7 @@ public class TransactionsServiceTest {
             transactionsService.claimItem(request);
         });
 
-        assertEquals("Item is not available for claiming", exception.getMessage());
+        assertEquals("Item is not available for claiming.", exception.getMessage());
     }
 
     @Test
@@ -215,7 +215,7 @@ public class TransactionsServiceTest {
             transactionsService.handoverItem(request);
         });
 
-        assertEquals("Item not found", exception.getMessage());
+        assertEquals("Item not found with ID: 1", exception.getMessage());
     }
 
     @Test
@@ -234,7 +234,7 @@ public class TransactionsServiceTest {
             transactionsService.handoverItem(request);
         });
 
-        assertEquals("Requester not found", exception.getMessage());
+        assertEquals("Requester not found with ID: 1", exception.getMessage());
     }
 
     @Test
@@ -268,7 +268,7 @@ public class TransactionsServiceTest {
             transactionsService.updateReporterCompletion(1);
         });
 
-        assertEquals("Transaction not found", exception.getMessage());
+        assertEquals("Transaction not found with ID: 1", exception.getMessage());
     }
 
     @Test
@@ -302,7 +302,7 @@ public class TransactionsServiceTest {
             transactionsService.updateRequesterCompletion(1);
         });
 
-        assertEquals("Transaction not found", exception.getMessage());
+        assertEquals("Transaction not found with ID: 1", exception.getMessage());
     }
 
     @Test

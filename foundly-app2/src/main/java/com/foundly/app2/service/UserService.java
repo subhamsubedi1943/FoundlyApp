@@ -51,6 +51,10 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    public long getTotalUsersCount() {
+        return userRepository.count();
+    }
+
     public Optional<User> getUserById(Integer userId) {
         return userRepository.findById(userId);
     }

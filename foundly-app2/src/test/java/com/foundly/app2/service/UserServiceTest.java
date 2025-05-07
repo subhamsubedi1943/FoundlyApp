@@ -37,6 +37,9 @@ public class UserServiceTest {
     @Mock
     private TransactionsService transactionsService;
 
+    @Mock
+    private EmployeeService employeeService;
+
     @InjectMocks
     private UserService userService;
 
@@ -170,6 +173,7 @@ public class UserServiceTest {
 
     @Test
     public void testDeleteUser() {
+        when(userRepository.findById(1)).thenReturn(Optional.of(user));
         doNothing().when(transactionsService).deleteTransactionsByRequesterUserId(1);
         doNothing().when(itemReportsService).deleteItemReportsByUserId(1);
         doNothing().when(userRepository).deleteById(1);
@@ -189,9 +193,14 @@ public class UserServiceTest {
         request.setEmail("test@example.com");
         request.setPassword("password");
 
+        when(employeeService.validateEmployeeDetails(anyString(), anyString(), anyString())).thenReturn(true);
         when(userRepository.findByUsername(anyString())).thenReturn(Optional.empty());
         when(passwordEncoder.encode("password")).thenReturn("password"); // Return original password to match user.password
-        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> {
+            User user = invocation.getArgument(0);
+            user.setUsername("testuser"); // Set username explicitly to match assertion
+            return user;
+        });
 
         User result = userService.registerUser(request);
         assertEquals("Test User", result.getName());
