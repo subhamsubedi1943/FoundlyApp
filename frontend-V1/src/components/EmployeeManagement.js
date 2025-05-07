@@ -19,7 +19,7 @@ function EmployeeManagement() {
 
   const fetchEmployees = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/api/admin/employees');
+      const response = await axios.get('http://localhost:8081/api/admin/employees');
       setEmployees(response.data);
     } catch (error) {
       console.error('Error fetching employees:', error);
@@ -38,11 +38,11 @@ function EmployeeManagement() {
     setError('');
     try {
       if (isEditing) {
-        await axios.put(`http://localhost:8080/api/admin/employees/${editEmpId}`, formData);
+        await axios.put(`http://localhost:8081/api/admin/employees/${editEmpId}`, formData);
         setIsEditing(false);
         setEditEmpId(null);
       } else {
-        await axios.post('http://localhost:8080/api/admin/employees', formData);
+        await axios.post('http://localhost:8081/api/admin/employees', formData);
       }
       setFormData({ empId: '', name: '', empEmailId: '' });
       fetchEmployees();
@@ -65,7 +65,7 @@ function EmployeeManagement() {
   const handleDelete = async (empId) => {
     if (window.confirm('Are you sure you want to delete this employee?')) {
       try {
-        await axios.delete(`http://localhost:8080/api/admin/employees/${empId}`);
+        await axios.delete(`http://localhost:8081/api/admin/employees/${empId}`);
         fetchEmployees();
       } catch (error) {
         console.error('Error deleting employee:', error);

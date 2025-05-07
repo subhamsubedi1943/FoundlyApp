@@ -66,6 +66,7 @@ function Navbar({ onAboutClick, activeSection }) {
 
   const onLogoutClick = () => {
     handleLogout();
+    navigate('/');
     setShowDropdown(false);
   };
 
