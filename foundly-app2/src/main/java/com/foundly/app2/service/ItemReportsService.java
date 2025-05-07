@@ -50,6 +50,10 @@ public class ItemReportsService {
         return itemReportsRepository.findAll();
     }
 
+    public long getTotalItemReportsCount() {
+        return itemReportsRepository.count();
+    }
+
     // Get an item report by ID
     public Optional<ItemReports> getItemReportById(Integer itemId) {
         return itemReportsRepository.findById(itemId);

@@ -24,6 +24,10 @@ public class EmployeeService {
         return employeeRepository.findAll();
     }
 
+    public long getTotalEmployeesCount() {
+        return employeeRepository.count();
+    }
+
     public Optional<Employee> getEmployeeById(String empId) {
         return employeeRepository.findById(empId);
     }
