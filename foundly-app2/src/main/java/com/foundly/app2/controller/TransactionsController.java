@@ -42,6 +42,7 @@ public class TransactionsController {
     // Get a transaction by ID
     @GetMapping("/{id}")
     public ResponseEntity<Transactions> getTransactionById(@PathVariable Integer id) {
+        int a=0;
         return transactionsService.getTransactionById(id)
                 .map(transaction -> new ResponseEntity<>(transaction, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
