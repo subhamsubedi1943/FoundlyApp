@@ -1,5 +1,6 @@
 
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/ReportItem.css";
 
 const categoryMap = {
@@ -16,6 +17,7 @@ const categoryMap = {
 };
 
 const ReportItem = () => {
+  const navigate = useNavigate();
   const [itemType, setItemType] = useState("Found");
   const [handoverOption, setHandoverOption] = useState("keep");
   const [uploadedFiles, setUploadedFiles] = useState([]);
@@ -89,37 +91,40 @@ const ReportItem = () => {
 
       console.log("Response " + response.data);
 
+        if (response.ok) {
+          alert("Item reported successfully!");
 
-      if (response.ok) {
-        alert("Item reported successfully!");
+          // Reset the form fields after successful submission
+          setFormData({
+            userId: "",
+            name: "",
+            location: "",
+            categoryId: "",
+            itemName: "",
+            description: "",
+            date: "",
+            time: "",
+            pickupMessage: "",
+            securityId: "",
+            securityName: "",
+          });
 
-        // Reset the form fields after successful submission
-        setFormData({
-          userId: "",
-          name: "",
-          location: "",
-          categoryId: "",
-          itemName: "",
-          description: "",
-          date: "",
-          time: "",
-          pickupMessage: "",
-          securityId: "",
-          securityName: "",
-        });
+          setUploadedFiles([]); // Clear uploaded files
 
-        setUploadedFiles([]); // Clear uploaded files
+          setItemType("Found"); // Reset item type to "Found"
+          setHandoverOption("keep"); // Reset handover option
 
-        setItemType("Found"); // Reset item type to "Found"
-        setHandoverOption("keep"); // Reset handover option
-      } else {
-        alert("Failed to report item.");
+          return true; // Indicate success for redirect
+        } else {
+          alert("Failed to report item.");
+          return false;
+        }
+      } catch (error) {
+        console.error("Error reporting item:", error);
+        alert("Something went wrong!");
+        return false;
       }
-    } catch (error) {
-      console.error("Error reporting item:", error);
-      alert("Something went wrong!");
-    }
-  };
+    };
   const [reportType, setReportType] = useState("");
 
   const handleSubmit1 = async () => {
@@ -458,9 +463,15 @@ const ReportItem = () => {
         {/* Buttons */}
         <div className="form-buttons">
           <button className="cancel-btn">Cancel</button>
-          <button className="submit-btn" onClick={handleSubmit}>
-            Submit
-          </button>
+          <button className="submit-btn" onClick={async () => {
+          const response = await handleSubmit();
+          // Redirect to home page after successful submission
+          if (response) {
+            navigate("/");
+          }
+        }}>
+          Submit
+        </button>
         </div>
       </div>
     </div>
