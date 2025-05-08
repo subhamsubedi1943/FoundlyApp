@@ -5,7 +5,7 @@ import Navbar from './components/Navbar';
 import ReportItem from './components/ReportItem';
 import MyActivity from './components/MyActivity';
 import HomePage from './components/HomePage';
-import AboutUs from './components/About';
+import AboutUs from './components/AboutUs';
 import Dashboard from './components/Dashboard';
 import AuthBox from './components/AuthBox';
 import AdminLogin from './components/AdminLogin';
@@ -19,6 +19,7 @@ import EditProfile from './components/EditProfile';
 import EmployeeManagement from './components/EmployeeManagement';
 import TransactionManagement from './components/TransactionManagement';
 import ItemReportsManagement from './components/ItemReportsManagement';
+import ForgotPasswordPage from './components/ForgotPasswordPage';
 
 
 
@@ -67,7 +68,7 @@ const App = () => {
         <Route path="/my-activity" element={<RequireAuth><MyActivity /></RequireAuth>} />
         <Route path="/lost-items" element={<RequireAuth><LostItems/></RequireAuth>} />
         <Route path="/found-items" element={<RequireAuth><FoundItems /></RequireAuth>} />
-        
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         {/* Admin Routes */}
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<RequireAdminAuth><AdminDashboard /></RequireAdminAuth>} />

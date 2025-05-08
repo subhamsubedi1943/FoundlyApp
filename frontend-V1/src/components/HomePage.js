@@ -4,7 +4,13 @@ import { useAuth } from '../context/AuthContext';
 import Testimonials from '../components/Testimonials';
 import Navbar from '../components/Navbar';
 import '../styles/HomePage.css';
-import '../styles/About.css';
+import '../styles/AboutUs.css';
+import mem1 from '../assets/member01.jpg';
+import mem2 from '../assets/member02.jpg';
+import mem3 from '../assets/member03.jpg';
+import mem4 from '../assets/member04.jpg';
+import mem5 from '../assets/member05.jpg';
+
 
 import backgroundImage from '../assets/img.png';
 
@@ -161,13 +167,42 @@ function HomePage() {
             </ul>
           </div>
 
-          <div className="team">
-            <h2>Meet the Team</h2>
-            <p>
-              We are a group of passionate developers and problem-solvers...
-            </p>
-            <img src={teamImg} alt="Meet the Team" />
+          {/* Meet the Team */}
+          <section className="team">
+        <h2>Meet the Team</h2>
+        <p>
+          We are a group of passionate developers and problem-solvers who came together to build something that makes a real-world difference.
+          With expertise in ReactJS, Spring Boot, MySQL, Devops and a vision for smarter communities, Foundly is our way of bringing order to everyday chaos.
+        </p>
+
+        <div className="team-members">
+          <div className="member">
+            <img src={mem1} alt="Teammate 1" />
+            <h4>Akanksha</h4>
+            <p>Devops Engineer</p>
           </div>
+          <div className="member">
+            <img src={mem2} alt="Teammate 2" />
+            <h4>Rakesh</h4>
+            <p>Backend Developer</p>
+          </div>
+          <div className="member">
+            <img src={mem3} alt="Teammate 3" />
+            <h4>Roopa</h4>
+            <p>Backend Developer</p>
+          </div>
+ <div className="member">
+            <img src={mem4} alt="Teammate 4" />
+            <h4>Subham</h4>
+            <p>Frontend + Testing</p>
+          </div>
+          <div className="member">
+            <img src={mem5} alt="Teammate 5" />
+            <h4>Sowjanya</h4>
+            <p>Frontend Developer</p>
+          </div>
+        </div>
+      </section>
         </div>
       </section>
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import '../styles/Testimonials.css';
 
-function Testimonials() {
+const Testimonials = () => {
   const testimonials = [
     {
       text: "Lost & Found helped me find my lost wallet within hours! I'm so grateful for this amazing platform.",
@@ -17,18 +17,23 @@ function Testimonials() {
     }
   ];
 
+  // Duplicate for seamless loop
+  const extendedTestimonials = [...testimonials, ...testimonials];
+
   return (
     <div className="testimonials">
-      <div className="testimonial-cards">
-        {testimonials.map((testimonial, index) => (
-          <div key={index} className="testimonial-card">
-            <p className="testimonial-text">"{testimonial.text}"</p>
-            <p className="testimonial-author">- {testimonial.author}</p>
-          </div>
-        ))}
+      <div className="testimonial-marquee">
+        <div className="testimonial-track">
+          {extendedTestimonials.map((testimonial, index) => (
+            <div key={index} className="testimonial-card">
+              <p className="testimonial-text">"{testimonial.text}"</p>
+              <p className="testimonial-author">- {testimonial.author}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
-}
+};
 
 export default Testimonials;

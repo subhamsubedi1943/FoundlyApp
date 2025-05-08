@@ -26,10 +26,10 @@ grid-template-areas:
   .stat-card {
     flex: 1;
     min-width: 220px;
-    background-color: #fff;
+    background-color: #0c1b2a;
     border-radius: 12px;
     padding: 20px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 12px black;
     display: flex;
     align-items: center;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -37,7 +37,7 @@ grid-template-areas:
   
   .stat-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 6px 16px black;
   }
   
   .lost-card {
@@ -53,12 +53,12 @@ grid-template-areas:
   }
   
   .security-card {
-    background-color: #212529;
+    background-color: #0c1b2a;
     color: white;
-    border-left: 4px solid #69db7c; /* optional for uniformity */
+    border-left: 4px solid #ff2f7e; /* optional for uniformity */
     border-radius: 12px;
     padding: 20px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 12px black;
     display: flex;
     align-items: center;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -66,7 +66,7 @@ grid-template-areas:
   
   .security-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 6px 16px black;
   }
   
   
@@ -120,7 +120,7 @@ grid-template-areas:
   
   .stat-title {
     font-size: 14px;
-    color: #6c757d;
+    color: white;
     margin: 0;
   }
   
@@ -139,40 +139,24 @@ grid-template-areas:
   }
   
   .chart-card {
-    background-color: #fff;
+    background-color: #0c1b2a;
     border-radius: 12px;
     padding: 20px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 12px black;
   }
   
+  .chart-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 16px black;
+  }
   .chart-card h3 {
     margin-top: 0;
     margin-bottom: 20px;
     font-size: 18px;
-    color: #343a40;
-  }
-  
-  /* Notifications Panel */
-  .notifications-panel {
-    grid-area: notifications;
-    background-color: #343a40;
     color: white;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   }
   
-  .notifications-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-  }
-  
-  .notifications-header h3 {
-    margin: 0;
-    font-size: 20px;
-  }
+ 
   
   .settings-button {
     background: none;
@@ -181,31 +165,7 @@ grid-template-areas:
     font-size: 20px;
     cursor: pointer;
   }
-  
-  .notifications-list {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-  
-  .notification-item {
-    background-color: rgba(255, 255, 255, 0.05);
-    border-radius: 8px;
-    padding: 12px 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .notification-message {
-    margin: 0;
-    font-size: 14px;
-  }
-  
-  .notification-time {
-    font-size: 12px;
-    color: #adb5bd;
-  }
+
   
   /* Media Queries for Responsiveness */
   @media (max-width: 992px) {

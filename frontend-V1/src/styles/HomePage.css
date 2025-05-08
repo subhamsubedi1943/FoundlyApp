@@ -1,3 +1,10 @@
+.homepage-container {
+  width: 100vw;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+
 /* Navbar */
 .navbar {
   display: flex;
@@ -48,7 +55,6 @@
   cursor: pointer;
 }
 
- Profile Dropdown 
 .profile-dropdown {
   position: relative;
   display: inline-block;
@@ -245,7 +251,7 @@
 /* Content section */
 .content-section {
   background-color: #f9f9f9;
-  padding: 60px 20px;
+  padding: 20px 20px;
   text-align: center;
   border-top-left-radius: 30px;
   border-top-right-radius: 30px;
@@ -293,16 +299,6 @@
   }
 }
 
-/* For Navbar 'About Us' button override */
-.button-link {
-  background: none;
-  border: none;
-  color: inherit;
-  font: inherit;
-  cursor: pointer;
-  text-decoration: none;
-  padding: 0;
-}
 
 .footer {
   background-color: black;

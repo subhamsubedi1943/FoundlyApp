@@ -1,5 +1,6 @@
 
 
+
 .about-us-page {
   background-color: #0c1b2a;
   color: white;
@@ -7,6 +8,7 @@
   padding: 80px 2% 60px;
   overflow-x: hidden;
 }
+
 
 /* INTRO SECTION */
 .text-section.right {
@@ -53,6 +55,11 @@
   width: 300px;
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+}
+
+.roadmap-step img:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px black;
 }
 
 /* Step label styled like a tag, placed below the image */
@@ -139,41 +146,52 @@
 .team p {
   font-size: 17px;
   line-height: 1.7;
-  margin-bottom: 30px;
+  margin-bottom: 40px;
 }
 
-.team img {
-  width: 300px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+/* Team member container */
+.team-members {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
 }
 
-/* RESPONSIVE */
-@media screen and (max-width: 900px) {
-  .text-section.right {
-    text-align: left;
-    padding: 0 10px;
-  }
-
-  .roadmap-vertical {
-    gap: 50px;
-  }
-
-  .roadmap-step img {
-    width: 90%;
-  }
-
-  .step-label {
-    font-size: 12px;
-    padding: 6px 16px;
-    left: 50%;
-    transform: translateX(-50%);
-    top: auto;
-    bottom: -40px;
-  }
-
-  .roadmap-step:nth-child(even) .step-label {
-    right: auto;
-    left: 50%;
-  }
+/* Individual member card */
+.member {
+  width: 160px;
+  text-align: center;
 }
+
+/* Team member image */
+.member img {
+  width: 180px; 
+  height: 180px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid #0c1b2a;
+  box-shadow: 0 4px 12px black;
+  margin-bottom: 12px;
+}
+
+/* Member name */
+.member h4 {
+  margin: 8px 0 4px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #ff2f7e;
+}
+.member img:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px black;
+}
+
+/* Member role */
+.member p {
+  font-size: 14px;
+  color: #dcdcdc;
+  margin: 0;
+}
+
+
+
