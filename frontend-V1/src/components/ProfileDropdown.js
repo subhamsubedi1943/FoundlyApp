@@ -22,22 +22,23 @@ function ProfileDropdown({ onEditProfile, onLogout }) {
 
   return (
     <div className="profile-container" ref={dropdownRef}>
-      <FaUserCircle
-        className="profile-icon"
-        title="My Profile"
-        onClick={toggleDropdown}
-      />
-      {isOpen && (
-        <div className="profile-dropdown">
-          <div className="dropdown-item" onClick={onEditProfile}>
-            Edit Profile
-          </div>
-          <div className="dropdown-item" onClick={onLogout}>
-            Logout
-          </div>
-        </div>
-      )}
+  <FaUserCircle
+    className="profile-icon"
+    title="My Profile"
+    onClick={toggleDropdown}
+  />
+  {isOpen && (
+    <div className="profile-dropdown">
+      <div className="dropdown-item" onClick={onEditProfile}>
+        Edit Profile
+      </div>
+      <div className="dropdown-item" onClick={onLogout}>
+        Logout
+      </div>
     </div>
+  )}
+</div>
+
   );
 }
 
