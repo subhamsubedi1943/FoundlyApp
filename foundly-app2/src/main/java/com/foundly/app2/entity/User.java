@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
-
 @Entity
 @Table(name = "users")
 @Getter
@@ -30,8 +29,8 @@ public class User {
     @Column(name = "email", unique = true, nullable = false)
     private String email;
 
-//    @Column(name = "phone", unique = true, nullable = false)
-//    private String phone;
+    // @Column(name = "phone", unique = true, nullable = false)
+    // private String phone;
 
     @Column(name = "password", nullable = false)
     private String password;
@@ -42,18 +41,32 @@ public class User {
 
     @Column(name = "is_security")
     private boolean isSecurity;
-    
+
     @Column(name = "username", unique = true, nullable = false) // New field for username
     private String username;
+
+    @Column(name = "status", nullable = false)
+    private String status; // Added status field
 
     public enum Role {
         ADMIN, USER
     }
+
     public boolean isSecurity() {
         return isSecurity;
     }
-    
+
     public void setSecurity(boolean security) {
         this.isSecurity = security;
+    }
+
+    // Getter for the status field
+    public String getStatus() {
+        return this.status;
+    }
+
+    // Setter for the status field
+    public void setStatus(String status) {
+        this.status = status;
     }
 }
