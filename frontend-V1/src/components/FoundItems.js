@@ -19,18 +19,20 @@ const FoundItems = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
-  useEffect(() => {
-    const fetchFoundItems = async () => {
-      try {
-        const response = await axios.get('http://localhost:8080/api/items/found-items');
-        setItems(response.data);
-      } catch (error) {
-        console.error('Error fetching lost items:', error);
-      }
-    };
+    useEffect(() => {
+      const fetchFoundItems = async () => {
+        try {
+          const response = await axios.get('http://localhost:8080/api/items/found-items');
+          // Sort items by dateReported descending to show latest first
+          const sortedItems = response.data.sort((a, b) => new Date(b.dateReported) - new Date(a.dateReported));
+          setItems(sortedItems);
+        } catch (error) {
+          console.error('Error fetching lost items:', error);
+        }
+      };
 
-    fetchFoundItems();
-  }, []);
+      fetchFoundItems();
+    }, []);
 
   const handleFilterChange = (e) => {
     setFilters({ ...filters, [e.target.name]: e.target.value });

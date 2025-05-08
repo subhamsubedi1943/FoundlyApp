@@ -20,29 +20,31 @@ const LostItems = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
-  useEffect(() => {
-    const fetchLostItems = async () => {
-      try {
-        const response = await axios.get('http://localhost:8080/api/items/lost-items');
-        const data = response.data.map(item => ({
-          id: item.itemId,
-          itemName: item.itemName,
-          description: item.description,
-          location: item.location,
-          categoryName: item.category?.categoryName || 'Uncategorized',
-          dateReported: item.dateReported,
-          dateLostOrFound: item.dateLostOrFound,
-          imageUrl: item.imageUrl,
-          itemStatus: item.itemStatus
-        }));
-        setItems(data);
-      } catch (error) {
-        console.error('Error fetching lost items:', error);
-      }
-    };
+    useEffect(() => {
+      const fetchLostItems = async () => {
+        try {
+          const response = await axios.get('http://localhost:8080/api/items/lost-items');
+          const data = response.data.map(item => ({
+            id: item.itemId,
+            itemName: item.itemName,
+            description: item.description,
+            location: item.location,
+            categoryName: item.category?.categoryName || 'Uncategorized',
+            dateReported: item.dateReported,
+            dateLostOrFound: item.dateLostOrFound,
+            imageUrl: item.imageUrl,
+            itemStatus: item.itemStatus
+          }));
+          // Sort data by dateReported descending to show latest first
+          const sortedData = data.sort((a, b) => new Date(b.dateReported) - new Date(a.dateReported));
+          setItems(sortedData);
+        } catch (error) {
+          console.error('Error fetching lost items:', error);
+        }
+      };
 
-    fetchLostItems();
-  }, []);
+      fetchLostItems();
+    }, []);
 
   const handleFilterChange = (e) => {
     setFilters({ ...filters, [e.target.name]: e.target.value });
