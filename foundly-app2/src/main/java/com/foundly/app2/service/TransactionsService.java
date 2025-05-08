@@ -177,7 +177,6 @@ public class TransactionsService {
 
     public List<NotificationDTO> getNotificationsForUser(Integer userId) {
         List<Transactions> reporterTransactions = transactionsRepository.findByReporterUserId(userId);
-        List<Transactions> requesterTransactions = transactionsRepository.findByRequesterUserId(userId.longValue());
         List<NotificationDTO> notifications = new ArrayList<>();
 
         for (Transactions tx : reporterTransactions) {
@@ -193,45 +192,14 @@ public class TransactionsService {
             dto.setSecurityId(tx.getSecurityId());
             dto.setSecurityName(tx.getSecurityName());
 
-            // Set notification title and message
-            dto.setTitle(tx.getTransactionType() == Transactions.TransactionType.CLAIM
-                    ? "Claim Request: " + tx.getItem().getItemName()
-                    : "Found Item: " + tx.getItem().getItemName());
-
-            dto.setMessage(tx.getTransactionType() == Transactions.TransactionType.CLAIM
-                    ? "A user has claimed the item you reported. Review and confirm."
-                    : "Someone found your item and wants to hand it over.");
-
-            if (tx.getTransactionType() == Transactions.TransactionType.HANDOVER) {
-                dto.setPickupMessage(tx.getPickupMessage());
+            // Set notification title and message for reporter
+            if (tx.getTransactionType() == Transactions.TransactionType.CLAIM) {
+                dto.setTitle("Claim Request: " + tx.getItem().getItemName());
+                dto.setMessage("A user has claimed the item you reported. Review and confirm.");
+            } else if (tx.getTransactionType() == Transactions.TransactionType.HANDOVER) {
+                dto.setTitle("Found Item: " + tx.getItem().getItemName());
+                dto.setMessage("Someone found your item and wants to hand it over.");
             }
-
-            dto.setTransactionStatus(tx.getTransactionStatus().name());
-
-            notifications.add(dto);
-        }
-
-        for (Transactions tx : requesterTransactions) {
-            NotificationDTO dto = new NotificationDTO();
-            dto.setTransactionId(tx.getTransactionId());
-            dto.setType(tx.getTransactionType().toString());
-            dto.setTime(formatTimeAgo(tx.getDateUpdated()));
-            dto.setDescription(tx.getDescription());
-            dto.setPhoto(tx.getPhoto());
-            dto.setItemStatus(tx.getItem().getItemStatus().toString());
-            dto.setReporterCompleted(tx.isReporterCompleted());
-            dto.setRequesterCompleted(tx.isRequesterCompleted());
-            dto.setSecurityId(tx.getSecurityId());
-            dto.setSecurityName(tx.getSecurityName());
-
-            // Set notification title and message
-            dto.setTitle(tx.getTransactionType() == Transactions.TransactionType.CLAIM
-                    ? "Claim Request: " + tx.getItem().getItemName()
-                    : "Found Item: " + tx.getItem().getItemName());
-
-            dto.setMessage(tx.getTransactionType() == Transactions.TransactionType.CLAIM
-                    ? "A user has claimed the item you reported. Review and confirm."
-                    : "Someone found your item and wants to hand it over.");
 
             if (tx.getTransactionType() == Transactions.TransactionType.HANDOVER) {
                 dto.setPickupMessage(tx.getPickupMessage());
