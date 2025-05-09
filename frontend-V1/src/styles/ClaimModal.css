@@ -15,10 +15,8 @@
 
 .claim-modal {
   background-color: #083b5c;
-  padding: 10px 12px;
   border-radius: 10px;
   width: 100%;
-  max-width: 380px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
   color: white;
   font-family: 'Segoe UI', sans-serif;
@@ -26,6 +24,10 @@
   position: relative;
   display: flex;
   flex-direction: column;
+  max-width: 320px; /* reduce width */
+  max-height: 60vh; /* limit height */
+  overflow-y: auto; /* scroll if content too tall */
+  padding: 8px 10px;
 }
 
 .claim-modal::-webkit-scrollbar {

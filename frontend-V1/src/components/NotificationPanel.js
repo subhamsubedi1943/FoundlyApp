@@ -18,7 +18,9 @@ function NotificationPanel() {
       setLoading(false);
       return;
     }
-
+  
+    let intervalId;
+  
     const fetchNotifications = async () => {
       try {
         const response = await axios.get(`http://localhost:8080/api/transactions/notifications/${currentUser.userId}`);
@@ -31,8 +33,14 @@ function NotificationPanel() {
         setLoading(false);
       }
     };
-
+  
     fetchNotifications();
+  
+    // Add this polling interval to fetch notifications every 15 seconds
+    intervalId = setInterval(fetchNotifications, 15000);
+  
+    // Cleanup function to clear interval on unmount
+    return () => clearInterval(intervalId);
   }, [currentUser]);
 
   const openDetails = (note) => setSelectedNote(note);

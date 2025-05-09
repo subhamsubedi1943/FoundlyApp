@@ -86,12 +86,12 @@ const MyActivity = () => {
 
       {/* Activity Cards */}
       <div className="activity-cards-container">
-        {loading ? (
+          {loading ? (
           <p className="loading-message">Loading...</p>
         ) : currentData.length > 0 ? (
           currentData.map((item) => (
             <ActivityCard
-              key={item.transactionId || item.id || item.itemId}
+              key={item.transactionId ?? item.id ?? item.itemId ?? Math.random()}
               item={item}
               onTransactionUpdate={fetchAllData}  // Pass fetchAllData to refresh the list after update
             />

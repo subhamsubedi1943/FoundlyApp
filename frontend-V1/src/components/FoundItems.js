@@ -19,20 +19,20 @@ const FoundItems = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
-    useEffect(() => {
-      const fetchFoundItems = async () => {
-        try {
-          const response = await axios.get('http://localhost:8080/api/items/found-items');
-          // Sort items by dateReported descending to show latest first
-          const sortedItems = response.data.sort((a, b) => new Date(b.dateReported) - new Date(a.dateReported));
-          setItems(sortedItems);
-        } catch (error) {
-          console.error('Error fetching lost items:', error);
-        }
-      };
+  useEffect(() => {
+    const fetchFoundItems = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/items/found-items');
+        // Sort items by dateReported descending to show latest first
+        const sortedItems = response.data.sort((a, b) => new Date(b.dateReported) - new Date(a.dateReported));
+        setItems(sortedItems);
+      } catch (error) {
+        console.error('Error fetching found items:', error);
+      }
+    };
 
-      fetchFoundItems();
-    }, []);
+    fetchFoundItems();
+  }, []);
 
   const handleFilterChange = (e) => {
     setFilters({ ...filters, [e.target.name]: e.target.value });
@@ -65,9 +65,7 @@ const FoundItems = () => {
       <h1 className="title">Found Item Reports</h1>
 
       <div className="search-container">
-        <div className="search-icon">
-
-        </div>
+        <div className="search-icon"></div>
         <input
           type="text"
           placeholder="Search found items..."
@@ -124,16 +122,39 @@ const FoundItems = () => {
                 {item.imageUrl && (
                   <img src={item.imageUrl} alt={item.itemName} className="card-image" />
                 )}
-                <p className="card-category"> {item.categoryName}</p>
                 <h2 className="card-title">{item.itemName}</h2>
-                <p className="card-location"> {item.location}</p>
-                <p className="card-date"> {new Date(item.dateReported).toLocaleDateString()}</p>
               </div>
               <div className="flip-card-back">
-                <p className="card-description">{item.description}</p>
-                <button className="claim-button" onClick={() => handleClaimClick(item)}>
-                  Claim
-                </button>
+                <table className="item-details-table">
+                  <tbody>
+                    <tr>
+                      <td><strong>Category</strong></td>
+                      <td>{item.categoryName}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Location</strong></td>
+                      <td>{item.location}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Date</strong></td>
+                      <td>{new Date(item.dateReported).toLocaleDateString()}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Time</strong></td>
+                      <td>{new Date(item.dateReported).toLocaleTimeString()}</td>
+                    </tr>
+                    <tr>
+                      <td colSpan="2"><strong>Description:</strong><br />{item.description}</td>
+                    </tr>
+                    <tr>
+                      <td colSpan="2" style={{ textAlign: 'center' }}>
+                        <button className="claim-button" onClick={() => handleClaimClick(item)}>
+                          Claim
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>

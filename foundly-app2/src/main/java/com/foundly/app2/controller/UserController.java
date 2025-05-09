@@ -3,7 +3,6 @@ package com.foundly.app2.controller;
 import com.foundly.app2.entity.User;
 import com.foundly.app2.dto.UserRegistrationRequest;
 import com.foundly.app2.dto.EditUserDTO;
-import com.foundly.app2.dto.ForgotPasswordDTO;
 import com.foundly.app2.dto.UserLoginRequest;
 // import com.foundly.app2.exception.DuplicateItemException;
 // import com.foundly.app2.exception.InvalidRequestException;
@@ -126,10 +125,5 @@ public class UserController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
-    }
-    @PostMapping("/forgot-password")
-    public ResponseEntity<String> forgotPassword(@RequestBody ForgotPasswordDTO forgotPasswordDTO) {
-        userService.resetPassword(forgotPasswordDTO);
-        return ResponseEntity.ok("Password reset successful.");
     }
 }

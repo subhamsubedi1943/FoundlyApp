@@ -149,8 +149,8 @@
 
 .cancel-btn {
   background-color: transparent;
-  color: #ff1472;
-  border: 1.5px solid #ff1472;
+  color: #110a0d; /* Same color as claim form */
+  border: 1.5px solid #ff1472; /* Match border color */
 }
 
 .cancel-btn:hover {

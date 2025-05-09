@@ -134,7 +134,7 @@ const LostItems = () => {
           {filteredItems.slice(0, 10).map((item, index) => (
             <div className="flip-card" key={index}>
               <div className="flip-card-inner">
-                <div className="flip-card-front">
+                <div className="flip-card-front"> 
                   {item.imageUrl && (
                     <img src={item.imageUrl} alt={item.itemName} className="card-image" />
                   )}

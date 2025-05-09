@@ -11,7 +11,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.foundly.app2.dto.EditUserDTO;
-import com.foundly.app2.dto.ForgotPasswordDTO;
 import com.foundly.app2.dto.UserLoginRequest;
 import com.foundly.app2.dto.UserRegistrationRequest;
 import com.foundly.app2.dto.UserRequestDTO;
@@ -263,25 +262,6 @@ public class UserService {
         dto.setOldPassword("");
         dto.setNewPassword("");
         return dto;
-    }
-    public void resetPassword(ForgotPasswordDTO forgotPasswordDTO) {
-        // Fetch user by email from the database
-        User user = userRepository.findByEmail(forgotPasswordDTO.getEmail())
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
-
-        // Only allow password reset for users with ACCEPTED status
-        if (!"ACCEPTED".equalsIgnoreCase(user.getStatus())) {
-            throw new IllegalStateException("Password reset is allowed only for accepted users.");
-        }
-
-        // Encrypt the new password
-        String encryptedPassword = passwordEncoder.encode(forgotPasswordDTO.getNewPassword());
-        
-        // Set the new encrypted password for the user
-        user.setPassword(encryptedPassword);
-
-        // Save the updated user information to the database
-        userRepository.save(user);
     }
 
 	}
