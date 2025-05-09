@@ -12,7 +12,7 @@ function AdminDashboard() {
   });
 
   useEffect(() => {
-    fetch('http://localhost:8081/api/admin/dashboard/summary')
+    fetch('http://localhost:8080/api/admin/dashboard/summary')
       .then((response) => response.json())
       .then((data) => {
         setSummary(data);
