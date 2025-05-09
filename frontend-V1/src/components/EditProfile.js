@@ -19,7 +19,7 @@ const EditProfile = () => {
   useEffect(() => {
     if (!userId) return;
 
-    axios.get(`http://localhost:8081/api/users/profile/${userId}`)
+    axios.get(`http://localhost:8080/api/users/profile/${userId}`)
       .then(response => {
         const user = response.data;
         setFormData(prev => ({
@@ -42,7 +42,7 @@ const EditProfile = () => {
   };
 
   const handleUpdate = () => {
-    axios.put('http://localhost:8081/api/users/profile/update', formData)
+    axios.put('http://localhost:8080/api/users/profile/update', formData)
       .then(response => {
         alert('Profile updated successfully!');
       })
