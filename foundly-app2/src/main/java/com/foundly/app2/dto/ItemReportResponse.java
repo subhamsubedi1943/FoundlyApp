@@ -45,7 +45,7 @@ public class ItemReportResponse {
                 .location(item.getLocation())
                 .imageUrl(item.getImageUrl())
                 .category(item.getCategory() != null ? item.getCategory().getCategoryName() : "Uncategorized")
-                //.dateReported(item.getDateReported())
+                .dateReported(item.getDateReported())
                 .dateLostOrFound(item.getDateLostOrFound())
                 .itemStatus(item.getItemStatus() != null ? item.getItemStatus().toString() : "UNKNOWN")
                 .type(item.getType() != null ? item.getType().toString() : "UNKNOWN")
