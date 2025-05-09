@@ -125,7 +125,7 @@
 }
 
 /* Type-based border color classes */
-.border-lost {
+/* .border-lost {
   border: 2px solid #ff2975;
 }
 .border-found {
@@ -136,7 +136,7 @@
 }
 .border-handover {
   border: 2px solid #28a745;
-}
+} */
 
 /* FRONT */
 .flip-front {
@@ -153,7 +153,7 @@
   font-size: 11px;
   padding: 4px 10px;
   border-radius: 20px;
-  color: #fff;
+  color: #0382a1;
   font-weight: 600;
   text-transform: uppercase;
   z-index: 2;
