@@ -45,17 +45,18 @@ public class ItemReportResponse {
                 .location(item.getLocation())
                 .imageUrl(item.getImageUrl())
                 .category(item.getCategory() != null ? item.getCategory().getCategoryName() : "Uncategorized")
-                .dateReported(item.getDateReported())
+                .dateReported(item.getDateReported())  // ✅ Include this
                 .dateLostOrFound(item.getDateLostOrFound())
                 .itemStatus(item.getItemStatus() != null ? item.getItemStatus().toString() : "UNKNOWN")
                 .type(item.getType() != null ? item.getType().toString() : "UNKNOWN")
                 .transactionStatus(transaction != null ? transaction.getTransactionStatus().toString() : null)
-                .employeeId(item.getUser() != null ? item.getUser().getEmployeeId() : null)  // Set employeeId
+                .employeeId(item.getUser() != null ? item.getUser().getEmployeeId() : null)
                 .securityId(details != null ? details.getSecurityId() : null)
                 .securityName(details != null ? details.getSecurityName() : null)
                 .pickupMessage(details != null ? details.getPickupMessage() : null)
                 .build();
     }
+
     public static ItemReportResponse fromEntity(ItemReports item) {
         return fromEntity(item, null); // pass null when no transaction is available
     }

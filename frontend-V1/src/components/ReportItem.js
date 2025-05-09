@@ -1,27 +1,14 @@
-
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/ReportItem.css";
-
-const categoryMap = {
-  Electronics: 1,
-  Phone: 2,
-  Wallet: 3,
-  Keys: 4,
-  Bags: 5,
-  Watch: 6,
-  Documents: 7,
-  FashionAccessories: 8,
-  Jewellery: 9,
-  Others: 10,
-};
 
 const ReportItem = () => {
   const navigate = useNavigate();
   const [itemType, setItemType] = useState("Found");
   const [handoverOption, setHandoverOption] = useState("keep");
   const [uploadedFiles, setUploadedFiles] = useState([]);
-
+  const [categories, setCategories] = useState([]);
+  //dynamic categories
   const [formData, setFormData] = useState({
     userId: "",
     name: "",
@@ -36,19 +23,21 @@ const ReportItem = () => {
     securityName: "",
   });
 
-  const handleToggleItemType = () => {
-    setItemType((prev) => (prev === "Found" ? "Lost" : "Found"));
-  };
+  useEffect(() => {
+    fetch("http://localhost:8080/api/admin/categories")
+      .then((res) => res.json())
+      .then((data) => setCategories(data))
+      .catch((err) => console.error("Failed to fetch categories:", err));
+  }, []);
 
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
-
     files.forEach((file) => {
       const reader = new FileReader();
       reader.onloadend = () => {
         setUploadedFiles((prev) => [...prev, { file, base64: reader.result }]);
       };
-      reader.readAsDataURL(file); // converts to base64
+      reader.readAsDataURL(file);
     });
   };
 
@@ -83,118 +72,46 @@ const ReportItem = () => {
     try {
       const response = await fetch(`http://localhost:8080${endpoint}`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      console.log("Response " + response.data);
-
-        if (response.ok) {
-          alert("Item reported successfully!");
-
-          // Reset the form fields after successful submission
-          setFormData({
-            userId: "",
-            name: "",
-            location: "",
-            categoryId: "",
-            itemName: "",
-            description: "",
-            date: "",
-            time: "",
-            pickupMessage: "",
-            securityId: "",
-            securityName: "",
-          });
-
-          setUploadedFiles([]); // Clear uploaded files
-
-          setItemType("Found"); // Reset item type to "Found"
-          setHandoverOption("keep"); // Reset handover option
-
-          return true; // Indicate success for redirect
-        } else {
-          alert("Failed to report item.");
-          return false;
-        }
-      } catch (error) {
-        console.error("Error reporting item:", error);
-        alert("Something went wrong!");
-        return false;
-      }
-    };
-  const [reportType, setReportType] = useState("");
-
-  const handleSubmit1 = async () => {
-    if (itemType === "Found" && uploadedFiles.length === 0) {
-      alert("Please upload at least one media file.");
-      return;
-    }
-
-    const dateTime = `${formData.date} ${formData.time}`;
-    const payload = {
-      userId: parseInt(formData.userId),
-      name: formData.name,
-      location: formData.location,
-      categoryId: parseInt(formData.categoryId),
-      itemName: formData.itemName,
-      description: formData.description,
-      dateLostOrFound: dateTime,
-      imageUrl: uploadedFiles.length > 0 ? uploadedFiles[0].base64 : null, // only first file used
-      handoverToSecurity: itemType === "Found" && handoverOption === "security",
-      pickupMessage: itemType === "Found" && handoverOption === "keep" ? formData.pickupMessage : null,
-      securityId: itemType === "Found" && handoverOption === "security" ? formData.securityId : null,
-      securityName: itemType === "Found" && handoverOption === "security" ? formData.securityName : null,
-    };
-    <div className="toggle-switch">
-      <input
-        type="checkbox"
-        id="report-toggle"
-        className="toggle-input"
-        checked={itemType === "Found"}
-        onChange={handleToggle}
-      />
-      <label htmlFor="report-toggle" className="toggle-label">
-        <span className="toggle-text lost">
-          <i className="toggle-icon">❌</i> Lost
-        </span>
-        <span className="toggle-text found">
-          <i className="toggle-icon">✔️</i> Found
-        </span>
-      </label>
-    </div>
-
-    const endpoint = itemType === "Found" ? "/api/items/found" : "/api/items/lost";
-
-    try {
-      const response = await fetch(`http://localhost:8080${endpoint}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
       if (response.ok) {
         alert("Item reported successfully!");
+        setFormData({
+          userId: "",
+          name: "",
+          location: "",
+          categoryId: "",
+          itemName: "",
+          description: "",
+          date: "",
+          time: "",
+          pickupMessage: "",
+          securityId: "",
+          securityName: "",
+        });
+        setUploadedFiles([]);
+        setItemType("Found");
+        setHandoverOption("keep");
+        return true;
       } else {
         alert("Failed to report item.");
+        return false;
       }
     } catch (error) {
       console.error("Error reporting item:", error);
       alert("Something went wrong!");
+      return false;
     }
   };
 
-
   return (
-
     <div className="report-container">
       <div className="report-box">
         <h2 className="report-title">Report Item</h2>
-        {/* Capsule-shaped toggle switch */}
+
+        {/* Toggle Found / Lost */}
         <div className="toggle-container">
           <input
             type="checkbox"
@@ -204,21 +121,15 @@ const ReportItem = () => {
             onChange={() => setItemType(itemType === "Lost" ? "Found" : "Lost")}
           />
           <label htmlFor="toggleSwitch" className="toggle-label">
-            <span className={`toggle-text lost ${itemType === "Lost" ? "active" : ""}`}>
-              Lost
-            </span>
-            <span className={`toggle-text found ${itemType === "Found" ? "active" : ""}`}>
-              Found
-            </span>
+            <span className={`toggle-text lost ${itemType === "Lost" ? "active" : ""}`}>Lost</span>
+            <span className={`toggle-text found ${itemType === "Found" ? "active" : ""}`}>Found</span>
             <span className="toggle-knob"></span>
           </label>
         </div>
 
-
-        {/* Row 1: Toggle + Location */}
+        {/* Location */}
         <div className="form-row">
           <select
-
             name="location"
             value={formData.location}
             onChange={handleInputChange}
@@ -235,9 +146,7 @@ const ReportItem = () => {
           </select>
         </div>
 
-
-
-        {/* Row 2: User ID and Name */}
+        {/* User ID and Name */}
         <div className="form-row">
           <input
             type="text"
@@ -257,30 +166,22 @@ const ReportItem = () => {
           />
         </div>
 
-        {/* Row 3: Category and Item Name
-        <div className="form-row">
+        {/* Category and Item Name */}
+        <div className="form-row flex gap-2">
           <select
             name="categoryId"
-            className="input-field"
-            onChange={(e) =>
-              setFormData((prev) => ({
-                ...prev,
-                categoryId: categoryMap[e.target.value],
-              }))
-            }
+            value={formData.categoryId}
+            className="input-field flex-1"
+            onChange={handleInputChange}
           >
-            <option>Select category</option>
-            <option value="Electronics">Electronics</option>
-            <option value="Phone">Phone</option>
-            <option value="Wallet">Wallet</option>
-            <option value="Keys">Keys</option>
-            <option value="Bags">Bags</option>
-            <option value="Watch">Watch</option>
-            <option value="Documents">Documents</option>
-            <option value="FashionAccessories">Fashion Accessories</option>
-            <option value="Jewellery">Jewellery</option>
-            <option value="Others">Others</option>
+            <option value="">Select category</option>
+            {categories.map((cat) => (
+              <option key={cat.categoryId} value={cat.categoryId}>
+                {cat.categoryName}
+              </option>
+            ))}
           </select>
+
           <input
             type="text"
             name="itemName"
@@ -289,42 +190,7 @@ const ReportItem = () => {
             onChange={handleInputChange}
             className="input-field"
           />
-        </div> */
-          <div className="form-row flex gap-2">
-            <select
-              name="categoryId"
-              className="flex-1 px-4 py-3 border  rounded-lg input-field text-white text-sm"
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  categoryId: categoryMap[e.target.value],
-                }))
-
-              }
-            >
-              <option value="" >Select category</option>
-              <option value="Electronics">Electronics</option>
-              <option value="Phone">Phone</option>
-              <option value="Wallet">Wallet</option>
-              <option value="Keys">Keys</option>
-              <option value="Bags">Bags</option>
-              <option value="Watch">Watch</option>
-              <option value="Documents">Documents</option>
-              <option value="FashionAccessories">Fashion Accessories</option>
-              <option value="Jewellery">Jewellery</option>
-              <option value="Others">Others</option>
-            </select>
-
-            <input
-              type="text"
-              name="itemName"
-              placeholder="Enter item name"
-              value={formData.itemName}
-              onChange={handleInputChange}
-              className="input-field"
-            />
-          </div>
-        }
+        </div>
 
         {/* Description */}
         <textarea
@@ -366,21 +232,6 @@ const ReportItem = () => {
             style={{ display: "none" }}
           />
         </div>
-        {/* Upload Media */}
-        {/* <div className="upload-box">
-      <label htmlFor="file-upload">
-        ⬆ Upload media {reportType === "found" && <span style={{ color: "red" }}>*</span>}
-      </label>
-      <input
-        id="file-upload"
-        type="file"
-        multiple
-        onChange={handleFileChange}
-        style={{ display: "none" }}
-        required={reportType === "found"}
-      />
-    </div> */}
-
 
         {/* Uploaded Files Preview */}
         <div className="uploaded-files">
@@ -463,15 +314,17 @@ const ReportItem = () => {
         {/* Buttons */}
         <div className="form-buttons">
           <button className="cancel-btn">Cancel</button>
-          <button className="submit-btn" onClick={async () => {
-          const response = await handleSubmit();
-          // Redirect to home page after successful submission
-          if (response) {
-            navigate("/");
-          }
-        }}>
-          Submit
-        </button>
+          <button
+            className="submit-btn"
+            onClick={async () => {
+              const success = await handleSubmit();
+              if (success) {
+                navigate("/");
+              }
+            }}
+          >
+            Submit
+          </button>
         </div>
       </div>
     </div>
@@ -479,4 +332,3 @@ const ReportItem = () => {
 };
 
 export default ReportItem;
-
