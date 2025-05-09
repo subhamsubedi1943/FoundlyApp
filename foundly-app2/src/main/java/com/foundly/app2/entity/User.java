@@ -45,8 +45,8 @@ public class User {
     @Column(name = "username", unique = true, nullable = false) // New field for username
     private String username;
 
-    @Column(name = "status", nullable = false)
-    private String status; // Added status field
+//    @Column(name = "status", nullable = false)
+//    private String status; // Added status field
 
     public enum Role {
         ADMIN, USER
@@ -59,14 +59,14 @@ public class User {
     public void setSecurity(boolean security) {
         this.isSecurity = security;
     }
-
-    // Getter for the status field
-    public String getStatus() {
-        return this.status;
-    }
-
-    // Setter for the status field
-    public void setStatus(String status) {
-        this.status = status;
-    }
+//
+//    // Getter for the status field
+//    public String getStatus() {
+//        return this.status;
+//    }
+//
+//    // Setter for the status field
+//    public void setStatus(String status) {
+//        this.status = status;
+//    }
 }
