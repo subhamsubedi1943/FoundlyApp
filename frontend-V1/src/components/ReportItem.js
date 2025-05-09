@@ -8,7 +8,7 @@ const ReportItem = () => {
   const [handoverOption, setHandoverOption] = useState("keep");
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [categories, setCategories] = useState([]);
-
+  //dynamic categories
   const [formData, setFormData] = useState({
     userId: "",
     name: "",
