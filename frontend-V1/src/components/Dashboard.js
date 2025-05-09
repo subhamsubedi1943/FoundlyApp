@@ -13,6 +13,7 @@ const Dashboard = () => {
   const [categoryData, setCategoryData] = useState([]);
   const [locationData, setLocationData] = useState([]);
   const [claimStatusData, setClaimStatusData] = useState([]);
+  const [handoverToSecurityCount, setHandoverToSecurityCount] = useState(0);
 
   const COLORS = ['#0088FE', '#FF8042', '#82ca9d', '#8884d8'];
   const LOST_COLOR = '#ff6b6b';
@@ -24,6 +25,7 @@ const Dashboard = () => {
     fetchCategories();
     fetchLocations();
     fetchClaimStatus();
+    fetchHandoverToSecurityCount();
   }, []);
 
   const fetchStats = async () => {
@@ -41,30 +43,9 @@ const Dashboard = () => {
       ).length;
 
       setStats([
-        { 
-          id: 1, 
-          title: 'Total Lost Items Reported', 
-          count: totalLost, 
-          icon: <AlertCircle className="stat-icon lost-icon" />, 
-          change: '+8% this week', 
-          type: 'lost' 
-        },
-        { 
-          id: 2, 
-          title: 'Total Found Items Reported', 
-          count: totalFound, 
-          icon: <CheckCircle className="stat-icon found-icon" />, 
-          change: '+12% this week', 
-          type: 'found' 
-        },
-        { 
-          id: 3, 
-          title: 'Items Successfully Returned', 
-          count: totalReturned, 
-          icon: <Database className="stat-icon neutral-icon" />, 
-          change: '', 
-          type: 'neutral' 
-        }
+        { id: 1, title: 'Total Lost Items Reported', count: totalLost, icon: <AlertCircle className="stat-icon lost-icon" />, change: '+8% this week', type: 'lost' },
+        { id: 2, title: 'Total Found Items Reported', count: totalFound, icon: <CheckCircle className="stat-icon found-icon" />, change: '+12% this week', type: 'found' },
+        { id: 3, title: 'Items Successfully Returned', count: totalReturned, icon: <Database className="stat-icon neutral-icon" />, change: '', type: 'neutral' }
       ]);
     } catch (error) {
       console.error('Error fetching stats:', error);
@@ -79,18 +60,30 @@ const Dashboard = () => {
       const monthlyCounts = {};
 
       data.forEach(item => {
-        const month = new Date(item.dateReported).toLocaleString('default', { month: 'short' });
-        if (!monthlyCounts[month]) monthlyCounts[month] = { lost: 0, found: 0 };
-        if (item.type === 'LOST') monthlyCounts[month].lost += 1;
-        if (item.type === 'FOUND') monthlyCounts[month].found += 1;
+        if (!item.dateReported || !item.type) return;
+
+        const date = new Date(item.dateReported);
+        if (isNaN(date)) return;
+
+        const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+
+        if (!monthlyCounts[monthKey]) {
+          monthlyCounts[monthKey] = { name: monthKey, lost: 0, found: 0 };
+        }
+
+        if (item.type === 'LOST') monthlyCounts[monthKey].lost++;
+        else if (item.type === 'FOUND') monthlyCounts[monthKey].found++;
       });
 
-      const formatted = Object.keys(monthlyCounts).map(month => ({
-        name: month,
-        ...monthlyCounts[month]
-      }));
+      const sorted = Object.values(monthlyCounts).sort((a, b) => a.name.localeCompare(b.name));
 
-      setMonthlyData(formatted);
+      sorted.forEach(entry => {
+        const [year, month] = entry.name.split("-");
+        const date = new Date(`${year}-${month}-01`);
+        entry.name = date.toLocaleString('default', { month: 'short', year: 'numeric' });
+      });
+
+      setMonthlyData(sorted);
     } catch (error) {
       console.error('Error fetching monthly trends:', error);
     }
@@ -104,15 +97,12 @@ const Dashboard = () => {
       const categoryCounts = {};
 
       data.forEach(item => {
-        const category = item.category ? item.category.name : 'Others';
+        const category = item.category?.name || 'Others';
         if (!categoryCounts[category]) categoryCounts[category] = 0;
         categoryCounts[category]++;
       });
 
-      const formatted = Object.keys(categoryCounts).map(category => ({
-        name: category,
-        value: categoryCounts[category]
-      }));
+      const formatted = Object.entries(categoryCounts).map(([name, value]) => ({ name, value }));
 
       setCategoryData(formatted);
     } catch (error) {
@@ -133,10 +123,7 @@ const Dashboard = () => {
         locationCounts[location]++;
       });
 
-      const formatted = Object.keys(locationCounts).map(location => ({
-        name: location,
-        value: locationCounts[location]
-      }));
+      const formatted = Object.entries(locationCounts).map(([name, value]) => ({ name, value }));
 
       setLocationData(formatted);
     } catch (error) {
@@ -149,19 +136,16 @@ const Dashboard = () => {
       const res = await axios.get('http://localhost:8080/api/transactions');
       const data = res.data;
 
-      const claimCounts = { Requested: 0, Pending: 0, Completed: 0, HandedOver: 0 };
+      const claimCounts = { REQUESTED: 0, PENDING: 0, COMPLETED: 0, HANDOVER: 0 };
 
       data.forEach(txn => {
-        if (txn.transactionStatus === 'REQUESTED') claimCounts.Requested++;
-        else if (txn.transactionStatus === 'PENDING') claimCounts.Pending++;
-        else if (txn.transactionStatus === 'COMPLETED') claimCounts.Completed++;
-        else if (txn.transactionStatus === 'HANDOVER') claimCounts.HandedOver++;
+        const status = txn.transactionStatus;
+        if (claimCounts[status] !== undefined) {
+          claimCounts[status]++;
+        }
       });
 
-      const formatted = Object.keys(claimCounts).map(status => ({
-        name: status,
-        value: claimCounts[status]
-      }));
+      const formatted = Object.entries(claimCounts).map(([name, value]) => ({ name, value }));
 
       setClaimStatusData(formatted);
     } catch (error) {
@@ -169,38 +153,43 @@ const Dashboard = () => {
     }
   };
 
-  const renderStatCards = () => {
-    return stats.map(stat => (
-      <div key={stat.id} className={`stat-card ${stat.type}-card`}>
-        <div className="stat-icon-container">
-          {stat.icon}
-        </div>
-        <div className="stat-content">
-          <h2 className="stat-count">{stat.count}</h2>
-          <p className="stat-title">{stat.title}</p>
-          {stat.change && <p className="stat-change">{stat.change}</p>}
-        </div>
-      </div>
-    ));
+  const fetchHandoverToSecurityCount = async () => {
+    try {
+      const res = await axios.get('http://localhost:8080/api/items');
+      const data = res.data;
+
+      const handoverCount = data.filter(item => item.type === 'FOUND' && item.handoverToSecurity === true).length;
+      setHandoverToSecurityCount(handoverCount);
+    } catch (error) {
+      console.error('Error fetching handover to security count:', error);
+    }
   };
+
+  const renderStatCards = () => stats.map(stat => (
+    <div key={stat.id} className={`stat-card ${stat.type}-card`}>
+      <div className="stat-icon-container">{stat.icon}</div>
+      <div className="stat-content">
+        <h2 className="stat-count">{stat.count}</h2>
+        <p className="stat-title">{stat.title}</p>
+        {stat.change && <p className="stat-change">{stat.change}</p>}
+      </div>
+    </div>
+  ));
 
   return (
     <div className="dashboard-container">
-      {/* Stats */}
       <div className="stats-container">
         {renderStatCards()}
         <div className="stat-card security-card">
           <div className="security-content">
             <Shield className="shield-icon" />
             <h2>Backed by Security Team</h2>
-            <p>30 Verified handovers</p>
+            <p>{handoverToSecurityCount} Verified handovers</p>
           </div>
         </div>
       </div>
 
-      {/* Charts */}
       <div className="charts-container">
-        {/* Monthly Trends */}
         <div className="chart-card">
           <h3>Monthly Activity Trends</h3>
           <ResponsiveContainer width="100%" height={250}>
@@ -210,13 +199,12 @@ const Dashboard = () => {
               <YAxis />
               <Tooltip />
               <Legend />
-              <Line type="monotone" dataKey="lost" stroke={LOST_COLOR} activeDot={{ r: 8 }} name="Lost Items" />
+              <Line type="monotone" dataKey="lost" stroke={LOST_COLOR} name="Lost Items" />
               <Line type="monotone" dataKey="found" stroke={FOUND_COLOR} name="Found Items" />
             </LineChart>
           </ResponsiveContainer>
         </div>
 
-        {/* Categories */}
         <div className="chart-card">
           <h3>Item Categories Distribution</h3>
           <ResponsiveContainer width="100%" height={250}>
@@ -242,7 +230,6 @@ const Dashboard = () => {
           </ResponsiveContainer>
         </div>
 
-        {/* Locations */}
         <div className="chart-card">
           <h3>Top Locations with Most Reports</h3>
           <ResponsiveContainer width="100%" height={250}>
@@ -256,7 +243,6 @@ const Dashboard = () => {
           </ResponsiveContainer>
         </div>
 
-        {/* Claim Status */}
         <div className="chart-card">
           <h3>Claim Status Distribution</h3>
           <ResponsiveContainer width="100%" height={250}>

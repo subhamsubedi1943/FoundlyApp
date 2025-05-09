@@ -65,7 +65,7 @@ function EmployeeManagement() {
   const handleDelete = async (empId) => {
     if (window.confirm('Are you sure you want to delete this employee?')) {
       try {
-        await axios.delete(`http://localhost:8081/api/admin/employees/${empId}`);
+        await axios.delete(`http://localhost:8080/api/admin/employees/${empId}`);
         fetchEmployees();
       } catch (error) {
         console.error('Error deleting employee:', error);
