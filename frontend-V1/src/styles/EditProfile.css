@@ -178,3 +178,32 @@
 .dropdown-item:hover {
   background-color: #0c3e56;
 }
+
+
+
+.profile-container {
+  position: relative; /* Needed for absolute positioning of the dropdown */
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+
+
+.profile-dropdown {
+  position: absolute;
+  top: 150%; /* Places it just below the icon */
+  right: 150%;
+  border-radius: 6px;
+  padding: 0.5rem 0;
+  z-index: 100;
+  width: 150px;
+}
+
+.dropdown-item {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+
