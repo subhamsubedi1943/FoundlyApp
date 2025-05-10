@@ -13,6 +13,18 @@ const FoundItems = () => {
     location: '',
     date: '',
   });
+  const [customCategory, setCustomCategory] = useState('');
+  const [customLocation, setCustomLocation] = useState('');
+  const [categories, setCategories] = useState([]);
+  const [locationOptions, setLocationOptions] = useState([
+    'Cafeteria',
+    'Lobby',
+    'Meeting room',
+    'Washroom',
+    'Playing zone',
+    'Conference room',
+  ]);
+
   const user = JSON.parse(localStorage.getItem("user"));
   const requesterId = user?.requesterId;
 
@@ -23,7 +35,6 @@ const FoundItems = () => {
     const fetchFoundItems = async () => {
       try {
         const response = await axios.get('http://localhost:8080/api/items/found-items');
-        // Sort items by dateReported descending to show latest first
         const sortedItems = response.data.sort((a, b) => new Date(b.dateReported) - new Date(a.dateReported));
         setItems(sortedItems);
       } catch (error) {
@@ -31,11 +42,28 @@ const FoundItems = () => {
       }
     };
 
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/admin/categories');
+        setCategories(response.data);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
     fetchFoundItems();
+    fetchCategories();
   }, []);
 
   const handleFilterChange = (e) => {
-    setFilters({ ...filters, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    if (name === 'category' && value !== 'Others') {
+      setCustomCategory('');
+    }
+    if (name === 'location' && value !== 'Others') {
+      setCustomLocation('');
+    }
+    setFilters({ ...filters, [name]: value });
   };
 
   const applyFilters = () => {
@@ -52,11 +80,15 @@ const FoundItems = () => {
     setShowModal(false);
   };
 
+  const normalize = (str) => str?.toLowerCase().replace(/\s+/g, '');
+
   const filteredItems = items.filter((item) => {
-    const matchesSearch = item.itemName.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = !filters.category || item.categoryName === filters.category;
-    const matchesLocation = !filters.location || item.location === filters.location;
-    const matchesDate = !filters.date || item.dateReported === filters.date;
+    const selectedCategory = filters.category === 'Others' ? customCategory : filters.category;
+    const selectedLocation = filters.location === 'Others' ? customLocation : filters.location;
+    const matchesSearch = normalize(item.itemName).includes(normalize(searchQuery));
+    const matchesCategory = !selectedCategory || normalize(item.categoryName) === normalize(selectedCategory);
+    const matchesLocation = !selectedLocation || normalize(item.location) === normalize(selectedLocation);
+    const matchesDate = !filters.date || item.dateReported.startsWith(filters.date);
     return matchesSearch && matchesCategory && matchesLocation && matchesDate;
   });
 
@@ -65,7 +97,6 @@ const FoundItems = () => {
       <h1 className="title">Found Item Reports</h1>
 
       <div className="search-container">
-        <div className="search-icon"></div>
         <input
           type="text"
           placeholder="Search found items..."
@@ -84,26 +115,51 @@ const FoundItems = () => {
 
       {filterOpen && (
         <div className="filters-inline">
+          {/* Category Filter */}
           <select name="category" value={filters.category} onChange={handleFilterChange}>
             <option value="">Category</option>
-            <option value="Phone">Phone</option>
-            <option value="Wallet">Wallet</option>
-            <option value="Watch">Watch</option>
-            <option value="Bags">Bags</option>
-            <option value="Electronics">Electronics</option>
-            <option value="Documents">Documents</option>
-            <option value="Keys">Keys</option>
-            <option value="Fashion accessories">Fashion accessories</option>
-            <option value="Jewellery">Jewellery</option>
+            {categories.map((cat) => (
+              <option key={cat.categoryId} value={cat.categoryName}>
+                {cat.categoryName}
+              </option>
+            ))}
             <option value="Others">Others</option>
           </select>
-          <input
-            type="text"
+          {filters.category === 'Others' && (
+            <input
+              type="text"
+              placeholder="Enter custom category"
+              value={customCategory}
+              onChange={(e) => setCustomCategory(e.target.value)}
+              className="custom-category-input"
+            />
+          )}
+
+          {/* Location Filter */}
+          <select
             name="location"
-            placeholder="Location"
             value={filters.location}
             onChange={handleFilterChange}
-          />
+            className="location-select"
+          >
+            <option value="">Select location</option>
+            {locationOptions.map((location, index) => (
+              <option key={index} value={location}>{location}</option>
+            ))}
+            <option value="Others">Others</option>
+          </select>
+          {filters.location === 'Others' && (
+            <input
+              type="text"
+              placeholder="Enter custom location"
+              value={customLocation}
+              onChange={(e) => setCustomLocation(e.target.value)}
+              className="custom-location-input"
+              style={{ appearance: 'none', WebkitAppearance: 'none' }}
+            />
+          )}
+
+          {/* Date Picker */}
           <input
             type="date"
             name="date"
@@ -164,7 +220,7 @@ const FoundItems = () => {
       {showModal && selectedItem && (
         <ClaimModal
           itemId={selectedItem.itemId}
-          requesterId={selectedItem.requesterId}
+          requesterId={requesterId}
           onClose={handleCloseModal}
         />
       )}

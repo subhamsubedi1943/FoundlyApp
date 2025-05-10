@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.foundly.app2.dto.CategoryCountDTO;
 import com.foundly.app2.dto.FoundItemReportRequest;
 import com.foundly.app2.dto.ItemReportResponse;
 import com.foundly.app2.dto.LostItemPreviewDTO;
@@ -26,7 +27,6 @@ import com.foundly.app2.repository.ItemReportsRepository;
 import com.foundly.app2.repository.UserRepository;
 
 @Service
-
 public class ItemReportsService {
 
     @Autowired
@@ -67,13 +67,7 @@ public class ItemReportsService {
         itemReportsRepository.deleteById(itemId);
     }
 
-    // Filter item reports based on various criteria
-//    public List<ItemReports> filterItems(Integer id, String location, ItemReports.ItemStatus itemStatus, Category category, User user, ItemReports.Type type) {
-//        return itemReportsRepository.findByFilters(id, location, itemStatus, category, user, type);
-//    }
-    
-
-    
+    // Report a found item
     public ItemReports reportFoundItem(FoundItemReportRequest request) {
         ItemReports foundItem = new ItemReports();
         foundItem.setItemName(request.getItemName());
@@ -82,18 +76,27 @@ public class ItemReportsService {
         foundItem.setImageUrl(request.getImageUrl());
         foundItem.setDateReported(LocalDateTime.now());
         foundItem.setType(ItemReports.Type.FOUND);
+        foundItem.setIsRequested(false);
 
         if (request.getName() != null && !request.getName().trim().isEmpty()) {
             foundItem.setName(request.getName().trim());
         }
 
-        if (request.getHandoverToSecurity()) {
+        if (request.getHandoverToSecurity() != null && request.getHandoverToSecurity()) {
+            // 🔐 Validate Security ID
+            if (request.getSecurityId() == null || request.getSecurityId().trim().isEmpty()) {
+                throw new IllegalArgumentException("Security ID must be provided for handover.");
+            }
+
+            Optional<User> securityUser = userRepository.findByEmployeeId(request.getSecurityId());
+            if (securityUser.isEmpty() || !securityUser.get().isSecurity()) {
+                throw new IllegalArgumentException("Provided security ID does not belong to a valid security personnel.");
+            }
+
             foundItem.setItemStatus(ItemReports.ItemStatus.WITH_SECURITY);
         } else {
             foundItem.setItemStatus(ItemReports.ItemStatus.WITH_FINDER);
         }
-
-        foundItem.setIsRequested(false);
 
         // Set User
         if (request.getUserId() != null) {
@@ -118,23 +121,24 @@ public class ItemReportsService {
             foundItem.setDateLostOrFound(LocalDateTime.parse(request.getDateLostOrFound(), formatter));
         }
 
-        // Save the found item report first
+        // Save the found item report
         ItemReports savedItem = itemReportsRepository.save(foundItem);
 
-        // Create and save FoundItemDetails
+        // Save associated FoundItemDetails
         FoundItemDetails details = new FoundItemDetails();
-        details.setItem(savedItem); // Link to saved ItemReports
+        details.setItem(savedItem);
         details.setSecurityId(request.getSecurityId());
         details.setSecurityName(request.getSecurityName());
         details.setPickupMessage(request.getPickupMessage());
         details.setHandoverToSecurity(request.getHandoverToSecurity());
 
-        foundItemDetailsRepository.save(details); // Save to DB
+        foundItemDetailsRepository.save(details);
 
         return savedItem;
     }
 
 
+    // Report a lost item
     public ItemReports reportLostItem(LostItemReportRequest request) {
         if (request.getDateLostOrFound() == null) {
             throw new IllegalArgumentException("Date lost or found must be provided.");
@@ -171,29 +175,12 @@ public class ItemReportsService {
         return itemReportsRepository.save(lostItem);
     }
 
-
+    // Get items by type (Lost or Found)
     public List<ItemReports> getItemsByType(ItemReports.Type type) {
         return itemReportsRepository.findByType(type);
     }
 
-    // Additional methods for handling item reports can be added here
-//    public List<LostItemPreviewDTO> getAllLostItems() {
-//        return itemReportsRepository
-//                .findByType(ItemReports.Type.LOST) // 👈 Make sure this exists in your repo
-//                .stream()
-//                .map(item -> new LostItemPreviewDTO(
-//                        item.getItemName(),
-//                        item.getDescription(),
-//                        item.getLocation(),
-//                        item.getCategory() != null ? item.getCategory().getCategoryName() : "Uncategorized",
-//                        item.getDateReported(),
-//                        item.getDateLostOrFound(),
-//                        item.getImageUrl(),
-//                        item.getItemStatus()
-//                ))
-//                .collect(Collectors.toList());
-//    }
-
+    // Get recent lost items preview
     public List<LostItemPreviewDTO> getRecentLostItemsPreview(int limit) {
         Pageable pageable = PageRequest.of(0, limit); // ✅ Pageable created correctly
         return itemReportsRepository
@@ -211,12 +198,8 @@ public class ItemReportsService {
                 ))
                 .collect(Collectors.toList());
     }
-//    public List<ItemReportResponse> getLostReportsByUserId(Long userId) {
-//        List<ItemReports> lostItems = itemReportsRepository.findByUserIdAndType(userId, ItemReports.Type.LOST);
-//        return lostItems.stream()
-//                .map(ItemReportResponse::fromEntity)
-//                .collect(Collectors.toList());
-//    }
+
+    // Get lost reports by user ID
     public List<ItemReportResponse> getLostReportsByUserId(Long userId) {
         List<ItemReports> reports = itemReportsRepository.findByUser_UserIdAndType(userId, ItemReports.Type.LOST);
         return reports.stream()
@@ -224,11 +207,17 @@ public class ItemReportsService {
                       .collect(Collectors.toList());
     }
 
+    // Get found reports by user ID
     public List<ItemReportResponse> getFoundReportsByUserId(Long userId) {
         List<ItemReports> reports = itemReportsRepository.findByUser_UserIdAndType(userId, ItemReports.Type.FOUND);
         return reports.stream()
                       .map(ItemReportResponse::fromEntity)
                       .collect(Collectors.toList());
+    }
+
+    // Count the number of handovers to security (handoverToSecurity = true)
+    public long getHandoverToSecurityCount() {
+        return foundItemDetailsRepository.countByHandoverToSecurityTrue();
     }
    
     @Transactional
@@ -244,6 +233,9 @@ public class ItemReportsService {
             // Delete item reports
             itemReportsRepository.deleteAll(reports);
         }
+    }
+    public List<CategoryCountDTO> getCategoryCounts() {
+        return itemReportsRepository.getCategoryCounts();
     }
 
 

@@ -1,5 +1,6 @@
 package com.foundly.app2.repository;
 
+import com.foundly.app2.dto.CategoryCountDTO;
 import com.foundly.app2.entity.ItemReports;
 import com.foundly.app2.entity.ItemReports.Type;
 // import com.foundly.app2.entity.Category;
@@ -51,6 +52,15 @@ public interface ItemReportsRepository extends JpaRepository<ItemReports, Intege
     @Query("SELECT i FROM ItemReports i WHERE i.user.userId = :userId AND i.type = :type")
  // Optional: You can remove @Query if using derived query
     List<ItemReports> findByUser_UserIdAndType(Long userId, ItemReports.Type type);
+    
+//    @Query("SELECT i.category.categoryName, COUNT(i) FROM ItemReports i GROUP BY i.category.categoryName")
+//    List<Object[]> getCategoryCounts();
+    @Query("SELECT new com.foundly.app2.dto.CategoryCountDTO(c.categoryName, COUNT(i)) " +
+    	       "FROM Category c LEFT JOIN ItemReports i ON i.category = c " +
+    	       "GROUP BY c.categoryName")
+    	List<CategoryCountDTO> getCategoryCounts();
+
+
 
 
 }

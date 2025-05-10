@@ -11,27 +11,25 @@ import java.util.List;
 
 @Repository
 public interface TransactionsRepository extends JpaRepository<Transactions, Integer> {
-	// Simple count by transaction type
-	long countByTransactionType(Transactions.TransactionType transactionType);
+    long countByTransactionType(Transactions.TransactionType transactionType);
 
-	// Group count by transaction status (JPQL)
-	@Query("SELECT t.transactionStatus, COUNT(t) FROM Transactions t GROUP BY t.transactionStatus")
-	List<Object[]> countGroupedByTransactionStatus();
+    @Query("SELECT t.transactionStatus, COUNT(t) FROM Transactions t GROUP BY t.transactionStatus")
+    List<Object[]> countGroupedByTransactionStatus();
 
-
-    // Custom query method to find Transactions by TransactionStatus
     List<Transactions> findByTransactionStatus(Transactions.TransactionStatus transactionStatus);
-    
+
     List<Transactions> findByRequesterUserId(Long userId);
 
     List<Transactions> findByRequesterUserIdAndTransactionType(Long userId, Transactions.TransactionType type);
-    
+
     List<Transactions> findByReporterUserId(Integer userId);
 
     List<Transactions> findByItem_ItemIdIn(List<Integer> itemIds);
 
-    // Custom query method to update the transaction status
     @Query("UPDATE Transactions t SET t.transactionStatus = :transactionStatus WHERE t.transactionId = :transactionId")
     @Modifying
     void updateTransactionStatus(@Param("transactionId") Integer transactionId, @Param("transactionStatus") Transactions.TransactionStatus transactionStatus);
+
+    // ✅ New method to count handovers to security
+    long countByHandedOverToSecurityTrue();
 }

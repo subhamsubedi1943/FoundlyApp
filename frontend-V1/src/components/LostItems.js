@@ -13,6 +13,9 @@ const LostItems = () => {
     location: '',
     date: ''
   });
+  const [customLocation, setCustomLocation] = useState('');
+  const [customCategory, setCustomCategory] = useState('');
+  const [categories, setCategories] = useState([]);
 
   const user = JSON.parse(localStorage.getItem("user"));
   const requesterId = user?.id;
@@ -20,34 +23,50 @@ const LostItems = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
-    useEffect(() => {
-      const fetchLostItems = async () => {
-        try {
-          const response = await axios.get('http://localhost:8080/api/items/lost-items');
-          const data = response.data.map(item => ({
-            id: item.itemId,
-            itemName: item.itemName,
-            description: item.description,
-            location: item.location,
-            categoryName: item.category?.categoryName || 'Uncategorized',
-            dateReported: item.dateReported,
-            dateLostOrFound: item.dateLostOrFound,
-            imageUrl: item.imageUrl,
-            itemStatus: item.itemStatus
-          }));
-          // Sort data by dateReported descending to show latest first
-          const sortedData = data.sort((a, b) => new Date(b.dateReported) - new Date(a.dateReported));
-          setItems(sortedData);
-        } catch (error) {
-          console.error('Error fetching lost items:', error);
-        }
-      };
+  useEffect(() => {
+    const fetchLostItems = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/items/lost-items');
+        const data = response.data.map(item => ({
+          id: item.itemId,
+          itemName: item.itemName,
+          description: item.description,
+          location: item.location,
+          categoryName: item.category?.categoryName || 'Uncategorized',
+          dateReported: item.dateReported,
+          dateLostOrFound: item.dateLostOrFound,
+          imageUrl: item.imageUrl,
+          itemStatus: item.itemStatus
+        }));
+        const sortedData = data.sort((a, b) => new Date(b.dateReported) - new Date(a.dateReported));
+        setItems(sortedData);
+      } catch (error) {
+        console.error('Error fetching lost items:', error);
+      }
+    };
 
-      fetchLostItems();
-    }, []);
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/admin/categories');
+        setCategories(response.data);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
+    fetchLostItems();
+    fetchCategories();
+  }, []);
 
   const handleFilterChange = (e) => {
-    setFilters({ ...filters, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    if (name === 'location' && value !== 'Others') {
+      setCustomLocation('');
+    }
+    if (name === 'category' && value !== 'Others') {
+      setCustomCategory('');
+    }
+    setFilters({ ...filters, [name]: value });
   };
 
   const applyFilters = () => {
@@ -64,10 +83,15 @@ const LostItems = () => {
     setShowModal(false);
   };
 
+  const normalize = str => str?.toLowerCase().replace(/\s+/g, '');
+
   const filteredItems = items.filter((item) => {
-    const matchesSearch = item.itemName.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = !filters.category || item.categoryName === filters.category;
-    const matchesLocation = !filters.location || item.location.toLowerCase().includes(filters.location.toLowerCase());
+    const selectedLocation = filters.location === 'Others' ? customLocation : filters.location;
+    const selectedCategory = filters.category === 'Others' ? customCategory : filters.category;
+
+    const matchesSearch = normalize(item.itemName).includes(normalize(searchQuery));
+    const matchesCategory = !selectedCategory || normalize(item.categoryName) === normalize(selectedCategory);
+    const matchesLocation = !selectedLocation || normalize(item.location) === normalize(selectedLocation);
     const matchesDate = !filters.date || item.dateReported.startsWith(filters.date);
 
     return matchesSearch && matchesCategory && matchesLocation && matchesDate;
@@ -78,47 +102,68 @@ const LostItems = () => {
       <h1 className="title">Lost Item Reports</h1>
 
       <div className="search-container">
-              <div className="search-icon">
-      
-              </div>
-              <input
-                type="text"
-                placeholder="Search lost items..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="search-input"
-              />
-              <button
-                onClick={() => setFilterOpen(!filterOpen)}
-                className="filter-icon-button"
-                title="Toggle filters"
-              >
-                <FiFilter className="filter-icon" />
-              </button>
-            </div>
+        <input
+          type="text"
+          placeholder="Search lost items..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="search-input"
+        />
+        <button
+          onClick={() => setFilterOpen(!filterOpen)}
+          className="filter-icon-button"
+          title="Toggle filters"
+        >
+          <FiFilter className="filter-icon" />
+        </button>
+      </div>
 
       {filterOpen && (
         <div className="filters-inline">
+          {/* Category Filter */}
           <select name="category" value={filters.category} onChange={handleFilterChange}>
             <option value="">Category</option>
-            <option value="Phone">Phone</option>
-            <option value="Wallet">Wallet</option>
-            <option value="Watch">Watch</option>
-            <option value="Bags">Bags</option>
-            <option value="Electronics">Electronics</option>
-            <option value="Documents">Documents</option>
-            <option value="Keys">Keys</option>
-            <option value="Fashion accessories">Fashion Accessories</option>
-            <option value="Jewellery">Jewellery</option>
+            {categories.map((cat) => (
+              <option key={cat.categoryId} value={cat.categoryName}>
+                {cat.categoryName}
+              </option>
+            ))}
             <option value="Others">Others</option>
           </select>
-          <input
-            type="text"
-            name="location"
-            placeholder="Location"
-            value={filters.location}
-            onChange={handleFilterChange}
-          />
+          {filters.category === 'Others' && (
+            <input
+              type="text"
+              placeholder="Enter custom category"
+              value={customCategory}
+              onChange={(e) => setCustomCategory(e.target.value)}
+              className="custom-location-input"
+              style={{ appearance: 'none', WebkitAppearance: 'none' }}
+            />
+          )}
+
+          {/* Location Filter */}
+          <select name="location" value={filters.location} onChange={handleFilterChange}>
+            <option value="">Select location</option>
+            <option value="Cafeteria">Cafeteria</option>
+            <option value="Lobby">Lobby</option>
+            <option value="Meeting room">Meeting room</option>
+            <option value="Washroom">Washroom</option>
+            <option value="Playing zone">Playing zone</option>
+            <option value="Conference room">Conference room</option>
+            <option value="Others">Others</option>
+          </select>
+          {filters.location === 'Others' && (
+            <input
+              type="text"
+              placeholder="Enter custom location"
+              value={customLocation}
+              onChange={(e) => setCustomLocation(e.target.value)}
+              className="custom-location-input"
+              style={{ appearance: 'none', WebkitAppearance: 'none' }}
+            />
+          )}
+
+          {/* Date Filter */}
           <input
             type="date"
             name="date"
@@ -129,12 +174,13 @@ const LostItems = () => {
         </div>
       )}
 
+      {/* Item Cards */}
       {filteredItems.length > 0 ? (
         <div className="grid-container">
           {filteredItems.slice(0, 10).map((item, index) => (
             <div className="flip-card" key={index}>
               <div className="flip-card-inner">
-                <div className="flip-card-front"> 
+                <div className="flip-card-front">
                   {item.imageUrl && (
                     <img src={item.imageUrl} alt={item.itemName} className="card-image" />
                   )}
@@ -180,6 +226,7 @@ const LostItems = () => {
         <p className="no-results">No items match your search or filters.</p>
       )}
 
+      {/* Handover Modal */}
       {showModal && selectedItem && (
         <HandoverModal
           isOpen={showModal}

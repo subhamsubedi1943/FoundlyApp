@@ -6,15 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.foundly.app2.dto.ClaimRequest;
 import com.foundly.app2.dto.HandoverRequest;
@@ -42,7 +34,6 @@ public class TransactionsController {
     // Get a transaction by ID
     @GetMapping("/{id}")
     public ResponseEntity<Transactions> getTransactionById(@PathVariable Integer id) {
-        int a=0;
         return transactionsService.getTransactionById(id)
                 .map(transaction -> new ResponseEntity<>(transaction, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
@@ -105,20 +96,33 @@ public class TransactionsController {
         List<NotificationDTO> notifications = transactionsService.getNotificationsForUser(userId);
         return ResponseEntity.ok(notifications);
     }
+
+    // Get total number of claim transactions
     @GetMapping("/count/claims")
     public ResponseEntity<Long> getTotalClaimsCount() {
         long count = transactionsService.countByTransactionType(Transactions.TransactionType.CLAIM);
         return ResponseEntity.ok(count);
     }
+
+    // Get total number of handover transactions
     @GetMapping("/count/handovers")
     public ResponseEntity<Long> getTotalHandoversCount() {
         long count = transactionsService.countByTransactionType(Transactions.TransactionType.HANDOVER);
         return ResponseEntity.ok(count);
     }
+
+    // Get total number of transactions grouped by status
     @GetMapping("/count/status")
     public ResponseEntity<Map<String, Long>> getTransactionCountByStatus() {
         Map<String, Long> statusCounts = transactionsService.countTransactionsGroupedByStatus();
         return ResponseEntity.ok(statusCounts);
+    }
+
+    // ✅ Get total number of items handed over to security (across both transaction & found item reports)
+    @GetMapping("/count/handover-to-security")
+    public ResponseEntity<Long> getTotalHandoverToSecurityCount() {
+        long count = transactionsService.getTotalHandoverToSecurityCount();
+        return ResponseEntity.ok(count);
     }
 
     // Delete a transaction by ID
@@ -127,6 +131,4 @@ public class TransactionsController {
         transactionsService.deleteTransactionById(id);
         return ResponseEntity.noContent().build();
     }
-
-
 }
