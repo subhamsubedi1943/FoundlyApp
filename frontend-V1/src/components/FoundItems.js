@@ -185,7 +185,7 @@ const FoundItems = () => {
                   <tbody>
                     <tr>
                       <td><strong>Category</strong></td>
-                      <td>{item.categoryName}</td>
+                      <td>{item.category}</td>
                     </tr>
                     <tr>
                       <td><strong>Location</strong></td>

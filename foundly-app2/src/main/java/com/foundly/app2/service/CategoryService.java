@@ -1,9 +1,13 @@
 package com.foundly.app2.service;
 
 import com.foundly.app2.entity.Category;
+import com.foundly.app2.entity.ItemReports;
 import com.foundly.app2.exception.CategoryNotFoundException;
 import com.foundly.app2.exception.InvalidRequestException;
 import com.foundly.app2.repository.CategoryRepository;
+import com.foundly.app2.repository.ItemReportsRepository;
+import jakarta.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +19,9 @@ public class CategoryService {
 
     @Autowired
     private CategoryRepository categoryRepository;
+    @Autowired
+    private ItemReportsRepository itemReportsRepository;
+
 
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();
@@ -50,7 +57,19 @@ public class CategoryService {
         return categoryRepository.save(existingCategory);
     }
 
-    public void deleteCategory(Integer categoryId) {
-        categoryRepository.deleteById(categoryId);
-    }
+@Transactional
+public void deleteCategory(Integer categoryId) {
+    Category category = categoryRepository.findById(categoryId)
+        .orElseThrow(() -> new CategoryNotFoundException("Category not found"));
+
+    // Delete all item reports related to this category
+    List<ItemReports> relatedItems = itemReportsRepository.findByCategory(category);
+    itemReportsRepository.deleteAll(relatedItems);
+
+    // Now delete the category
+    categoryRepository.deleteById(categoryId);
 }
+
+
+}
+   
