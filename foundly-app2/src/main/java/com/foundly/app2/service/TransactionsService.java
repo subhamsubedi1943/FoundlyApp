@@ -2,11 +2,7 @@ package com.foundly.app2.service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +15,7 @@ import com.foundly.app2.dto.TransactionResponse;
 import com.foundly.app2.entity.ItemReports;
 import com.foundly.app2.entity.Transactions;
 import com.foundly.app2.entity.User;
+import com.foundly.app2.repository.FoundItemDetailsRepository;
 import com.foundly.app2.repository.ItemReportsRepository;
 import com.foundly.app2.repository.TransactionsRepository;
 import com.foundly.app2.repository.UserRepository;
@@ -36,6 +33,9 @@ public class TransactionsService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private FoundItemDetailsRepository foundItemDetailsRepository;
 
     public List<Transactions> getAllTransactions() {
         return transactionsRepository.findAll();
@@ -69,7 +69,6 @@ public class TransactionsService {
         transaction.setTransactionType(Transactions.TransactionType.CLAIM);
         transaction.setDateUpdated(LocalDateTime.now());
 
-        // Determine the transaction status based on the item's status
         if (item.getItemStatus() == ItemReports.ItemStatus.WITH_SECURITY) {
             transaction.setTransactionStatus(Transactions.TransactionStatus.PENDING_COMPLETION);
             transaction.setReporterCompleted(true);
@@ -133,7 +132,6 @@ public class TransactionsService {
         transaction.setRequesterCompleted(true);
         transaction.setDateUpdated(LocalDateTime.now());
 
-        // Check and update the transaction's status based on completion status
         checkAndMarkCompletion(transaction);
 
         itemReportsRepository.save(transaction.getItem());
@@ -148,7 +146,6 @@ public class TransactionsService {
         transaction.setReporterCompleted(true);
         transaction.setDateUpdated(LocalDateTime.now());
 
-        // Check and update the transaction's status based on completion status
         checkAndMarkCompletion(transaction);
 
         itemReportsRepository.save(transaction.getItem());
@@ -192,16 +189,12 @@ public class TransactionsService {
             dto.setSecurityId(tx.getSecurityId());
             dto.setSecurityName(tx.getSecurityName());
 
-            // Set notification title and message for reporter
             if (tx.getTransactionType() == Transactions.TransactionType.CLAIM) {
                 dto.setTitle("Claim Request: " + tx.getItem().getItemName());
                 dto.setMessage("A user has claimed the item you reported. Review and confirm.");
             } else if (tx.getTransactionType() == Transactions.TransactionType.HANDOVER) {
                 dto.setTitle("Found Item: " + tx.getItem().getItemName());
                 dto.setMessage("Someone found your item and wants to hand it over.");
-            }
-
-            if (tx.getTransactionType() == Transactions.TransactionType.HANDOVER) {
                 dto.setPickupMessage(tx.getPickupMessage());
             }
 
@@ -250,13 +243,15 @@ public class TransactionsService {
                 transaction.getPickupMessage(),
                 transaction.getSecurityId(),
                 transaction.getSecurityName(),
-                transaction.isRequesterCompleted(), // ✅ Add this line to include requesterCompleted
-                transaction.getEmployeeId() // Added employeeId field
+                transaction.isRequesterCompleted(),
+                transaction.getEmployeeId()
         );
     }
+
     public long countByTransactionType(Transactions.TransactionType type) {
         return transactionsRepository.countByTransactionType(type);
     }
+
     public Map<String, Long> countTransactionsGroupedByStatus() {
         List<Object[]> results = transactionsRepository.countGroupedByTransactionStatus();
         Map<String, Long> statusCounts = new HashMap<>();
@@ -272,9 +267,7 @@ public class TransactionsService {
 
     @Transactional
     public void deleteTransactionsByItemIds(List<Integer> itemIds) {
-        if (itemIds == null || itemIds.isEmpty()) {
-            return;
-        }
+        if (itemIds == null || itemIds.isEmpty()) return;
         List<Transactions> transactions = transactionsRepository.findByItem_ItemIdIn(itemIds);
         if (transactions != null && !transactions.isEmpty()) {
             transactionsRepository.deleteAll(transactions);
@@ -287,5 +280,12 @@ public class TransactionsService {
         if (transactions != null && !transactions.isEmpty()) {
             transactionsRepository.deleteAll(transactions);
         }
+    }
+
+    // ✅ NEW METHOD: Total handovers to security
+    public long getTotalHandoverToSecurityCount() {
+        long fromTransactions = transactionsRepository.countByHandedOverToSecurityTrue();
+        long fromFoundItemDetails = foundItemDetailsRepository.countByHandoverToSecurityTrue();
+        return fromTransactions + fromFoundItemDetails;
     }
 }
