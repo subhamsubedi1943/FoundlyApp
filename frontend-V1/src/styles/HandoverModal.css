@@ -15,42 +15,36 @@
 }
 
 .modal-container {
-  background-color: #083b5c;
-  color: white;
+  background-color:#0c1b2a;
   border-radius: 10px;
   width: 100%;
-  max-width: 380px;
-  max-height: 90vh;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  color: white;
   font-family: 'Segoe UI', sans-serif;
+  box-sizing: border-box;
+  position: relative;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  box-sizing: border-box;
+  max-width: 500px; /* reduce width */
+  max-height: 95vh; /* limit height */
+  padding: 8px 10px;
 }
 
 .modal-header {
-  padding: 10px 12px;
-  border-bottom: 1px solid #0a2c44;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  padding : 10px 12px;
+  border-bottom : 1px solid #0c1b2a;
+  display : flex;
+  justify-content : center; /* This centers the content horizontally */
+  align-items : center;
 }
 
 .modal-header h2 {
-  color: #ff007a;
+  color: white;
   font-size: 18px;
   font-weight: bold;
   margin: 0;
 }
 
-.close-button {
-  background: transparent;
-  border: none;
-  font-size: 1.3rem;
-  color: #ff1472;
-  cursor: pointer;
-}
 
 .modal-body {
   padding: 10px 12px;
@@ -61,8 +55,8 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  background-color:#0c1b2a;
 }
-
 .modal-form label {
   font-weight: 500;
   color: #b0c4de;
@@ -70,13 +64,17 @@
   margin-bottom: 2px;
 }
 
+.input{
+  min-height: 80px;
+}
 .modal-form input[type="text"],
 .modal-form input[type="file"],
 .modal-form textarea {
+  min-height: 50px;
   width: 100%;
   padding: 6px 10px;
-  background-color: #072d44;
-  border: 1px solid #4a90e2;
+  background-color: #0c1b2a;
+  border: 1px solid white;
   border-radius: 5px;
   color: white;
   font-size: 13px;
@@ -89,70 +87,123 @@
 }
 
 .modal-form input[type="file"] {
-  padding: 6px;
-  background-color: #0d3b57;
-  border: 1px dashed #4a90e2;
-  color: white;
-  font-size: 13px;
+  
+   width: 100%;
+  padding: 20px;
+  border: 2px dashed white;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #b0c4de;
+  cursor: pointer;
 }
 
 .modal-form textarea {
   resize: vertical;
-  min-height: 50px;
+  min-height: 30px;
   max-height: 100px;
 }
 
-.radio-group {
-  margin-bottom: 8px;
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
+
+.radio-option {
+  display: inline-flex;
+  align-items: center; /* aligns vertically */
+  justify-content: flex-start; /* aligns horizontally to the left */
+  gap: 8px;
+  padding: 6px 20px;
+  border-radius: 25px;
+  border: 1.5px solid white;
+  margin-right: 10px;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  min-width: 160px;
+  text-align: left;
 }
 
-.radio-group label {
-  font-size: 13px;
-  color: #b0c4de;
-  display: flex;
-  align-items: center;
-  gap: 4px;
+.radio-option input[type="radio"] {
+  accent-color: #ff1472;
+  width: 60px; /* standard size */
+  height: 16px;
 }
+
+.radio-option.active {
+  border-color: #ff1472;
+  background-color: #ff1472;
+  color: white;
+}
+
+
+.handover-to-security {
+  display: flex; /* Align the input fields in a row */
+  gap: 10px; /* Adds space between the input fields */
+  width: 100%;
+}
+
+.handover-to-security input {
+  flex: 1; /* Ensures the input fields take equal space */
+  padding: 6px 10px;
+  border: 1px solid white;
+  border-radius: 5px;
+  color: white;
+  background-color: #0c1b2a;
+  font-size: 13px;
+  box-sizing: border-box;
+}
+
+.handover-to-security input::placeholder {
+  color: #b0c4de;
+}
+
 
 .modal-footer {
   display: flex;
   justify-content: flex-end;
   gap: 6px;
-  padding: 10px 12px;
+  padding: 6px 10px;
   border-top: 1px solid #0a2c44;
   flex-wrap: wrap;
 }
 
-.submit-btn,
-.cancel-btn {
-  padding: 6px 14px;
-  font-size: 13px;
-  font-weight: 600;
-  border-radius: 5px;
+.form-buttons {
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+}
+
+.form-buttons .cancel-btn {
+  padding: 10px 30px;
+  border: #ff1472 solid 2px;
+  background-color: transparent;
+  color: white;
+  border-radius: 8px;
   cursor: pointer;
-  min-width: 85px;
-  transition: 0.3s ease;
-  border: none;
+  font-weight: 600;
 }
 
 .submit-btn {
+  padding: 10px 30px;
+  border: none;
   background-color: #ff1472;
   color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
 }
 
-.submit-btn:hover {
+
+.form-buttons button[type="submit"]:hover {
   background-color: #e01365;
 }
 
-.cancel-btn {
+.form-buttons button[type="button"] {
   background-color: transparent;
-  color: #110a0d; /* Same color as claim form */
-  border: 1.5px solid #ff1472; /* Match border color */
+  color: white;
+  border: 2px solid #ff1472;
 }
 
-.cancel-btn:hover {
+.form-buttons button[type="button"]:hover {
   background-color: #26182c;
 }
+

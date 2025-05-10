@@ -74,7 +74,9 @@ const ClaimModal = ({ itemId, requesterId: initialRequesterId, onClose }) => {
   return (
     <div className="claim-modal-overlay">
       <div className="claim-modal" ref={modalRef}>
-        <h2 className="modal-title">Claim</h2>
+        <div className="modal-header">
+          <h2>Claim</h2>
+        </div>
         <form onSubmit={handleSubmit}>
 
           <div className="form-group">

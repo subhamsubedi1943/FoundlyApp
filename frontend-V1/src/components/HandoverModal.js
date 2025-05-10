@@ -97,40 +97,39 @@ export function HandoverModal({ isOpen, onClose, onSubmit, itemId }) {
       <div className="modal-container">
         <div className="modal-header">
           <h2>Handover</h2>
-          <button className="close-button" onClick={onClose}>×</button>
         </div>
 
         <div className="modal-body">
           <form onSubmit={handleSubmit} className="modal-form">
 
-            <label>
-              Description
-              <textarea
-                required
-                rows={3}
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              />
-            </label>
+            <textarea
+              name="description"
+              placeholder="Enter description"
+              required
+              rows={3}
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            />
 
-            <label>
-              Photo Proof
-              <input
-                type="file"
-                accept="image/*"
-                required
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    photo: e.target.files?.[0] || null,
-                  })
-                }
-              />
-            </label>
 
-            <div className="radio-group">
-            
-              <label>
+            <input
+              type="file"
+              accept="image/*"
+              name="photo proof"
+              placeholder="Photo proof"
+              required
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  photo: e.target.files?.[0] || null,
+                })
+              }
+            />
+
+            <div className="handover-options">
+              <label
+                className={`radio-option ${formData.handoverToSecurity ? "active" : ""}`}
+              >
                 <input
                   type="radio"
                   name="handlingOption"
@@ -140,7 +139,10 @@ export function HandoverModal({ isOpen, onClose, onSubmit, itemId }) {
                 />
                 Handover to security
               </label>
-              <label>
+
+              <label
+                className={`radio-option ${formData.handoverToSecurity === false ? "active" : ""}`}
+              >
                 <input
                   type="radio"
                   name="handlingOption"
@@ -152,42 +154,44 @@ export function HandoverModal({ isOpen, onClose, onSubmit, itemId }) {
               </label>
             </div>
 
+
             {formData.handoverToSecurity ? (
               <>
-                <label>
-                  Security ID
-                  <input
-                    type="text"
-                    required
-                    value={formData.securityId}
-                    onChange={(e) => setFormData({ ...formData, securityId: e.target.value })}
-                  />
-                </label>
+                <div className="handover-to-security">
+                <input
+                  name="security id"
+                  placeholder="Enter Security ID"
+                  type="text"
+                  required
+                  value={formData.securityId}
+                  onChange={(e) => setFormData({ ...formData, securityId: e.target.value })}
+                />
 
-                <label>
-                  Security Name
-                  <input
-                    type="text"
-                    required
-                    value={formData.securityName}
-                    onChange={(e) => setFormData({ ...formData, securityName: e.target.value })}
-                  />
-                </label>
+
+                <input
+                  name="security name"
+                  placeholder="Enter Security Name"
+                  type="text"
+                  required
+                  value={formData.securityName}
+                  onChange={(e) => setFormData({ ...formData, securityName: e.target.value })}
+                />
+                </div>
               </>
             ) : (
-              <label>
-                Pickup Message
-                <textarea
-                  required
-                  rows={3}
-                  value={formData.pickupMessage}
-                  onChange={(e) => setFormData({ ...formData, pickupMessage: e.target.value })}
-                />
-              </label>
+
+              <textarea
+                name="pickup message"
+                placeholder="Enter pickup message"
+                required
+                rows={3}
+                value={formData.pickupMessage}
+                onChange={(e) => setFormData({ ...formData, pickupMessage: e.target.value })}
+              />
+
             )}
 
-            <div className="modal-footer">
-              
+            <div className="form-buttons">
               <button
                 type="button"
                 onClick={onClose}
@@ -204,6 +208,7 @@ export function HandoverModal({ isOpen, onClose, onSubmit, itemId }) {
                 {isSubmitting ? 'Submitting...' : 'Submit'}
               </button>
             </div>
+
           </form>
         </div>
       </div>

@@ -221,13 +221,16 @@ function HomePage() {
             <a href="/">Home</a>
             <a href="/dashboard">Dashboard</a>
             <a href="#about">About us</a>
-            <a href="/notifications">Notifications</a>
           </div>
 
           <div className="footer-contact">
             <p>Contact : +91 8734629540</p>
             <p>Email : support@insightglobal.com</p>
           </div>
+
+        </div>
+        <div className="footer-copyright" style={{marginTop: '10px', fontSize: '0.9em', color: '#888', textAlign: 'right'}}>
+          ©2025 Insight Global, A Staffing Services Company. All rights reserved.
         </div>
       </footer>
     </div>

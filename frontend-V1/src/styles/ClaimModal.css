@@ -1,5 +1,5 @@
 .claim-modal-overlay {
-  position: fixed;
+position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
@@ -11,10 +11,11 @@
   z-index: 1000;
   padding: 10px;
   box-sizing: border-box;
+  overflow-y: auto;
 }
 
 .claim-modal {
-  background-color: #083b5c;
+  background-color:#0c1b2a;
   border-radius: 10px;
   width: 100%;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
@@ -24,29 +25,31 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  max-width: 320px; /* reduce width */
-  max-height: 60vh; /* limit height */
-  overflow-y: auto; /* scroll if content too tall */
+  max-width: 400px; /* reduce width */
+  max-height: 85vh; /* limit height */
   padding: 8px 10px;
 }
+.modal-header {
+  padding: 10px 12px;
+  border-bottom: 1px solid #0c1b2a;
+  display: flex;
 
-.claim-modal::-webkit-scrollbar {
-  display: none;
 }
 
-.claim-modal h2 {
-  text-align: center;
+.modal-header h2 {
+  
+  color: white;
   font-size: 18px;
   font-weight: bold;
-  color: #ff007a;
-  margin: 4px 0 10px;
+  margin: 0;
 }
+
 
 .claim-modal form {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin: 0;
+  background-color: #0c1b2a;
 }
 
 .claim-modal label {
@@ -59,10 +62,11 @@
 .claim-modal input[type="text"],
 .claim-modal input[type="file"],
 .claim-modal textarea {
+  min-height: 50px;
   width: 100%;
   padding: 6px 10px;
-  background-color: #072d44;
-  border: 1px solid #4a90e2;
+  background-color: #0c1b2a;
+  border: 1px solid white;
   border-radius: 5px;
   color: white;
   font-size: 13px;
@@ -75,29 +79,35 @@
 }
 
 .claim-modal input[type="file"] {
-  padding: 6px;
-  background-color: #0d3b57;
-  border: 1px dashed #4a90e2;
-  font-size: 13px;
+   width: 100%;
+  padding: 20px;
+  border: 2px dashed white;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #b0c4de;
+  cursor: pointer;
 }
 
 .claim-modal textarea {
   resize: vertical;
-  min-height: 50px;
+  min-height: 30px;
   max-height: 100px;
 }
 
+
 .claim-modal-buttons {
   display: flex;
-  justify-content: flex-end;
-  margin-top: 8px;
-  gap: 6px;
+  justify-content: space-between;
+  padding: 6px 10px;
+  border-top: 1px solid #0a2c44;
   flex-wrap: wrap;
 }
 
+
 .claim-modal-buttons button {
-  padding: 6px 14px;
-  border-radius: 5px;
+  padding: 10px 30px;
+  border-radius: 8px;
   font-weight: 600;
   font-size: 13px;
   cursor: pointer;
@@ -117,8 +127,8 @@
 
 .claim-modal-buttons button[type="button"] {
   background-color: transparent;
-  color: #ff1472;
-  border: 1.5px solid #ff1472;
+  color: white;
+  border: 2px solid #ff1472;
 }
 
 .claim-modal-buttons button[type="button"]:hover {
