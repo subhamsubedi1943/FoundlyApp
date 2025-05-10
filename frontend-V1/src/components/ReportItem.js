@@ -341,16 +341,17 @@ const ReportItem = () => {
         {/* Buttons */}
         <div className="form-buttons">
           <button className="cancel-btn">Cancel</button>
-          <button
-            className="submit-btn"
-            onClick={async () => {
-              const success = await handleSubmit();
-              if (success) {
-                navigate("/");
-              }
-            }}
-          >
-            Submit
+         <button
+              className="submit-btn"
+              onClick={async () => {
+                const success = await handleSubmit();
+                if (success) {
+                  navigate("/");
+                  window.scrollTo(0, 0);
+                }
+              }}
+            >
+              Submit
           </button>
         </div>
       </div>

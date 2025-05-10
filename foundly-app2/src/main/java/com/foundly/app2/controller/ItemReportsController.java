@@ -1,6 +1,7 @@
 package com.foundly.app2.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -44,11 +45,14 @@ public class ItemReportsController {
         return itemReportsService.getItemsByType(ItemReports.Type.LOST);
     }
 
-    @GetMapping("/found-items")
-    public List<ItemReports> getAllFoundItems() {
-        return itemReportsService.getItemsByType(ItemReports.Type.FOUND);
-    }
-
+   @GetMapping("/found-items")
+public ResponseEntity<List<ItemReportResponse>> getAllFoundItems() {
+    List<ItemReports> foundItems = itemReportsService.getItemsByType(ItemReports.Type.FOUND);
+    List<ItemReportResponse> responseList = foundItems.stream()
+            .map(ItemReportResponse::fromEntity)
+            .collect(Collectors.toList());
+    return new ResponseEntity<>(responseList, HttpStatus.OK);
+}
     // Get an item report by ID
     @GetMapping("/{id}")
     public ResponseEntity<ItemReports> getItemReportById(@PathVariable Integer id) {

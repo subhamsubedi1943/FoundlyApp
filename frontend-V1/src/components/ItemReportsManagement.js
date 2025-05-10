@@ -35,44 +35,46 @@ function ItemReportsManagement() {
   if (error) return <p>{error}</p>;
 
   return (
-    <div>
-      <h2>Item Reports Management</h2>
-      {itemReports.length === 0 ? (
-        <p>No item reports found.</p>
-      ) : (
-        <table border="1" cellPadding="5" cellSpacing="0">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Item Name</th>
-              <th>Employee ID</th>
-              <th>Description</th>
-              <th>Location</th>
-              <th>Status</th>
-              <th>Type</th>
-              <th>Date Reported</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {itemReports.map(item => (
-              <tr key={item.itemid}>
-                <td>{item.itemid}</td>
-                <td>{item.itemName}</td>
-                <td>{item.employeeId}</td>
-                <td>{item.description}</td>
-                <td>{item.location}</td>
-                <td>{item.itemStatus}</td>
-                <td>{item.type}</td>
-                <td>{new Date(item.dateReported).toLocaleString()}</td>
-                <td>
-                  <button onClick={() => deleteItemReport(item.itemid)}>Delete</button>
-                </td>
+    <div className="dashboard-feature-container">
+      <h2 className="page-title">Item Reports Management</h2>
+      <div className="scrollable-content">
+        {itemReports.length === 0 ? (
+          <p>No item reports found.</p>
+        ) : (
+          <table border="1" cellPadding="5" cellSpacing="0">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Item Name</th>
+                <th>Employee ID</th>
+                <th>Description</th>
+                <th>Location</th>
+                <th>Status</th>
+                <th>Type</th>
+                <th>Date Reported</th>
+                <th>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+            </thead>
+            <tbody>
+              {itemReports.map(item => (
+                <tr key={item.itemid}>
+                  <td>{item.itemid}</td>
+                  <td>{item.itemName}</td>
+                  <td>{item.employeeId}</td>
+                  <td>{item.description}</td>
+                  <td>{item.location}</td>
+                  <td>{item.itemStatus}</td>
+                  <td>{item.type}</td>
+                  <td>{new Date(item.dateReported).toLocaleString()}</td>
+                  <td>
+                    <button onClick={() => deleteItemReport(item.itemid)}>Delete</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
     </div>
   );
 }

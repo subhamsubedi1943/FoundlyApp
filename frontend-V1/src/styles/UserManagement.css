@@ -40,12 +40,16 @@ body {
     margin-right: 8px;
   }
   
-  form label {
-    display: flex;
-    align-items: center;
-    color: #fff;
-    font-size: 16px;
-  }
+ form label {
+  margin-right: 1rem; /* Add right margin to checkbox label */
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+form button[type="submit"] {
+  margin-left: 0.5rem; /* Add left margin to the Add User button */
+}
   
   form button {
     padding: 10px 16px;

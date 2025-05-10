@@ -1,6 +1,7 @@
 package com.foundly.app2.repository;
 
 import com.foundly.app2.dto.CategoryCountDTO;
+import com.foundly.app2.entity.Category;
 import com.foundly.app2.entity.ItemReports;
 import com.foundly.app2.entity.ItemReports.Type;
 // import com.foundly.app2.entity.Category;
@@ -18,6 +19,7 @@ import java.util.List;
 @Repository
 public interface ItemReportsRepository extends JpaRepository<ItemReports, Integer> {
 
+    List<ItemReports> findByCategory(Category category);
     // ✅ Get all items by status (e.g. NOT_FOUND, WITH_SECURITY, etc.)
     List<ItemReports> findByItemStatus(ItemReports.ItemStatus itemStatus);
 

@@ -319,4 +319,12 @@
   .collected-btn:disabled:hover {
     background: #555; /* no hover color change */
   }
+  /* Add spacing between Close and Mark as Completed buttons in notification modal */
+.modal-content button.collected-btn {
+  margin-right: 1rem;
+}
+
+.modal-content button.view-btn {
+  margin-left: 1rem;
+}
   
