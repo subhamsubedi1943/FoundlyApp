@@ -8,7 +8,7 @@ const ReportItem = () => {
   const [handoverOption, setHandoverOption] = useState("keep");
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [categories, setCategories] = useState([]);
-  //dynamic categories
+
   const [formData, setFormData] = useState({
     userId: "",
     name: "",
@@ -24,10 +24,21 @@ const ReportItem = () => {
   });
 
   useEffect(() => {
+    // Fetch categories
     fetch("http://localhost:8080/api/admin/categories")
       .then((res) => res.json())
       .then((data) => setCategories(data))
       .catch((err) => console.error("Failed to fetch categories:", err));
+
+    // Autofill userId and name from localStorage
+    const userFromStorage = JSON.parse(localStorage.getItem("user"));
+    if (userFromStorage?.userId && userFromStorage?.name) {
+      setFormData((prev) => ({
+        ...prev,
+        userId: userFromStorage.userId.toString(),
+        name: userFromStorage.name,
+      }));
+    }
   }, []);
 
   const handleFileChange = (e) => {
@@ -62,9 +73,18 @@ const ReportItem = () => {
       dateLostOrFound: dateTime,
       imageUrl: uploadedFiles.length ? uploadedFiles[0].base64 : "",
       handoverToSecurity: itemType === "Found" && handoverOption === "security",
-      pickupMessage: itemType === "Found" && handoverOption === "keep" ? formData.pickupMessage : null,
-      securityId: itemType === "Found" && handoverOption === "security" ? formData.securityId : null,
-      securityName: itemType === "Found" && handoverOption === "security" ? formData.securityName : null,
+      pickupMessage:
+        itemType === "Found" && handoverOption === "keep"
+          ? formData.pickupMessage
+          : null,
+      securityId:
+        itemType === "Found" && handoverOption === "security"
+          ? formData.securityId
+          : null,
+      securityName:
+        itemType === "Found" && handoverOption === "security"
+          ? formData.securityName
+          : null,
     };
 
     const endpoint = itemType === "Found" ? "/api/items/found" : "/api/items/lost";
@@ -118,11 +138,25 @@ const ReportItem = () => {
             id="toggleSwitch"
             className="toggle-input"
             checked={itemType === "Found"}
-            onChange={() => setItemType(itemType === "Lost" ? "Found" : "Lost")}
+            onChange={() =>
+              setItemType(itemType === "Lost" ? "Found" : "Lost")
+            }
           />
           <label htmlFor="toggleSwitch" className="toggle-label">
-            <span className={`toggle-text lost ${itemType === "Lost" ? "active" : ""}`}>Lost</span>
-            <span className={`toggle-text found ${itemType === "Found" ? "active" : ""}`}>Found</span>
+            <span
+              className={`toggle-text lost ${
+                itemType === "Lost" ? "active" : ""
+              }`}
+            >
+              Lost
+            </span>
+            <span
+              className={`toggle-text found ${
+                itemType === "Found" ? "active" : ""
+              }`}
+            >
+              Found
+            </span>
             <span className="toggle-knob"></span>
           </label>
         </div>
@@ -144,26 +178,6 @@ const ReportItem = () => {
             <option>Conference room</option>
             <option>Others</option>
           </select>
-        </div>
-
-        {/* User ID and Name */}
-        <div className="form-row">
-          <input
-            type="text"
-            name="userId"
-            placeholder="Enter user ID"
-            value={formData.userId}
-            onChange={handleInputChange}
-            className="input-field"
-          />
-          <input
-            type="text"
-            name="name"
-            placeholder="Enter name (optional)"
-            value={formData.name}
-            onChange={handleInputChange}
-            className="input-field"
-          />
         </div>
 
         {/* Category and Item Name */}
@@ -222,7 +236,8 @@ const ReportItem = () => {
         {/* Upload Media */}
         <div className="upload-box">
           <label htmlFor="file-upload">
-            ⬆ Upload media {itemType === "Found" && <span style={{ color: "red" }}>*</span>}
+            ⬆ Upload media{" "}
+            {itemType === "Found" && <span style={{ color: "red" }}>*</span>}
           </label>
           <input
             id="file-upload"
@@ -242,7 +257,11 @@ const ReportItem = () => {
               <img
                 src={fileObj.base64}
                 alt="preview"
-                style={{ width: "100px", marginTop: "5px", borderRadius: "8px" }}
+                style={{
+                  width: "100px",
+                  marginTop: "5px",
+                  borderRadius: "8px",
+                }}
               />
             </div>
           ))}
@@ -254,7 +273,11 @@ const ReportItem = () => {
         {itemType === "Found" && (
           <>
             <div className="handover-options">
-              <label className={`radio-option ${handoverOption === "keep" ? "active" : ""}`}>
+              <label
+                className={`radio-option ${
+                  handoverOption === "keep" ? "active" : ""
+                }`}
+              >
                 <input
                   type="radio"
                   name="handover"
@@ -265,7 +288,11 @@ const ReportItem = () => {
                 Keep it with me
               </label>
 
-              <label className={`radio-option ${handoverOption === "security" ? "active" : ""}`}>
+              <label
+                className={`radio-option ${
+                  handoverOption === "security" ? "active" : ""
+                }`}
+              >
                 <input
                   type="radio"
                   name="handover"
