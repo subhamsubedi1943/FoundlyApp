@@ -76,18 +76,27 @@ public class ItemReportsService {
         foundItem.setImageUrl(request.getImageUrl());
         foundItem.setDateReported(LocalDateTime.now());
         foundItem.setType(ItemReports.Type.FOUND);
+        foundItem.setIsRequested(false);
 
         if (request.getName() != null && !request.getName().trim().isEmpty()) {
             foundItem.setName(request.getName().trim());
         }
 
-        if (request.getHandoverToSecurity()) {
+        if (request.getHandoverToSecurity() != null && request.getHandoverToSecurity()) {
+            // 🔐 Validate Security ID
+            if (request.getSecurityId() == null || request.getSecurityId().trim().isEmpty()) {
+                throw new IllegalArgumentException("Security ID must be provided for handover.");
+            }
+
+            Optional<User> securityUser = userRepository.findByEmployeeId(request.getSecurityId());
+            if (securityUser.isEmpty() || !securityUser.get().isSecurity()) {
+                throw new IllegalArgumentException("Provided security ID does not belong to a valid security personnel.");
+            }
+
             foundItem.setItemStatus(ItemReports.ItemStatus.WITH_SECURITY);
         } else {
             foundItem.setItemStatus(ItemReports.ItemStatus.WITH_FINDER);
         }
-
-        foundItem.setIsRequested(false);
 
         // Set User
         if (request.getUserId() != null) {
@@ -112,21 +121,22 @@ public class ItemReportsService {
             foundItem.setDateLostOrFound(LocalDateTime.parse(request.getDateLostOrFound(), formatter));
         }
 
-        // Save the found item report first
+        // Save the found item report
         ItemReports savedItem = itemReportsRepository.save(foundItem);
 
-        // Create and save FoundItemDetails
+        // Save associated FoundItemDetails
         FoundItemDetails details = new FoundItemDetails();
-        details.setItem(savedItem); // Link to saved ItemReports
+        details.setItem(savedItem);
         details.setSecurityId(request.getSecurityId());
         details.setSecurityName(request.getSecurityName());
         details.setPickupMessage(request.getPickupMessage());
         details.setHandoverToSecurity(request.getHandoverToSecurity());
 
-        foundItemDetailsRepository.save(details); // Save to DB
+        foundItemDetailsRepository.save(details);
 
         return savedItem;
     }
+
 
     // Report a lost item
     public ItemReports reportLostItem(LostItemReportRequest request) {

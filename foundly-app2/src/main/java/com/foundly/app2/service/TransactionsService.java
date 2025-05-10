@@ -104,6 +104,16 @@ public class TransactionsService {
         transaction.setDateUpdated(LocalDateTime.now());
 
         if (request.isHandoverToSecurity()) {
+            // 🔐 Security verification
+            if (request.getSecurityId() == null || request.getSecurityId().trim().isEmpty()) {
+                throw new IllegalArgumentException("Security ID must be provided for handover.");
+            }
+
+            Optional<User> securityUser = userRepository.findByEmployeeId(request.getSecurityId());
+            if (securityUser.isEmpty() || !securityUser.get().isSecurity()) {
+                throw new IllegalArgumentException("Provided Security ID does not belong to a valid security personnel.");
+            }
+
             item.setItemStatus(ItemReports.ItemStatus.WITH_SECURITY);
             transaction.setTransactionStatus(Transactions.TransactionStatus.PENDING_COMPLETION);
             transaction.setHandedOverToSecurity(true);
@@ -123,6 +133,7 @@ public class TransactionsService {
         itemReportsRepository.save(item);
         return transactionsRepository.save(transaction);
     }
+
 
     @Transactional
     public Transactions updateRequesterCompletion(Integer transactionId) {
