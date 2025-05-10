@@ -297,3 +297,16 @@
 .item-details-table td[colspan="2"] {
   text-align: left;
 }
+
+.custom-input {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 6px 10px;
+  margin-left: 10px;
+  outline: none;
+  background-color: white;
+  font-size: 14px;
+}
