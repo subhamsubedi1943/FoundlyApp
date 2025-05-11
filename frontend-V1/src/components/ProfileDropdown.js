@@ -5,8 +5,6 @@ import { FaUserCircle } from 'react-icons/fa';
 function ProfileDropdown({ onEditProfile, onLogout }) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
-  localStorage.clear("user")
-  console.log(localStorage)
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);

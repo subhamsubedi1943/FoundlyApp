@@ -54,9 +54,9 @@ public class FoundlyApplication {
                 User defaultAdmin = new User();
                 defaultAdmin.setEmployeeId("001");
                 defaultAdmin.setName("admin");
-                defaultAdmin.setEmail("admin@001.com");
+                defaultAdmin.setEmail("admin@001");
                 defaultAdmin.setUsername("admin@admin");
-                defaultAdmin.setPassword(passwordEncoder.encode("Admin123"));
+                defaultAdmin.setPassword(passwordEncoder.encode("admin"));
                 defaultAdmin.setRole(User.Role.ADMIN);
                 defaultAdmin.setSecurity(false);
 

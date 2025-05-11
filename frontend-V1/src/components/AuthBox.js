@@ -11,54 +11,20 @@ function AuthBox({ isOpen, onClose, onAuthSuccess }) {
     password: ''
   });
 
-  const [errors, setErrors] = useState({});
-
   const navigate = useNavigate(); // Initialize the navigate function
 
   if (!isOpen) return null;
 
   const handleChange = (e) => {
-    const updated = { ...formData, [e.target.name]: e.target.value };
     setFormData(prev => ({
       ...prev,
       [e.target.name]: e.target.value
     }));
-    console.log(errors)
-    validation(updated); 
-    
   };
-  
-  const validation = (data) => {
-  const newErrors = {};
-
-  // Email validation
-  if (data.email) {
-    if (!data.email.includes('@')) {
-      newErrors.email = "Email must contain '@'";
-    } else if (!/\.[^\s@]{2,}$/.test(data.email)) {
-      newErrors.email = "Email must contain a period (.) and at least 2 characters after it";
-    }
-  }
-
-  // Password validation
-  if (data.password) {
-    const errors = [];
-    if (data.password.length < 8) errors.push("at least 8 characters");
-    if (!/[a-z]/.test(data.password)) errors.push("one lowercase letter");
-    if (!/[A-Z]/.test(data.password)) errors.push("one uppercase letter");
-    if (!/\d/.test(data.password)) errors.push("one digit");
-
-    if (errors.length > 0) {
-      newErrors.password = `Password must contain ${errors.join(", ")}`;
-    }
-  }
-
-  setErrors(newErrors);
-};
 
   const saveUserToLocalStorage = (user) => {
     if (user?.id) {
-      localStorage.setItem("userId", user.id.toString()); 
+      localStorage.setItem("userId", user.id.toString()); // ✅ store as string
     } else {
       console.warn("User ID not found in response");
     }
@@ -143,7 +109,6 @@ function AuthBox({ isOpen, onClose, onAuthSuccess }) {
                 onChange={handleChange}
                 required
               />
-              {errors.email && <div className="floating-error">{errors.email}</div>}
             </div>
             <div className="input-box">
               <input
@@ -154,7 +119,6 @@ function AuthBox({ isOpen, onClose, onAuthSuccess }) {
                 onChange={handleChange}
                 required
               />
-{errors.password && <div className="floating-error">{errors.password}</div>}
             </div>
             <div className="forgot-link">
               <a onClick={handleForgotPassword}>Forgot password?</a>
@@ -169,7 +133,7 @@ function AuthBox({ isOpen, onClose, onAuthSuccess }) {
             <h1>Create Account</h1>
             <div className="input-box">
               <input
-                type="name"
+                type="text"
                 name="name"
                 placeholder="Full Name"
                 value={formData.name}
@@ -179,7 +143,7 @@ function AuthBox({ isOpen, onClose, onAuthSuccess }) {
             </div>
             <div className="input-box">
               <input
-                type="name"
+                type="text"
                 name="employeeId"
                 placeholder="Employee ID"
                 value={formData.employeeId}
@@ -196,7 +160,6 @@ function AuthBox({ isOpen, onClose, onAuthSuccess }) {
                 onChange={handleChange}
                 required
               />
- {errors.email && <div className="floating-error">{errors.email}</div>}
             </div>
             <div className="input-box">
               <input
@@ -207,7 +170,6 @@ function AuthBox({ isOpen, onClose, onAuthSuccess }) {
                 onChange={handleChange}
                 required
               />
-              {errors.password && <div className="floating-error">{errors.password}</div>}
             </div>
             <button type="submit" className="btn register-btn">Register</button>
           </form>
