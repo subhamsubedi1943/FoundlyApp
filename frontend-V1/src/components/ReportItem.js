@@ -26,6 +26,8 @@ const ReportItem = () => {
     securityName: "",
   });
 
+  
+
   useEffect(() => {
     fetch("http://localhost:8080/api/admin/categories")
       .then((res) => res.json())
@@ -66,6 +68,8 @@ const ReportItem = () => {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
   };
+
+  
 
   const handleSubmit = async () => {
     const dateTime = `${formData.date} ${formData.time}`;

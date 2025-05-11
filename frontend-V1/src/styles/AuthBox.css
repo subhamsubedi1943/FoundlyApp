@@ -245,3 +245,63 @@ form {
 .toggle-panel .btn:hover {
   background: rgba(255, 255, 255, 0.1);
 }
+
+.floating-error {
+  position: absolute;
+  font-size: 0.75rem;
+  color: red;
+  background: #111;
+  padding: 2px 4px;
+  border-radius: 4px;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  white-space: wrap;
+}
+.input-wrapper {
+  position: relative;
+  margin-bottom: 2rem; /* enough space for floating error */
+}
+
+.input-wrapper {
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.input-error {
+  border: 1px solid red !important;
+}
+
+.custom-tooltip {
+  position: absolute;
+  top: -45px; /* float above input */
+  left: 0;
+  background: white;
+  color: black;
+  font-size: 0.75rem;
+  padding: 8px 10px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  border-left: 4px solid orange;
+  z-index: 20;
+  max-width: 220px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.custom-tooltip .icon {
+  color: orange;
+  font-weight: bold;
+}
+
+.tooltip-arrow {
+  position: absolute;
+  bottom: -8px;
+  left: 15px;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid white;
+}
