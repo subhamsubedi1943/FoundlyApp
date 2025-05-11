@@ -26,7 +26,7 @@ position: fixed;
   display: flex;
   flex-direction: column;
   max-width: 400px; /* reduce width */
-  max-height: 85vh; /* limit height */
+  max-height: 80vh; /* limit height */
   padding: 8px 10px;
 }
 .modal-header {

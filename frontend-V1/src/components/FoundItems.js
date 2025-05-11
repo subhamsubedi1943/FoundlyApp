@@ -82,15 +82,16 @@ const FoundItems = () => {
 
   const normalize = (str) => str?.toLowerCase().replace(/\s+/g, '');
 
-  const filteredItems = items.filter((item) => {
-    const selectedCategory = filters.category === 'Others' ? customCategory : filters.category;
-    const selectedLocation = filters.location === 'Others' ? customLocation : filters.location;
-    const matchesSearch = normalize(item.itemName).includes(normalize(searchQuery));
-    const matchesCategory = !selectedCategory || normalize(item.categoryName) === normalize(selectedCategory);
-    const matchesLocation = !selectedLocation || normalize(item.location) === normalize(selectedLocation);
-    const matchesDate = !filters.date || item.dateReported.startsWith(filters.date);
-    return matchesSearch && matchesCategory && matchesLocation && matchesDate;
-  });
+const filteredItems = items.filter((item) => {
+  const selectedCategory = filters.category === 'Others' ? customCategory : filters.category;
+  const selectedLocation = filters.location === 'Others' ? customLocation : filters.location;
+  const matchesSearch = normalize(item.itemName).includes(normalize(searchQuery));
+  const matchesCategory = !selectedCategory || normalize(item.category) === normalize(selectedCategory);
+  const matchesLocation = !selectedLocation || normalize(item.location) === normalize(selectedLocation);
+  const matchesDate = !filters.date || item.dateReported.startsWith(filters.date);
+  return matchesSearch && matchesCategory && matchesLocation && matchesDate;
+});
+
 
   return (
     <div className="items-page">
@@ -166,7 +167,6 @@ const FoundItems = () => {
             value={filters.date}
             onChange={handleFilterChange}
           />
-          <button onClick={applyFilters}>Apply</button>
         </div>
       )}
 

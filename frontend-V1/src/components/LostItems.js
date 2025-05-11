@@ -170,7 +170,7 @@ const LostItems = () => {
             value={filters.date}
             onChange={handleFilterChange}
           />
-          <button onClick={applyFilters}>Apply</button>
+          
         </div>
       )}
 
@@ -206,11 +206,15 @@ const LostItems = () => {
                         <td>{new Date(item.dateReported).toLocaleTimeString()}</td>
                       </tr>
                       <tr>
-                        <td colSpan="2"><strong>Description:</strong><br />{item.description}</td>
+                        <td colSpan="2">
+                          <strong>Description:</strong><br />
+                          <div className="scrollable-description">{item.description}</div>
+                        </td>
                       </tr>
+
                       <tr>
                         <td colSpan="2" style={{ textAlign: 'center' }}>
-                          <button className="claim-button" onClick={() => handleHandoverClick(item)}>
+                          <button className="handover-button" onClick={() => handleHandoverClick(item)}>
                             Handover
                           </button>
                         </td>

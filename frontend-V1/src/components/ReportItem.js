@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "../styles/ReportItem.css";
 
 const ReportItem = () => {
@@ -8,6 +10,7 @@ const ReportItem = () => {
   const [handoverOption, setHandoverOption] = useState("keep");
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [customLocation, setCustomLocation] = useState("");
 
   const [formData, setFormData] = useState({
     userId: "",
@@ -24,13 +27,11 @@ const ReportItem = () => {
   });
 
   useEffect(() => {
-    // Fetch categories
     fetch("http://localhost:8080/api/admin/categories")
       .then((res) => res.json())
       .then((data) => setCategories(data))
       .catch((err) => console.error("Failed to fetch categories:", err));
 
-    // Autofill userId and name from localStorage
     const userFromStorage = JSON.parse(localStorage.getItem("user"));
     if (userFromStorage?.userId && userFromStorage?.name) {
       setFormData((prev) => ({
@@ -58,15 +59,23 @@ const ReportItem = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (name === "location") {
+      setFormData((prev) => ({ ...prev, location: value }));
+      if (value !== "Others") setCustomLocation("");
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleSubmit = async () => {
     const dateTime = `${formData.date} ${formData.time}`;
+    const locationToSend =
+      formData.location === "Others" ? customLocation : formData.location;
+
     const payload = {
       userId: parseInt(formData.userId),
       name: formData.name,
-      location: formData.location,
+      location: locationToSend,
       categoryId: parseInt(formData.categoryId),
       itemName: formData.itemName,
       description: formData.description,
@@ -97,7 +106,7 @@ const ReportItem = () => {
       });
 
       if (response.ok) {
-        alert("Item reported successfully!");
+        toast.success("Item reported successfully!");
         setFormData({
           userId: "",
           name: "",
@@ -114,14 +123,15 @@ const ReportItem = () => {
         setUploadedFiles([]);
         setItemType("Found");
         setHandoverOption("keep");
+        setCustomLocation("");
         return true;
       } else {
-        alert("Failed to report item.");
+        toast.error("Failed to report item.");
         return false;
       }
     } catch (error) {
       console.error("Error reporting item:", error);
-      alert("Something went wrong!");
+      toast.error("Something went wrong!");
       return false;
     }
   };
@@ -131,7 +141,6 @@ const ReportItem = () => {
       <div className="report-box">
         <h2 className="report-title">Report Item</h2>
 
-        {/* Toggle Found / Lost */}
         <div className="toggle-container">
           <input
             type="checkbox"
@@ -144,16 +153,12 @@ const ReportItem = () => {
           />
           <label htmlFor="toggleSwitch" className="toggle-label">
             <span
-              className={`toggle-text lost ${
-                itemType === "Lost" ? "active" : ""
-              }`}
+              className={`toggle-text lost ${itemType === "Lost" ? "active" : ""}`}
             >
               Lost
             </span>
             <span
-              className={`toggle-text found ${
-                itemType === "Found" ? "active" : ""
-              }`}
+              className={`toggle-text found ${itemType === "Found" ? "active" : ""}`}
             >
               Found
             </span>
@@ -161,7 +166,6 @@ const ReportItem = () => {
           </label>
         </div>
 
-        {/* Location */}
         <div className="form-row">
           <select
             name="location"
@@ -180,7 +184,19 @@ const ReportItem = () => {
           </select>
         </div>
 
-        {/* Category and Item Name */}
+        {formData.location === "Others" && (
+          <div className="form-row">
+            <input
+              type="text"
+              name="customLocation"
+              value={customLocation}
+              placeholder="Enter custom location"
+              onChange={(e) => setCustomLocation(e.target.value)}
+              className="customLocation input-field"
+            />
+          </div>
+        )}
+
         <div className="form-row flex gap-2">
           <select
             name="categoryId"
@@ -202,11 +218,10 @@ const ReportItem = () => {
             placeholder="Enter item name"
             value={formData.itemName}
             onChange={handleInputChange}
-            className="input-field"
+            className="itemName-field input-field"
           />
         </div>
 
-        {/* Description */}
         <textarea
           name="description"
           placeholder="Enter description"
@@ -215,7 +230,6 @@ const ReportItem = () => {
           className="description-field input-field"
         ></textarea>
 
-        {/* Date and Time */}
         <div className="form-row">
           <input
             type="date"
@@ -233,11 +247,9 @@ const ReportItem = () => {
           />
         </div>
 
-        {/* Upload Media */}
         <div className="upload-box">
           <label htmlFor="file-upload">
-            ⬆ Upload media{" "}
-            {itemType === "Found" && <span style={{ color: "red" }}>*</span>}
+            ⬆ Upload media {itemType === "Found" && <span style={{ color: "red" }}>*</span>}
           </label>
           <input
             id="file-upload"
@@ -248,7 +260,6 @@ const ReportItem = () => {
           />
         </div>
 
-        {/* Uploaded Files Preview */}
         <div className="uploaded-files">
           {uploadedFiles.map((fileObj, index) => (
             <div className="file-tag" key={index}>
@@ -257,11 +268,7 @@ const ReportItem = () => {
               <img
                 src={fileObj.base64}
                 alt="preview"
-                style={{
-                  width: "100px",
-                  marginTop: "5px",
-                  borderRadius: "8px",
-                }}
+                style={{ width: "100px", marginTop: "5px", borderRadius: "8px" }}
               />
             </div>
           ))}
@@ -269,14 +276,11 @@ const ReportItem = () => {
 
         <hr className="section-divider" />
 
-        {/* Found Item Extra Fields */}
         {itemType === "Found" && (
           <>
             <div className="handover-options">
               <label
-                className={`radio-option ${
-                  handoverOption === "keep" ? "active" : ""
-                }`}
+                className={`radio-option ${handoverOption === "keep" ? "active" : ""}`}
               >
                 <input
                   type="radio"
@@ -289,9 +293,7 @@ const ReportItem = () => {
               </label>
 
               <label
-                className={`radio-option ${
-                  handoverOption === "security" ? "active" : ""
-                }`}
+                className={`radio-option ${handoverOption === "security" ? "active" : ""}`}
               >
                 <input
                   type="radio"
@@ -338,22 +340,17 @@ const ReportItem = () => {
           </>
         )}
 
-        {/* Buttons */}
         <div className="form-buttons">
-          <button className="cancel-btn">Cancel</button>
-         <button
-              className="submit-btn"
-              onClick={async () => {
-                const success = await handleSubmit();
-                if (success) {
-                  navigate("/");
-                  window.scrollTo(0, 0);
-                }
-              }}
-            >
-              Submit
+          <button className="cancel-btn" onClick={() => navigate("/")}>
+            Cancel
+          </button>
+
+          <button className="submit-btn" onClick={handleSubmit}>
+            Submit
           </button>
         </div>
+
+        <ToastContainer position="top-center" autoClose={3000} />
       </div>
     </div>
   );

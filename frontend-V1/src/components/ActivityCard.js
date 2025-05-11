@@ -60,6 +60,8 @@ const ActivityCard = ({ item, onTransactionUpdate }) => {
 
   const shouldDisableButton = collected || status === 'COMPLETED' || (handoverToSecurity && status !== 'COMPLETED');
 
+  const showStatus = item.itemType === 'CLAIM' || item.itemType === 'HANDOVER';
+
   return (
     <div className={`flip-card ${getBorderClass(item.itemType)}`}>
       <div className="flip-card-inner">
@@ -72,9 +74,12 @@ const ActivityCard = ({ item, onTransactionUpdate }) => {
             className="card-image"
           />
           <h2 className="card-title">{item.itemName}</h2>
-          <div className={`status-tag ${getStatusClass(status)}`}>
-            {status}
-          </div>
+          
+          {showStatus && (
+            <div className={`status-tag ${getStatusClass(status)}`}>
+              {status}
+            </div>
+          )}
         </div>
 
         {/* Back Side */}

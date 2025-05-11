@@ -53,7 +53,7 @@
     right: 0;
     width: 400px;
     height: 100%;
-    background: #102331;
+    background: #0c1b2a;
     color: #fff;
     border-radius: 0 0 0 10px;
     box-shadow: -4px 0 20px rgba(0, 0, 0, 0.4);
@@ -81,7 +81,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 18px;
-    background: #173a4e;
+    background: #0d3b57;
   }
   
   .panel-header h2 {
@@ -101,7 +101,7 @@
   .tabs {
     display: flex;
     justify-content: space-around;
-    background: #173a4e;
+    background: #0d3b57;
     padding: 0;
     border-bottom: 1px solid #102331;
   }
@@ -119,7 +119,7 @@
   }
   
   .tabs button:hover {
-    background: #1f4b66;
+    background: #0d3b57;
     color: #fff;
   }
   
@@ -156,7 +156,7 @@
   
   /* Individual notification card */
   .notification-card {
-    background: #1a3347;
+    background: #0d3b57;
     border-radius: 8px;
     padding: 14px;
     margin-bottom: 14px;
@@ -225,41 +225,40 @@
     align-items: center;
   }
   
-  /* Modal content box */
-  .modal-content {
-    background: #173a4e;
+/* Modal content box */
+.modal-content {
+    background: #0c1b2a;
     padding: 24px;
     border-radius: 10px;
-    width: 90%;
-    max-width: 440px;
+    width: 200%;
+    max-width: 600px;
     color: #fff;
     text-align: center;
     box-shadow: 0 4px 20px rgba(0,0,0,0.4);
     transform: scale(1); /* always shown */
     opacity: 1;          /* always shown */
     transition: transform 0.3s ease, opacity 0.3s ease;
-  }
-  
-  
-  
-  .modal-content h2 {
+}
+
+.modal-content h2 {
     margin-bottom: 16px;
     font-size: 20px;
-  }
-  
-  .modal-content p {
+}
+
+.modal-content p {
     margin: 8px 0;
     color: #ddd;
     font-size: 14px;
-  }
-  
-  .modal-content .proof-image {
-    margin: 12px 0;
+}
+
+.modal-content .proof-image {
+    margin: 12px auto;  /* Centers the image */
     max-width: 100%;
     border-radius: 6px;
-  }
-  
-  .modal-content .view-link {
+    display: block;  /* Ensures the image behaves as a block element */
+}
+
+.modal-content .view-link {
     display: inline-block;
     margin-top: 18px;
     padding: 8px 20px;
@@ -270,12 +269,13 @@
     cursor: pointer;
     font-size: 14px;
     text-decoration: none;
-  }
-  
-  .modal-content .view-link:hover {
+}
+
+.modal-content .view-link:hover {
     background: #ff3390;
-  }
-  .view-btn {
+}
+
+.view-btn {
     display: inline-block;
     margin-top: 18px;
     padding: 8px 20px;
@@ -285,13 +285,13 @@
     border-radius: 5px;
     cursor: pointer;
     font-size: 14px;
-  }
-  
-  .view-btn:hover {
-    background: #ff3390;
-  }
+}
 
-  .collected-btn {
+.view-btn:hover {
+    background: #ff3390;
+}
+
+.collected-btn {
     display: inline-block;
     margin-top: 18px;
     padding: 8px 20px;
@@ -302,29 +302,46 @@
     cursor: pointer;
     font-size: 14px;
     transition: background 0.3s ease, opacity 0.3s ease;
-  }
-  
-  .collected-btn:hover {
+}
+
+.collected-btn:hover {
     background: #ff3390;
-  }
-  
-  /* Disabled state */
-  .collected-btn:disabled {
+}
+
+/* Disabled state */
+.collected-btn:disabled {
     background: #555;
     color: #aaa;
     cursor: not-allowed;
     opacity: 0.7;
-  }
-  
-  .collected-btn:disabled:hover {
+}
+
+.collected-btn:disabled:hover {
     background: #555; /* no hover color change */
-  }
-  /* Add spacing between Close and Mark as Completed buttons in notification modal */
+}
+
+/* Add spacing between Close and Mark as Completed buttons in notification modal */
 .modal-content button.collected-btn {
-  margin-right: 1rem;
+    margin-right: 1rem;
 }
 
 .modal-content button.view-btn {
-  margin-left: 1rem;
+    margin-left: 1rem;
 }
-  
+
+/* Remove borders from all tables */
+table {
+    border: none !important; /* Ensure no border appears */
+    border-collapse: collapse !important;
+}
+
+/* Remove alternating row colors */
+tr:nth-child(even), tr:nth-child(odd) {
+    background-color: transparent !important; /* Ensures no background color for any row */
+}
+
+/* Ensure there's no border for table cells */
+td, th {
+    border: none !important;
+}
+

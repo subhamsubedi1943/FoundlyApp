@@ -1,7 +1,10 @@
+
+
+
 .report-container {
   width: 100vw;
   min-height: 100vh;
-  background-color: #072d44;
+  background-color: #0c1b2a;
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -26,6 +29,7 @@
   margin-bottom: 30px;
 }
 
+
 .form-row {
   display: flex;
   flex-wrap: wrap;
@@ -35,23 +39,52 @@
   box-sizing: border-box;
 }
 
+.custom-location.input-field{
+  margin-right: 0px;
+}
 
+.form-row.flex.gap-2{
+  gap: 20px;
+}
+
+.itemName-field.input-field {
+  flex: 1;
+  padding: 12px 12px 12px 18px;
+  margin-right: 0px; 
+  border: 1.5px solid white;
+  border-radius: 8px;
+  width: 100%;
+  box-sizing: border-box; /* Ensures padding doesn't reduce the visible width */
+  color: white !important;
+  font-size: 14px;
+}
+
+
+input.input-field{
+  flex: 1;
+  padding: 12px;
+  border: 1.5px solid white;
+  border-radius: 8px;
+  width: 100%;
+  color: white !important;
+  font-size: 14px;
+}
 .input-field {
   flex: 1;
   padding: 12px;
-  border: 1px solid #4a90e2;
+  border: 1.5px solid white;
   border-radius: 8px;
-  background-color: #072d44;
+  width:100%;
   color: white !important;
   font-size: 14px;
 }
 .input-white-border {
   flex: 1;
   padding: 12px;
-  border: 1px solid white; /* changed from #4a90e2 to white */
+  border: 1.5px solid white;
   border-radius: 8px;
-  background-color: #072d44;
-  color: white;
+  width:100%;
+  color: white !important;
   font-size: 14px;
 }
 
@@ -60,9 +93,8 @@
   min-height: 80px;
   margin-bottom: 20px;
   padding: 12px;
-  border: 1px solid #4a90e2;
+  border: 1.5px solid white;
   border-radius: 8px;
-  background-color: #072d44;
   color: white;
   font-size: 14px;
   resize: vertical;
@@ -71,7 +103,7 @@
 .upload-box {
   width: 100%;
   padding: 20px;
-  border: 2px dashed #4a90e2;
+  border: 2px dashed white;
   border-radius: 8px;
   text-align: center;
   margin-bottom: 20px;
@@ -123,15 +155,17 @@
 
 .radio-option {
   display: inline-flex;
-  align-items: center;
+  align-items: center; /* vertically center the items */
+  justify-content: flex-start; /* align content to the left */
   gap: 8px;
   padding: 10px 16px;
   border-radius: 25px;
-  border: 2px solid #4a90e2;
-  margin-right: 10px;
+  border: 1.5px solid white;
+  margin-right: 0px;
   color: white;
   font-weight: 500;
   cursor: pointer;
+  white-space: nowrap; /* keeps text in a single line */
 }
 
 .radio-option input[type="radio"] {
@@ -143,6 +177,7 @@
   background-color: #ff1472;
   color: white;
 }
+
 
 /* Toggle Switch Container */
 .toggle-switch {
@@ -260,7 +295,7 @@
   font-size: 14px;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  border: 2px solid #4a90e2;
+  border: 2px solid white;
   background-color: #114d6c;
   color: white;
 }
@@ -279,22 +314,24 @@
 }
 
 .handover-options {
+  border-color: white;
   display: flex;
   gap: 10px;
   margin-bottom: 10px;
 }
 
 .form-buttons {
+  color : white;
   display: flex;
   justify-content: space-between;
   margin-top: 30px;
 }
 
-.cancel-btn {
+.form-buttons .cancel-btn {
   padding: 10px 30px;
-  border: 2px solid #ff1472;
+  border:#ff1472 solid 2px;
   background-color: transparent;
-  color: #ff1472;
+  color: white;
   border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
@@ -308,6 +345,10 @@
   border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
+}
+
+.submit-btn:hover {
+  background-color: #e60063;
 }
 
 option{

@@ -1,11 +1,11 @@
 .edit-profile-container {
-  background-color: #062838;
+  background-color: #0c1b2a;
   width: 100vw;
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 30px 10px; /* slightly more padding for breathing space */
+  padding: 80px 10px; /* slightly more padding for breathing space */
   font-family: 'Segoe UI', sans-serif;
   color: #ffffff;
 }
@@ -17,7 +17,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  background-color: #082e40;
+  background-color: #0d3b57;
   padding: 20px;
   border-radius: 10px;
   /* box-shadow: 0 0 10px #00000040; */
@@ -64,7 +64,7 @@
 .cancel-button {
   background: transparent;
   color: #ffffff;
-  border: 1.5px solid #ffffff;
+  border:#ff1472 solid 2px;
   cursor: pointer;
   transition: 0.3s;
 }

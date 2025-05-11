@@ -140,53 +140,95 @@ function NotificationPanel() {
       )}
 
       {/* Modal for Notification Details */}
-      {selectedNote && (
-        <div className="modal-overlay" onClick={closeDetails}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h2>{selectedNote.title || 'Notification Details'}</h2>
+{selectedNote && (
+  <div className="modal-overlay" onClick={closeDetails}>
+    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+      <h2>{selectedNote.title || 'Notification Details'}</h2>
 
-            <div className="modal-body">
-              {selectedNote.message && <p><strong>Message:</strong> {selectedNote.message}</p>}
-              {selectedNote.description && <p><strong>Description:</strong> {selectedNote.description}</p>}
-
-              {selectedNote.type?.toLowerCase() === 'handover' && (
-                <>
-                  {selectedNote.itemStatus && <p><strong>Item Status:</strong> {selectedNote.itemStatus}</p>}
-                  {selectedNote.pickupMessage && <p><strong>Pickup Message:</strong> {selectedNote.pickupMessage}</p>}
-                  {selectedNote.securityId && <p><strong>Security ID:</strong> {selectedNote.securityId}</p>}
-                  {selectedNote.securityName && <p><strong>Security Name:</strong> {selectedNote.securityName}</p>}
-                </>
-              )}
-
-              {selectedNote.type?.toLowerCase() === 'claim' && (
-                <>
-                  {selectedNote.employeeId && <p><strong>Employee ID:</strong> {selectedNote.employeeId}</p>}
-                  {selectedNote.employeeName && <p><strong>Employee Name:</strong> {selectedNote.employeeName}</p>}
-                </>
-              )}
-
-              {selectedNote.photo && (
-                <img src={selectedNote.photo} alt="Proof" className="proof-image" />
-              )}
-            </div>
-
-            {/* Mark Completed Button */}
-            {(selectedNote.type?.toLowerCase() === 'claim' || selectedNote.type?.toLowerCase() === 'handover') && (
-              <button
-                className="collected-btn"
-                onClick={handleCompletedClick}
-                disabled={selectedNote.transactionStatus === 'COMPLETED' || selectedNote.reporterCompleted}
-              >
-                {(selectedNote.transactionStatus === 'COMPLETED' || selectedNote.reporterCompleted)
-                  ? 'Completed'
-                  : 'Mark as Completed'}
-              </button>
+      <div className="modal-body">
+        <table className="details-table">
+          <tbody>
+            {selectedNote.description && (
+              <tr>
+                <td><strong>Description:</strong></td>
+                <td>{selectedNote.description}</td>
+              </tr>
             )}
 
-            <button className="view-btn" onClick={closeDetails}>Close</button>
+            {selectedNote.type?.toLowerCase() === 'handover' && (
+              <>
+                {selectedNote.itemStatus && (
+                  <tr>
+                    <td><strong>Item Status:</strong></td>
+                    <td>{selectedNote.itemStatus}</td>
+                  </tr>
+                )}
+                {selectedNote.pickupMessage && (
+                  <tr>
+                    <td><strong>Pickup Message:</strong></td>
+                    <td>{selectedNote.pickupMessage}</td>
+                  </tr>
+                )}
+                {selectedNote.securityId && (
+                  <tr>
+                    <td><strong>Security ID:</strong></td>
+                    <td>{selectedNote.securityId}</td>
+                  </tr>
+                )}
+                {selectedNote.securityName && (
+                  <tr>
+                    <td><strong>Security Name:</strong></td>
+                    <td>{selectedNote.securityName}</td>
+                  </tr>
+                )}
+              </>
+            )}
+
+            {selectedNote.type?.toLowerCase() === 'claim' && (
+              <>
+                {selectedNote.employeeId && (
+                  <tr>
+                    <td><strong>Employee ID:</strong></td>
+                    <td>{selectedNote.employeeId}</td>
+                  </tr>
+                )}
+                {selectedNote.employeeName && (
+                  <tr>
+                    <td><strong>Employee Name:</strong></td>
+                    <td>{selectedNote.employeeName}</td>
+                  </tr>
+                )}
+              </>
+            )}
+          </tbody>
+        </table>
+
+        {selectedNote.photo && (
+          <div className="proof-image-container">
+            <img src={selectedNote.photo} alt="Proof" className="proof-image" />
           </div>
-        </div>
+        )}
+      </div>
+
+      {/* Mark Completed Button */}
+      {(selectedNote.type?.toLowerCase() === 'claim' || selectedNote.type?.toLowerCase() === 'handover') && (
+        <button
+          className="collected-btn"
+          onClick={handleCompletedClick}
+          disabled={selectedNote.transactionStatus === 'COMPLETED' || selectedNote.reporterCompleted}
+        >
+          {(selectedNote.transactionStatus === 'COMPLETED' || selectedNote.reporterCompleted)
+            ? 'Completed'
+            : 'Mark as Completed'}
+        </button>
       )}
+
+      <button className="view-btn" onClick={closeDetails}>Close</button>
+    </div>
+  </div>
+)}
+
+    
     </div>
   );
 }

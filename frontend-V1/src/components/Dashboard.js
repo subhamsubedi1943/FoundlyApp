@@ -223,22 +223,24 @@ const Dashboard = () => {
               <Pie
                 data={categoryData}
                 cx="50%"
-                cy="50%"
+                cy="50%"                  // Slightly move the chart up to give legend room
                 labelLine={true}
-                outerRadius={100}
+                outerRadius={80}
                 innerRadius={40}
                 fill="#8884d8"
                 dataKey="value"
-                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                label={({ name, percent }) => `${(percent * 100).toFixed(0)}%`}
               >
                 {categoryData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={generateCategoryColors(categoryData)[index]} />
                 ))}
               </Pie>
               <Tooltip />
-              <Legend />
+              <Legend layout="horizontal" verticalAlign="bottom" align="center" />
             </PieChart>
           </ResponsiveContainer>
+
+
         </div>
 
         <div className="chart-card">
@@ -269,6 +271,7 @@ const Dashboard = () => {
         </div>
       </div>
     </div>
+
   );
 };
 
