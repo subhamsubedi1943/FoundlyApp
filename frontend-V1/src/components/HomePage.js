@@ -202,7 +202,7 @@ function HomePage() {
               <div className="member">
                 <img src={mem1} alt="Teammate 1" />
                 <h4>Akanksha</h4>
-                <p>Devops Engineer</p>
+                <p>Backend+Devops Engineer</p>
               </div>
               <div className="member">
                 <img src={mem2} alt="Teammate 2" />
@@ -230,25 +230,35 @@ function HomePage() {
       </section>
 
       <footer className="footer">
-        <div className="footer-content">
-          <div className="footer-logo">
-            <img src={logo} alt="Foundly Logo" className="footer-logo-img" />
-          </div>
+  <div className="footer-content">
+    <div className="footer-logo">
+      <img src={logo} alt="Foundly Logo" className="footer-logo-img" />
+    </div>
 
-          <div className="footer-links">
-            <a href="/">Home</a>
-            <a href="/dashboard">Dashboard</a>
-            <a href="#about">About us</a>
-          </div>
-          <div className="footer-contact">
-            <p>Contact : +91 8734629540</p>
-            <p>Email : support@insightglobal.com</p>
-          </div>
-        </div>
-        <div className="footer-copyright">
-          ©2025 Insight Global, A Staffing Services Company. All rights reserved.
-        </div>
-      </footer>
+    <div className="footer-links">
+      <a href="/">Home</a>
+      <a href="/dashboard">Dashboard</a>
+      <a href="#about">About us</a>
+      <a
+        href="https://docs.google.com/forms/d/e/1FAIpQLSdkvSTOdvFt7EY5ICngh0ua216HbJ4PWI_7z9J8qe7_bUZxAg/viewform?usp=sharing"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Feedback
+      </a>
+    </div>
+
+    <div className="footer-contact">
+      <p>Contact : +91 8734629540</p>
+      <p>Email : support@insightglobal.com</p>
+    </div>
+  </div>
+
+  <div className="footer-copyright">
+    ©2025 Insight Global, A Staffing Services Company. All rights reserved.
+  </div>
+</footer>
+
     </div>
   );
 }
