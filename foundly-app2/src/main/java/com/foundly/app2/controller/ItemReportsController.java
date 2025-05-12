@@ -22,6 +22,9 @@ import com.foundly.app2.dto.LostItemReportRequest;
 import com.foundly.app2.entity.ItemReports;
 import com.foundly.app2.service.ItemReportsService;
 
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
+
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api/items")
@@ -69,6 +72,8 @@ public ResponseEntity<List<ItemReportResponse>> getAllFoundItems() {
             return new ResponseEntity<>(createdItemReport, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (SecurityException e) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -124,5 +129,8 @@ public ResponseEntity<List<ItemReportResponse>> getAllFoundItems() {
         return ResponseEntity.ok(itemReportsService.getCategoryCounts());
     }
 
-
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<String> handleRuntimeException(RuntimeException ex, WebRequest request) {
+        return new ResponseEntity<>("Server error", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }

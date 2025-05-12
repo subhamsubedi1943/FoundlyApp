@@ -1,4 +1,5 @@
 
+
 package com.foundly.app2.controller;
 
 import com.foundly.app2.entity.Category;
@@ -11,6 +12,8 @@ import com.foundly.app2.service.TransactionsService;
 import com.foundly.app2.service.UserService;
 import com.foundly.app2.dto.DashboardSummaryDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -82,18 +85,33 @@ public class AdminController {
     }
 
     @PostMapping("/categories")
-    public Category createCategory(@RequestBody Category category) {
-        return categoryService.createCategory(category);
+    public ResponseEntity<?> createCategory(@RequestBody Category category) {
+        try {
+            Category createdCategory = categoryService.createCategory(category);
+            return ResponseEntity.ok(createdCategory);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @PutMapping("/categories/{id}")
-    public Category updateCategory(@PathVariable Integer id, @RequestBody Category category) {
-        return categoryService.updateCategory(id, category);
+    public ResponseEntity<?> updateCategory(@PathVariable Integer id, @RequestBody Category category) {
+        try {
+            Category updatedCategory = categoryService.updateCategory(id, category);
+            return ResponseEntity.ok(updatedCategory);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/categories/{id}")
-    public void deleteCategory(@PathVariable Integer id) {
-        categoryService.deleteCategory(id);
+    public ResponseEntity<?> deleteCategory(@PathVariable Integer id) {
+        try {
+            categoryService.deleteCategory(id);
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
     // Employee CRUD endpoints
@@ -103,9 +121,14 @@ public class AdminController {
     }
 
     @GetMapping("/employees/{empId}")
-    public Employee getEmployeeById(@PathVariable String empId) {
-        return employeeService.getEmployeeById(empId)
-                .orElseThrow(() -> new RuntimeException("Employee not found with id: " + empId));
+    public ResponseEntity<?> getEmployeeById(@PathVariable String empId) {
+        try {
+            Employee employee = employeeService.getEmployeeById(empId)
+                    .orElseThrow(() -> new RuntimeException("Employee not found with id: " + empId));
+            return ResponseEntity.ok(employee);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
     @PostMapping("/employees")

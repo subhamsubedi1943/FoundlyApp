@@ -238,7 +238,7 @@ public class TransactionsService {
         return transactions.stream().map(this::mapToTransactionResponse).collect(Collectors.toList());
     }
 
-    private TransactionResponse mapToTransactionResponse(Transactions transaction) {
+    public TransactionResponse mapToTransactionResponse(Transactions transaction) {
         return new TransactionResponse(
                 transaction.getTransactionId(),
                 transaction.getItem().getItemId(),

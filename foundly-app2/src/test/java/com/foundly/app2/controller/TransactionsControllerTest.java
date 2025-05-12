@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -198,5 +199,64 @@ public class TransactionsControllerTest {
                 .andExpect(status().isOk());
 
         verify(transactionsService, times(1)).getNotificationsForUser(1);
+    }
+
+    @Test
+    public void testGetTotalClaimsCount() throws Exception {
+        long count = 10L;
+        when(transactionsService.countByTransactionType(Transactions.TransactionType.CLAIM)).thenReturn(count);
+
+        mockMvc.perform(get("/api/transactions/count/claims"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(String.valueOf(count)));
+
+        verify(transactionsService, times(1)).countByTransactionType(Transactions.TransactionType.CLAIM);
+    }
+
+    @Test
+    public void testGetTotalHandoversCount() throws Exception {
+        long count = 15L;
+        when(transactionsService.countByTransactionType(Transactions.TransactionType.HANDOVER)).thenReturn(count);
+
+        mockMvc.perform(get("/api/transactions/count/handovers"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(String.valueOf(count)));
+
+        verify(transactionsService, times(1)).countByTransactionType(Transactions.TransactionType.HANDOVER);
+    }
+
+    @Test
+    public void testGetTransactionCountByStatus() throws Exception {
+        Map<String, Long> statusCounts = Map.of("COMPLETED", 5L, "PENDING", 3L);
+        when(transactionsService.countTransactionsGroupedByStatus()).thenReturn(statusCounts);
+
+        mockMvc.perform(get("/api/transactions/count/status"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.COMPLETED").value(5))
+                .andExpect(jsonPath("$.PENDING").value(3));
+
+        verify(transactionsService, times(1)).countTransactionsGroupedByStatus();
+    }
+
+    @Test
+    public void testGetTotalHandoverToSecurityCount() throws Exception {
+        long count = 7L;
+        when(transactionsService.getTotalHandoverToSecurityCount()).thenReturn(count);
+
+        mockMvc.perform(get("/api/transactions/count/handover-to-security"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(String.valueOf(count)));
+
+        verify(transactionsService, times(1)).getTotalHandoverToSecurityCount();
+    }
+
+    @Test
+    public void testDeleteTransaction() throws Exception {
+        doNothing().when(transactionsService).deleteTransactionById(1);
+
+        mockMvc.perform(delete("/api/transactions/1"))
+                .andExpect(status().isNoContent());
+
+        verify(transactionsService, times(1)).deleteTransactionById(1);
     }
 }

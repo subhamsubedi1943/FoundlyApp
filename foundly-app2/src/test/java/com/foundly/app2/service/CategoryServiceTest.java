@@ -4,6 +4,7 @@ import com.foundly.app2.entity.Category;
 import com.foundly.app2.exception.CategoryNotFoundException;
 import com.foundly.app2.exception.InvalidRequestException;
 import com.foundly.app2.repository.CategoryRepository;
+import com.foundly.app2.repository.ItemReportsRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -19,6 +20,9 @@ public class CategoryServiceTest {
 
     @Mock
     private CategoryRepository categoryRepository;
+
+    @Mock
+    private ItemReportsRepository itemReportsRepository;
 
     @InjectMocks
     private CategoryService categoryService;
@@ -95,5 +99,21 @@ public class CategoryServiceTest {
         Category updatedCategory = new Category();
         updatedCategory.setCategoryName("");
         assertThrows(InvalidRequestException.class, () -> categoryService.updateCategory(1, updatedCategory));
+    }
+
+    @Test
+    public void testDeleteCategory_CategoryExists() {
+        when(categoryRepository.findById(1)).thenReturn(Optional.of(category));
+        doNothing().when(categoryRepository).deleteById(1);
+        when(itemReportsRepository.findByCategory(category)).thenReturn(java.util.Collections.emptyList());
+        doNothing().when(itemReportsRepository).deleteAll(java.util.Collections.emptyList());
+        categoryService.deleteCategory(1);
+        verify(categoryRepository, times(1)).deleteById(1);
+    }
+
+    @Test
+    public void testDeleteCategory_CategoryNotFound() {
+        when(categoryRepository.findById(1)).thenReturn(Optional.empty());
+        assertThrows(CategoryNotFoundException.class, () -> categoryService.deleteCategory(1));
     }
 }
