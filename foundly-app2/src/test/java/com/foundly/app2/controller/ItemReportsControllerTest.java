@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.foundly.app2.dto.FoundItemReportRequest;
 import com.foundly.app2.dto.ItemReportResponse;
 import com.foundly.app2.dto.LostItemReportRequest;
+import com.foundly.app2.dto.CategoryCountDTO;
 import com.foundly.app2.entity.ItemReports;
 import com.foundly.app2.service.ItemReportsService;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,6 +42,42 @@ public class ItemReportsControllerTest {
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders.standaloneSetup(itemReportsController).build();
+    }
+
+    @Test
+    public void testGetHandoverToSecurityCount() throws Exception {
+        long count = 5L;
+        when(itemReportsService.getHandoverToSecurityCount()).thenReturn(count);
+
+        mockMvc.perform(get("/api/items/handover-to-security-count"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(String.valueOf(count)));
+
+        verify(itemReportsService, times(1)).getHandoverToSecurityCount();
+    }
+
+    @Test
+    public void testGetCategoryCounts() throws Exception {
+        List<CategoryCountDTO> categoryCounts = Arrays.asList(new CategoryCountDTO("Category1", 10L));
+        when(itemReportsService.getCategoryCounts()).thenReturn(categoryCounts);
+
+        mockMvc.perform(get("/api/items/category-counts"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].category").value("Category1"))
+                .andExpect(jsonPath("$[0].count").value(10));
+
+        verify(itemReportsService, times(1)).getCategoryCounts();
+    }
+
+    @Test
+    public void testDeleteItemReport() throws Exception {
+        doNothing().when(itemReportsService).deleteItemReportById(1);
+
+        mockMvc.perform(delete("/api/items/1"))
+                .andExpect(status().isNoContent());
+
+        verify(itemReportsService, times(1)).deleteItemReportById(1);
     }
 
     @Test
@@ -166,6 +203,31 @@ public class ItemReportsControllerTest {
                 .andExpect(jsonPath("$.itemId").value(1));
 
         verify(itemReportsService, times(1)).reportLostItem(any(LostItemReportRequest.class));
+    }
+
+    @Test
+    public void testReportFoundItem_Unauthorized() throws Exception {
+        FoundItemReportRequest request = new FoundItemReportRequest();
+
+        when(itemReportsService.reportFoundItem(any(FoundItemReportRequest.class)))
+                .thenThrow(new SecurityException("Unauthorized access"));
+
+        mockMvc.perform(post("/api/items/found")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isForbidden());
+
+        verify(itemReportsService, times(1)).reportFoundItem(any(FoundItemReportRequest.class));
+    }
+
+    @Test
+    public void testGetItemReportById_ServerError() throws Exception {
+        when(itemReportsService.getItemReportById(1)).thenThrow(new RuntimeException("Server error"));
+
+        mockMvc.perform(get("/api/items/1"))
+                .andExpect(status().isInternalServerError());
+
+        verify(itemReportsService, times(1)).getItemReportById(1);
     }
 
     @Test

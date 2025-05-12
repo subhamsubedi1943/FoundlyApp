@@ -94,4 +94,8 @@ public class EmployeeService {
     public boolean validateEmployeeDetails(String empId, String name, String empEmailId) {
         return employeeRepository.findByEmpIdAndNameAndEmpEmailId(empId, name, empEmailId).isPresent();
     }
+
+    public Optional<Employee> findByEmpId(String empId) {
+        return employeeRepository.findByEmpId(empId);
+    }
 }

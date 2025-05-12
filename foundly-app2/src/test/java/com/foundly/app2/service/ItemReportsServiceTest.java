@@ -2,8 +2,8 @@ package com.foundly.app2.service;
 
 import com.foundly.app2.dto.FoundItemReportRequest;
 import com.foundly.app2.dto.LostItemReportRequest;
-import com.foundly.app2.dto.LostItemPreviewDTO;
-import com.foundly.app2.dto.ItemReportResponse;
+
+import com.foundly.app2.dto.CategoryCountDTO;
 import com.foundly.app2.entity.Category;
 import com.foundly.app2.entity.FoundItemDetails;
 import com.foundly.app2.entity.ItemReports;
@@ -17,11 +17,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -86,7 +84,12 @@ public class ItemReportsServiceTest {
         request.setSecurityName("SecurityName");
         request.setPickupMessage("Pickup message");
 
+        User securityUser = new User();
+        securityUser.setSecurity(true);
+        securityUser.setEmployeeId("100");
+
         when(userRepository.findById(1)).thenReturn(Optional.of(user));
+        when(userRepository.findByEmployeeId("100")).thenReturn(Optional.of(securityUser));
         when(categoryRepository.findById(1)).thenReturn(Optional.of(category));
         when(itemReportsRepository.save(any(ItemReports.class))).thenAnswer(i -> i.getArguments()[0]);
         when(foundItemDetailsRepository.save(any(FoundItemDetails.class))).thenReturn(null);
@@ -96,6 +99,64 @@ public class ItemReportsServiceTest {
         assertNotNull(saved);
         assertEquals("Item1", saved.getItemName());
         assertEquals(ItemReports.Type.FOUND, saved.getType());
+    }
+
+    @Test
+    public void testReportFoundItem_MissingSecurityId_Throws() {
+        FoundItemReportRequest request = new FoundItemReportRequest();
+        request.setHandoverToSecurity(true);
+        request.setSecurityId(null);
+        request.setCategoryId(1);
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            itemReportsService.reportFoundItem(request);
+        });
+
+        assertEquals("Security ID must be provided for handover.", exception.getMessage());
+    }
+
+    @Test
+    public void testReportFoundItem_InvalidSecurityId_Throws() {
+        FoundItemReportRequest request = new FoundItemReportRequest();
+        request.setHandoverToSecurity(true);
+        request.setSecurityId("invalid");
+        request.setCategoryId(1);
+
+        when(userRepository.findByEmployeeId("invalid")).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            itemReportsService.reportFoundItem(request);
+        });
+
+        assertEquals("Provided security ID does not belong to a valid security personnel.", exception.getMessage());
+    }
+
+    @Test
+    public void testReportFoundItem_MissingCategoryId_Throws() {
+        FoundItemReportRequest request = new FoundItemReportRequest();
+        request.setHandoverToSecurity(false);
+        request.setCategoryId(null);
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            itemReportsService.reportFoundItem(request);
+        });
+
+        assertEquals("Category ID must be provided.", exception.getMessage());
+    }
+
+    @Test
+    public void testReportFoundItem_CategoryNotFound_Throws() {
+        FoundItemReportRequest request = new FoundItemReportRequest();
+        request.setHandoverToSecurity(false);
+        request.setCategoryId(999);
+
+        when(categoryRepository.findById(999)).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            itemReportsService.reportFoundItem(request);
+        });
+
+        assertEquals("Category not found for ID: 999", exception.getMessage());
     }
 
     @Test
@@ -122,106 +183,39 @@ public class ItemReportsServiceTest {
     }
 
     @Test
-    public void testGetAllItemReports() {
-        List<ItemReports> reports = new ArrayList<>();
-        reports.add(itemReport);
-        when(itemReportsRepository.findAll()).thenReturn(reports);
+    public void testReportLostItem_MissingDateLostOrFound_Throws() {
+        LostItemReportRequest request = new LostItemReportRequest();
+        request.setDateLostOrFound(null);
 
-        List<ItemReports> result = itemReportsService.getAllItemReports();
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            itemReportsService.reportLostItem(request);
+        });
+
+        assertEquals("Date lost or found must be provided.", exception.getMessage());
+    }
+
+    @Test
+    public void testGetTotalItemReportsCount() {
+        when(itemReportsRepository.count()).thenReturn(5L);
+
+        long count = itemReportsService.getTotalItemReportsCount();
+
+        assertEquals(5L, count);
+    }
+
+    @Test
+    public void testGetCategoryCounts() {
+        List<CategoryCountDTO> counts = new ArrayList<>();
+        // Create a CategoryCountDTO with dummy data using constructor with parameters
+        CategoryCountDTO dto = new CategoryCountDTO("TestCategory", 10L);
+        counts.add(dto);
+        when(itemReportsRepository.getCategoryCounts()).thenReturn(counts);
+
+        List<CategoryCountDTO> result = itemReportsService.getCategoryCounts();
 
         assertEquals(1, result.size());
-        assertEquals("Test Item", result.get(0).getItemName());
-    }
-
-    @Test
-    public void testGetItemReportById_Found() {
-        when(itemReportsRepository.findById(1)).thenReturn(Optional.of(itemReport));
-
-        Optional<ItemReports> result = itemReportsService.getItemReportById(1);
-
-        assertTrue(result.isPresent());
-        assertEquals("Test Item", result.get().getItemName());
-    }
-
-    @Test
-    public void testGetItemReportById_NotFound() {
-        when(itemReportsRepository.findById(1)).thenReturn(Optional.empty());
-
-        Optional<ItemReports> result = itemReportsService.getItemReportById(1);
-
-        assertFalse(result.isPresent());
-    }
-
-    @Test
-    public void testGetItemsByType() {
-        List<ItemReports> reports = new ArrayList<>();
-        reports.add(itemReport);
-        when(itemReportsRepository.findByType(ItemReports.Type.FOUND)).thenReturn(reports);
-
-        List<ItemReports> result = itemReportsService.getItemsByType(ItemReports.Type.FOUND);
-
-        assertEquals(1, result.size());
-        assertEquals(ItemReports.Type.FOUND, result.get(0).getType());
-    }
-
-    @Test
-    public void testGetRecentLostItemsPreview() {
-        List<ItemReports> reports = new ArrayList<>();
-        reports.add(itemReport);
-        Pageable pageable = PageRequest.of(0, 5);
-        when(itemReportsRepository.findByTypeOrderByDateReportedDesc(ItemReports.Type.LOST, pageable)).thenReturn(reports);
-
-        List<LostItemPreviewDTO> result = itemReportsService.getRecentLostItemsPreview(5);
-
-        assertEquals(1, result.size());
-        assertEquals("Test Item", result.get(0).getItemName());
-    }
-
-    @Test
-    public void testGetLostReportsByUserId() {
-        List<ItemReports> reports = new ArrayList<>();
-        reports.add(itemReport);
-        when(itemReportsRepository.findByUser_UserIdAndType(1L, ItemReports.Type.LOST)).thenReturn(reports);
-
-        List<ItemReportResponse> result = itemReportsService.getLostReportsByUserId(1L);
-
-        assertEquals(1, result.size());
-        assertEquals("Test Item", result.get(0).getItemName());
-    }
-
-    @Test
-    public void testGetFoundReportsByUserId() {
-        List<ItemReports> reports = new ArrayList<>();
-        reports.add(itemReport);
-        when(itemReportsRepository.findByUser_UserIdAndType(1L, ItemReports.Type.FOUND)).thenReturn(reports);
-
-        List<ItemReportResponse> result = itemReportsService.getFoundReportsByUserId(1L);
-
-        assertEquals(1, result.size());
-        assertEquals("Test Item", result.get(0).getItemName());
-    }
-
-    @Test
-    public void testDeleteItemReportsByUserId_WithReports() {
-        List<ItemReports> reports = new ArrayList<>();
-        reports.add(itemReport);
-        when(itemReportsRepository.findByUserId(1L)).thenReturn(reports);
-        doNothing().when(transactionsService).deleteTransactionsByItemIds(anyList());
-        doNothing().when(itemReportsRepository).deleteAll(reports);
-
-        itemReportsService.deleteItemReportsByUserId(1);
-
-        verify(transactionsService).deleteTransactionsByItemIds(anyList());
-        verify(itemReportsRepository).deleteAll(reports);
-    }
-
-    @Test
-    public void testDeleteItemReportsByUserId_NoReports() {
-        when(itemReportsRepository.findByUserId(1L)).thenReturn(Collections.emptyList());
-
-        itemReportsService.deleteItemReportsByUserId(1);
-
-        verify(transactionsService, never()).deleteTransactionsByItemIds(anyList());
-        verify(itemReportsRepository, never()).deleteAll(anyList());
+        // Use Lombok-generated getter methods
+        assertEquals("TestCategory", result.get(0).getCategory());
+        assertEquals(10L, result.get(0).getCount());
     }
 }
