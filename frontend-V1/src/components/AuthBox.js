@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import '../styles/AuthBox.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 function AuthBox({ isOpen, onClose, onAuthSuccess }) {
   const [isLogin, setIsLogin] = useState(true);
@@ -49,11 +52,11 @@ function AuthBox({ isOpen, onClose, onAuthSuccess }) {
         onClose();
       } else {
         const errorMsg = await response.text();
-        alert(`Login failed: ${errorMsg}`);
+        toast.error(`Login failed: ${errorMsg}`);
       }
     } catch (error) {
       console.error('Login error:', error);
-      alert('Login failed. Please try again later.');
+      toast.error('Login failed. Please try again later.');
     }
   };
 
@@ -78,11 +81,11 @@ function AuthBox({ isOpen, onClose, onAuthSuccess }) {
         onClose();
       } else {
         const errorMsg = await response.text();
-        alert(`Registration failed: ${errorMsg}`);
+        toast.error(`Registration failed: ${errorMsg}`);
       }
     } catch (error) {
       console.error('Registration error:', error);
-      alert('Error during registration. Please try again later.');
+      toast.error('Error during registration. Please try again later.');
     }
   };
 
@@ -194,6 +197,7 @@ function AuthBox({ isOpen, onClose, onAuthSuccess }) {
           </div>
         </div>
       </div>
+      <ToastContainer position="top-center" autoClose={3000} />
     </div>
   );
 }

@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "../styles/LostItems.css"; // Use LostItems styles for consistent card styling
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 const fallbackImage = 'https://via.placeholder.com/300x200';
 
@@ -30,7 +33,7 @@ const ActivityCard = ({ item, onTransactionUpdate }) => {
         }
       }
     } catch (error) {
-      alert("Something went wrong. Please try again.");
+      toast.error("Something went wrong. Please try again.");
     }
   };
 
@@ -128,6 +131,7 @@ const ActivityCard = ({ item, onTransactionUpdate }) => {
           </table>
         </div>
       </div>
+      <ToastContainer position="top-center" autoClose={3000} />
     </div>
   );
 };

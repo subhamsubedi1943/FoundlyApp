@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/UserManagement.css'
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 function UserManagement() {
   const [users, setUsers] = useState([]);
@@ -50,7 +53,7 @@ function UserManagement() {
         isSecurity: '',
       });
     })
-    .catch(error => alert(error.message));
+    .catch(error => toast.error(error.message));
   };
 
   // Edit user
@@ -82,7 +85,7 @@ function UserManagement() {
     })
     .catch(error => {
       console.error('Error updating user:', error);
-      alert('Error updating user: ' + error.message);
+      toast.error('Error updating user: ' + error.message);
     });
   };
   // Delete user
@@ -93,7 +96,7 @@ function UserManagement() {
           if (!res.ok) throw new Error('Failed to delete user');
           setUsers(users.filter(u => u.userId !== userId));
         })
-        .catch(error => alert(error.message));
+        .catch(error => toast.error(error.message));
     }
   };
 
@@ -107,7 +110,7 @@ function UserManagement() {
       .then(updatedUser => {
         setUsers(users.map(u => u.userId === updatedUser.userId ? updatedUser : u));
       })
-      .catch(error => alert(error.message));
+      .catch(error => toast.error(error.message));
   };
 
   // Demote admin to user
@@ -120,7 +123,7 @@ function UserManagement() {
       .then(updatedUser => {
         setUsers(users.map(u => u.userId === updatedUser.userId ? updatedUser : u));
       })
-      .catch(error => alert(error.message));
+      .catch(error => toast.error(error.message));
   };
 
   return (
@@ -228,6 +231,7 @@ function UserManagement() {
           ))}
         </tbody>
       </table>
+      <ToastContainer position="top-center" autoClose={3000} />
     </div>
   );
 }
