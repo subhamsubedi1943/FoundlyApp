@@ -6,8 +6,10 @@ import {
 import axios from 'axios';
 import '../styles/Dashboard.css';
 import { AlertCircle, CheckCircle, Database, Shield } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [stats, setStats] = useState([]);
   const [monthlyData, setMonthlyData] = useState([]);
   const [categoryData, setCategoryData] = useState([]);
@@ -186,6 +188,10 @@ const Dashboard = () => {
     </div>
   ));
 
+  const handleAboutClick = () => {
+    navigate('/', { state: { scrollToAbout: true } });
+  };
+
   return (
     <div className="dashboard-container">
       {loading && <div className="loading-spinner">Loading...</div>}
@@ -269,6 +275,12 @@ const Dashboard = () => {
             </BarChart>
           </ResponsiveContainer>
         </div>
+      </div>
+
+      <div className="about-link-container" style={{ marginTop: '20px', textAlign: 'center' }}>
+        <button className="about-link-button" onClick={handleAboutClick} style={{ cursor: 'pointer', padding: '8px 16px', fontSize: '16px' }}>
+          About Us
+        </button>
       </div>
     </div>
 

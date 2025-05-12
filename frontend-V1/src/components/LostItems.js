@@ -3,6 +3,7 @@ import axios from 'axios';
 import '../styles/LostItems.css';
 import { HandoverModal } from './HandoverModal';
 import { FiFilter } from 'react-icons/fi';
+import defaultImage from '../assets/lostDefaultImage.png';
 
 const LostItems = () => {
   const [items, setItems] = useState([]);
@@ -38,7 +39,7 @@ const LostItems = () => {
           imageUrl: item.imageUrl,
           itemStatus: item.itemStatus
         }));
-        const sortedData = data.sort((a, b) => new Date(b.dateReported) - new Date(a.dateReported));
+        const sortedData = data.sort((a, b) => new Date(b.dateLostOrFound) - new Date(a.dateLostOrFound));
         setItems(sortedData);
       } catch (error) {
         console.error('Error fetching lost items:', error);
@@ -170,7 +171,7 @@ const LostItems = () => {
             value={filters.date}
             onChange={handleFilterChange}
           />
-          
+
         </div>
       )}
 
@@ -181,11 +182,14 @@ const LostItems = () => {
             <div className="flip-card" key={index}>
               <div className="flip-card-inner">
                 <div className="flip-card-front">
-                  {item.imageUrl && (
-                    <img src={item.imageUrl} alt={item.itemName} className="card-image" />
-                  )}
+                  <img
+                    src={item.imageUrl || defaultImage}
+                    alt={item.itemName}
+                    className="card-image"
+                  />
                   <h2 className="card-title">{item.itemName}</h2>
                 </div>
+
                 <div className="flip-card-back">
                   <table className="item-details-table">
                     <tbody>
@@ -199,11 +203,11 @@ const LostItems = () => {
                       </tr>
                       <tr>
                         <td><strong>Date</strong></td>
-                        <td>{new Date(item.dateReported).toLocaleDateString()}</td>
+                        <td>{new Date(item.dateLostOrFound).toLocaleDateString()}</td>
                       </tr>
                       <tr>
                         <td><strong>Time</strong></td>
-                        <td>{new Date(item.dateReported).toLocaleTimeString()}</td>
+                        <td>{new Date(item.dateLostOrFound).toLocaleTimeString()}</td>
                       </tr>
                       <tr>
                         <td colSpan="2">

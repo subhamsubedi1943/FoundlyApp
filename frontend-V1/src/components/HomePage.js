@@ -11,7 +11,7 @@ import mem3 from '../assets/member03.jpg';
 import mem4 from '../assets/member04.jpg';
 import mem5 from '../assets/member05.jpg';
 import logo from '../assets/foundlylogo.png';
-
+import bgvideo from '../assets/bgvideo.mp4';
 import backgroundImage from '../assets/img.png';
 import signupImg from '../assets/signup.jpg';
 import notifyImg from '../assets/notify.jpg';
@@ -52,6 +52,14 @@ function HomePage() {
     }
   };
 
+  useEffect(() => {
+    if (location.state && location.state.scrollToAbout) {
+      scrollToAbout();
+      // Clear the state to prevent repeated scrolling
+      window.history.replaceState({}, document.title);
+    }
+  }, [location]);
+
   const handleProtectedClick = (path) => {
     if (isLoggedIn) {
       setIsScrolledUp(true);
@@ -89,59 +97,63 @@ function HomePage() {
 
   return (
     <div className={`homepage-container ${isScrolledUp ? 'scrolled-up' : ''}`}>
-      <header
-        className="App-header"
-        style={{
-          backgroundImage: `url(${backgroundImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-        }}
-      >
-        <Navbar onAboutClick={scrollToAbout} activeSection={activeSection} />
+      <header className="App-header">
+  <video
+    autoPlay
+    loop
+    muted
+    playsInline
+    className="background-video"
+  >
+    <source src={bgvideo} type="video/mp4" />
+    Your browser does not support the video tag.
+  </video>
 
-        <div className="hero-text">
-          <h1 className="main-title">Foundly</h1>
-          <div className="subtitle">
-            <span className="dot-label lost">Lost It</span>
-            <span className="dot-label list">List It</span>
-            <span className="dot-label find">Find It</span>
-          </div>
-          <div className="center-report">
-            <button className="report-btn" onClick={() => handleProtectedClick('/report')}>
-              Report ➜
-            </button>
-          </div>
-        </div>
+  <Navbar onAboutClick={scrollToAbout} activeSection={activeSection} />
 
-        <div className="tab-buttons">
-          <button
-            ref={(el) => (tabRefs.current[0] = el)}
-            className={`tab ${activeTab === 'lost-items' ? 'active' : ''}`}
-            onClick={() => handleTabClick('lost-items', '/lost-items')}
-          >
-            Lost Items
-          </button>
-          <button
-            ref={(el) => (tabRefs.current[1] = el)}
-            className={`tab ${activeTab === 'found-items' ? 'active' : ''}`}
-            onClick={() => handleTabClick('found-items', '/found-items')}
-          >
-            Found Items
-          </button>
-          <button
-            ref={(el) => (tabRefs.current[2] = el)}
-            className={`tab ${activeTab === 'my-activity' ? 'active' : ''}`}
-            onClick={() => handleTabClick('my-activity', '/my-activity')}
-          >
-            My Activity
-          </button>
+  <div className="hero-text">
+    <h1 className="main-title">Foundly</h1>
+    <div className="subtitle">
+      <span className="dot-label lost">Lost It</span>
+      <span className="dot-label list">List It</span>
+      <span className="dot-label find">Find It</span>
+    </div>
+    <div className="center-report">
+      <button className="report-btn" onClick={() => handleProtectedClick('/report')}>
+        Report ➜
+      </button>
+    </div>
+  </div>
 
-          <div className="tab-slider"></div>
-        </div>
-      </header>
+  <div className="tab-buttons">
+    <button
+      ref={(el) => (tabRefs.current[0] = el)}
+      className={`tab ${activeTab === 'lost-items' ? 'active' : ''}`}
+      onClick={() => handleTabClick('lost-items', '/lost-items')}
+    >
+      Lost Items
+    </button>
+    <button
+      ref={(el) => (tabRefs.current[1] = el)}
+      className={`tab ${activeTab === 'found-items' ? 'active' : ''}`}
+      onClick={() => handleTabClick('found-items', '/found-items')}
+    >
+      Found Items
+    </button>
+    <button
+      ref={(el) => (tabRefs.current[2] = el)}
+      className={`tab ${activeTab === 'my-activity' ? 'active' : ''}`}
+      onClick={() => handleTabClick('my-activity', '/my-activity')}
+    >
+      My Activity
+    </button>
 
-      <section ref={aboutRef} className="about-us-page">
+    <div className="tab-slider"></div>
+  </div>
+</header>
+
+
+      <section ref={aboutRef} className="about-us-page" id="about">
         <div className="about-flow">
           <div className="text-section right">
             <h2>What is Foundly?</h2>
