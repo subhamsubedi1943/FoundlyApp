@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import '../styles/NotificationPanel.css';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 function NotificationPanel() {
   const { currentUser } = useAuth();
@@ -55,7 +58,7 @@ function NotificationPanel() {
       );
 
       if (response.data) {
-        alert('Transaction marked as completed.');
+        toast.success('Transaction marked as completed.');
         setSelectedNote((prev) => ({
           ...prev,
           transactionStatus: 'COMPLETED',
@@ -73,7 +76,7 @@ function NotificationPanel() {
       }
     } catch (error) {
       console.error("Error marking transaction as completed:", error);
-      alert('Failed to mark as completed. Please try again.');
+      toast.error('Failed to mark as completed. Please try again.');
     }
   };
 
@@ -228,7 +231,7 @@ function NotificationPanel() {
   </div>
 )}
 
-    
+    <ToastContainer position="top-center" autoClose={3000} />
     </div>
   );
 }

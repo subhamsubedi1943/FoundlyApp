@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import '../styles/HandoverModal.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 export function HandoverModal({ isOpen, onClose, onSubmit, itemId }) {
   const [formData, setFormData] = useState({
@@ -69,11 +72,11 @@ export function HandoverModal({ isOpen, onClose, onSubmit, itemId }) {
         onClose();
       } else {
         console.error('Submission failed:', await response.text());
-        alert('Error submitting handover. Please try again.');
+        toast.error('Error submitting handover. Please try again.');
       }
     } catch (error) {
       console.error('Error during form submission:', error);
-      alert('Unexpected error occurred. Please try again.');
+      toast.error('Unexpected error occurred. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -212,6 +215,7 @@ export function HandoverModal({ isOpen, onClose, onSubmit, itemId }) {
           </form>
         </div>
       </div>
+      <ToastContainer position="top-center" autoClose={3000} />
     </div>
   );
 }

@@ -10,10 +10,9 @@ import mem2 from '../assets/member02.jpg';
 import mem3 from '../assets/member03.jpg';
 import mem4 from '../assets/member04.jpg';
 import mem5 from '../assets/member05.jpg';
-
+import logo from '../assets/foundlylogo.png';
 
 import backgroundImage from '../assets/img.png';
-
 import signupImg from '../assets/signup.jpg';
 import notifyImg from '../assets/notify.jpg';
 import listoutImg from '../assets/listout.jpg';
@@ -25,8 +24,25 @@ function HomePage() {
   const { isLoggedIn, setShowAuthBox } = useAuth();
   const [isScrolledUp, setIsScrolledUp] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
-  const [activeTab, setActiveTab] = useState(null);  // Start with no active tab
+  const [activeTab, setActiveTab] = useState(null);
   const tabRefs = useRef([]);
+  const [feedbacks, setFeedbacks] = useState([]);
+  const [showForm, setShowForm] = useState(false);
+  const [formData, setFormData] = useState({ name: '', story: '' });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    if (formData.name && formData.story) {
+      setFeedbacks((prev) => [...prev, { author: formData.name, text: formData.story }]);
+      setFormData({ name: '', story: '' });
+      setShowForm(false);
+    }
+  };
 
   const aboutRef = useRef(null);
 
@@ -167,54 +183,85 @@ function HomePage() {
             </ul>
           </div>
 
-          {/* Meet the Team */}
           <section className="team">
-        <h2>Meet the Team</h2>
-        <p>
-          We are a group of passionate developers and problem-solvers who came together to build something that makes a real-world difference.
-          With expertise in ReactJS, Spring Boot, MySQL, Devops and a vision for smarter communities, Foundly is our way of bringing order to everyday chaos.
-        </p>
+            <h2>Meet the Team</h2>
+            <p>
+              We are a group of passionate developers and problem-solvers who came together to build something that makes a real-world difference.
+              With expertise in ReactJS, Spring Boot, MySQL, Devops and a vision for smarter communities, Foundly is our way of bringing order to everyday chaos.
+            </p>
 
-        <div className="team-members">
-          <div className="member">
-            <img src={mem1} alt="Teammate 1" />
-            <h4>Akanksha</h4>
-            <p>Devops Engineer</p>
-          </div>
-          <div className="member">
-            <img src={mem2} alt="Teammate 2" />
-            <h4>Rakesh</h4>
-            <p>Backend Developer</p>
-          </div>
-          <div className="member">
-            <img src={mem3} alt="Teammate 3" />
-            <h4>Roopa</h4>
-            <p>Backend Developer</p>
-          </div>
- <div className="member">
-            <img src={mem4} alt="Teammate 4" />
-            <h4>Subham</h4>
-            <p>Frontend + Testing</p>
-          </div>
-          <div className="member">
-            <img src={mem5} alt="Teammate 5" />
-            <h4>Sowjanya</h4>
-            <p>Frontend Developer</p>
-          </div>
-        </div>
-      </section>
+            <div className="team-members">
+              <div className="member">
+                <img src={mem1} alt="Teammate 1" />
+                <h4>Akanksha</h4>
+                <p>Devops Engineer</p>
+              </div>
+              <div className="member">
+                <img src={mem2} alt="Teammate 2" />
+                <h4>Rakesh</h4>
+                <p>Backend Developer</p>
+              </div>
+              <div className="member">
+                <img src={mem3} alt="Teammate 3" />
+                <h4>Roopa</h4>
+                <p>Backend Developer</p>
+              </div>
+              <div className="member">
+                <img src={mem4} alt="Teammate 4" />
+                <h4>Subham</h4>
+                <p>Frontend + Testing</p>
+              </div>
+              <div className="member">
+                <img src={mem5} alt="Teammate 5" />
+                <h4>Sowjanya</h4>
+                <p>Frontend Developer</p>
+              </div>
+            </div>
+          </section>
         </div>
       </section>
 
       <section className="content-section">
         <h2 className="section-heading">What users say</h2>
-        <Testimonials />
+        <Testimonials testimonials={feedbacks} />
+        <button className="feedback-button" onClick={() => setShowForm(true)}>
+          Share Your Experience
+        </button>
       </section>
+
+      {showForm && (
+        <div className="feedback-modal">
+          <div className="feedback-form-box">
+            <h3>Share your Success Story</h3>
+            <form className="feedbackform-container" onSubmit={handleFormSubmit}>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                placeholder="Your Name"
+                required
+              />
+              <textarea
+                name="story"
+                value={formData.story}
+                onChange={handleInputChange}
+                placeholder="Your experience using Foundly"
+                required
+              ></textarea>
+              <div className="feedback-button-group">
+                <button type="button" className="fbcancel-button" onClick={() => setShowForm(false)}>Cancel</button>
+                <button type="submit" className="fbsubmit-button">Submit</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       <footer className="footer">
         <div className="footer-content">
           <div className="footer-logo">
-            Foundly
+            <img src={logo} alt="Foundly Logo" className="footer-logo-img" />
           </div>
 
           <div className="footer-links">
@@ -222,14 +269,12 @@ function HomePage() {
             <a href="/dashboard">Dashboard</a>
             <a href="#about">About us</a>
           </div>
-
           <div className="footer-contact">
             <p>Contact : +91 8734629540</p>
             <p>Email : support@insightglobal.com</p>
           </div>
-
         </div>
-        <div className="footer-copyright" style={{marginTop: '10px', fontSize: '0.9em', color: '#888', textAlign: 'right'}}>
+        <div className="footer-copyright">
           ©2025 Insight Global, A Staffing Services Company. All rights reserved.
         </div>
       </footer>

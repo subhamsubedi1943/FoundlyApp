@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ItemReportResponse {
 
-    private Long itemid;
+    private Long itemId;
     private String itemName;
     private String description;
     private String location;
@@ -39,7 +39,7 @@ public class ItemReportResponse {
         FoundItemDetails details = item.getFoundItemDetails();
 
         return ItemReportResponse.builder()
-                .itemid(item.getItemId() != null ? item.getItemId().longValue() : null)
+                .itemId(item.getItemId() != null ? item.getItemId().longValue() : null)
                 .itemName(item.getItemName())
                 .description(item.getDescription())
                 .location(item.getLocation())

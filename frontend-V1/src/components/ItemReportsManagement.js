@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 function ItemReportsManagement() {
   const [itemReports, setItemReports] = useState([]);
@@ -23,7 +26,7 @@ function ItemReportsManagement() {
       await axios.delete(`http://localhost:8080/api/items/${id}`);
       setItemReports(itemReports.filter(item => item.itemid !== id));
     } catch (err) {
-      alert('Failed to delete item report');
+      toast.error('Failed to delete item report');
     }
   };
 
@@ -75,6 +78,7 @@ function ItemReportsManagement() {
           </table>
         )}
       </div>
+      <ToastContainer position="top-center" autoClose={3000} />
     </div>
   );
 }
