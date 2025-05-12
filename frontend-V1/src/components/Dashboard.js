@@ -276,12 +276,6 @@ const Dashboard = () => {
           </ResponsiveContainer>
         </div>
       </div>
-
-      <div className="about-link-container" style={{ marginTop: '20px', textAlign: 'center' }}>
-        <button className="about-link-button" onClick={handleAboutClick} style={{ cursor: 'pointer', padding: '8px 16px', fontSize: '16px' }}>
-          About Us
-        </button>
-      </div>
     </div>
 
   );

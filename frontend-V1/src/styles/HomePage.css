@@ -13,29 +13,7 @@ body::-webkit-scrollbar {
 .homepage-container {
   width: 100vw;
   max-width: 100%;
-
-}
-
-.App-header {
-  position: relative;
-  height: 100vh;
-  padding-bottom: 2rem; 
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  color: white;
-  z-index: 1;
-}
-
-.background-video {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: -1;
+  overflow-x: hidden;
 }
 
 /* Navbar */
@@ -332,7 +310,6 @@ body::-webkit-scrollbar {
   }
 }
 
-
 .footer {
   background-color: black;
   color: white;
@@ -401,101 +378,3 @@ body::-webkit-scrollbar {
   font-size: 14px;
   color: #ccc;
 }
-.feedback-button{
-  background-color: #ff006f;
-  color: white;
-  border: #ff006f;
-  padding: 14px 36px;
-  font-size: 20px;
-  font-weight: bold;
-  border-radius: 10px;
-  cursor: pointer;
-  box-shadow: 0 4px 15px rgba(255, 0, 111, 0.4);
-}
-
-.feedback-button:hover {
-  background-color: #e60063;
-  transform: scale(1.05);
-
-}
-
-.feedback-modal{
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.feedback-form-box{
-  background-color: #0c1b2a;
-  padding: 20px;
-  border-radius: 10px;
-  width: 400px;
-  height : 400px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-}
-
-.feedback-form-box h3{
-  color : white;
-  margin-bottom: 20px;
-}
-.feedbackform-container{
-     background-color: #0c1b2a;
-    border-radius: 8px;
-    padding: 2rem;
-    margin-bottom: 2rem;
-}
-.feedback-form-box input[type="text"]{
-  background-color: #0c1b2a;
-    width: 100%;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin-bottom: 10px;
-}
-.feedback-form-box textarea{
-  background-color: #0c1b2a;
-    width: 97%;
-    height: 100px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin-bottom: 10px;
-}
-.feedbackform-container .fbcancel-button {
-  background-color: transparent;
-  border: 2px solid #ff006f;
-  background-color: transparent;
-  color: white;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.feedbackform-container .fbcancel-button:hover {
-  background-color: rgba(255, 0, 111, 0.1);
-}
-
-.feedbackform-container .fbsubmit-button {
-  background-color: #ff006f;
-  color: #fff;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: opacity 0.2s ease;
-  margin-right: 0%;
-}
-.feedback-button-group {
-  display: flex;
-  gap : 94px;
-  margin-top: 20px;
-}
-
-

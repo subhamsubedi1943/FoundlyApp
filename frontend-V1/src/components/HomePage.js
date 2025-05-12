@@ -1,7 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import Testimonials from '../components/Testimonials';
 import Navbar from '../components/Navbar';
 import '../styles/HomePage.css';
 import '../styles/AboutUs.css';
@@ -97,60 +96,57 @@ function HomePage() {
 
   return (
     <div className={`homepage-container ${isScrolledUp ? 'scrolled-up' : ''}`}>
-      <header className="App-header">
-  <video
-    autoPlay
-    loop
-    muted
-    playsInline
-    className="background-video"
-  >
-    <source src={bgvideo} type="video/mp4" />
-    Your browser does not support the video tag.
-  </video>
+      <header
+        className="App-header"
+        style={{
+          backgroundImage: `url(${backgroundImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+        }}
+      >
+        <Navbar onAboutClick={scrollToAbout} activeSection={activeSection} />
 
-  <Navbar onAboutClick={scrollToAbout} activeSection={activeSection} />
+        <div className="hero-text">
+          <h1 className="main-title">Foundly</h1>
+          <div className="subtitle">
+            <span className="dot-label lost">Lost It</span>
+            <span className="dot-label list">List It</span>
+            <span className="dot-label find">Find It</span>
+          </div>
+          <div className="center-report">
+            <button className="report-btn" onClick={() => handleProtectedClick('/report')}>
+              Report ➜
+            </button>
+          </div>
+        </div>
 
-  <div className="hero-text">
-    <h1 className="main-title">Foundly</h1>
-    <div className="subtitle">
-      <span className="dot-label lost">Lost It</span>
-      <span className="dot-label list">List It</span>
-      <span className="dot-label find">Find It</span>
-    </div>
-    <div className="center-report">
-      <button className="report-btn" onClick={() => handleProtectedClick('/report')}>
-        Report ➜
-      </button>
-    </div>
-  </div>
+        <div className="tab-buttons">
+          <button
+            ref={(el) => (tabRefs.current[0] = el)}
+            className={`tab ${activeTab === 'lost-items' ? 'active' : ''}`}
+            onClick={() => handleTabClick('lost-items', '/lost-items')}
+          >
+            Lost Items
+          </button>
+          <button
+            ref={(el) => (tabRefs.current[1] = el)}
+            className={`tab ${activeTab === 'found-items' ? 'active' : ''}`}
+            onClick={() => handleTabClick('found-items', '/found-items')}
+          >
+            Found Items
+          </button>
+          <button
+            ref={(el) => (tabRefs.current[2] = el)}
+            className={`tab ${activeTab === 'my-activity' ? 'active' : ''}`}
+            onClick={() => handleTabClick('my-activity', '/my-activity')}
+          >
+            My Activity
+          </button>
 
-  <div className="tab-buttons">
-    <button
-      ref={(el) => (tabRefs.current[0] = el)}
-      className={`tab ${activeTab === 'lost-items' ? 'active' : ''}`}
-      onClick={() => handleTabClick('lost-items', '/lost-items')}
-    >
-      Lost Items
-    </button>
-    <button
-      ref={(el) => (tabRefs.current[1] = el)}
-      className={`tab ${activeTab === 'found-items' ? 'active' : ''}`}
-      onClick={() => handleTabClick('found-items', '/found-items')}
-    >
-      Found Items
-    </button>
-    <button
-      ref={(el) => (tabRefs.current[2] = el)}
-      className={`tab ${activeTab === 'my-activity' ? 'active' : ''}`}
-      onClick={() => handleTabClick('my-activity', '/my-activity')}
-    >
-      My Activity
-    </button>
-
-    <div className="tab-slider"></div>
-  </div>
-</header>
+          <div className="tab-slider"></div>
+        </div>
+      </header>
 
 
       <section ref={aboutRef} className="about-us-page" id="about">
@@ -232,43 +228,6 @@ function HomePage() {
           </section>
         </div>
       </section>
-
-      <section className="content-section">
-        <h2 className="section-heading">What users say</h2>
-        <Testimonials testimonials={feedbacks} />
-        <button className="feedback-button" onClick={() => setShowForm(true)}>
-          Share Your Experience
-        </button>
-      </section>
-
-      {showForm && (
-        <div className="feedback-modal">
-          <div className="feedback-form-box">
-            <h3>Share your Success Story</h3>
-            <form className="feedbackform-container" onSubmit={handleFormSubmit}>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                placeholder="Your Name"
-                required
-              />
-              <textarea
-                name="story"
-                value={formData.story}
-                onChange={handleInputChange}
-                placeholder="Your experience using Foundly"
-                required
-              ></textarea>
-              <div className="feedback-button-group">
-                <button type="button" className="fbcancel-button" onClick={() => setShowForm(false)}>Cancel</button>
-                <button type="submit" className="fbsubmit-button">Submit</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
 
       <footer className="footer">
         <div className="footer-content">
