@@ -1,62 +1,70 @@
 pipeline {
-    agent any
-	tools{
-		maven 'maven1'
-	}
-    
-    stages {
-            stage('Compile and Clean') { 
-                steps {
-                       sh 'mvn compile'
-                      }
-            }
-       
-	        stage('Junit5 Test') { 
-                 steps {
-	                sh 'mvn test'
-                  }
-            }
+    agent {
+        docker {
+            image 'docker:latest'
+            args '-v /var/run/docker.sock:/var/run/docker.sock'
+        }
+    }
 
-	    stage('Jacoco Coverage Report') {
-        	     steps{
-            		//jacoco()
-            		echo 'TestCoverage'
-		          }
-	        }
-		stage('SonarQube'){
-			steps{
-			//	bat label: '', script: '''mvn sonar:sonar \
-			//	-Dsonar.host.url=http://CDLVDIDEVMAN500:9000 \
-			//	-Dsonar.login=c0909bf6713cd534393d47364d1da553431a220d'''
-			echo 'Sonar Code Scanning '
-				}	
-   			}
+    tools {
+        maven 'maven1'
+    }
+
+    stages {
+        stage('Compile and Clean') { 
+            steps {
+                sh 'mvn compile'
+            }
+        }
+
+        stage('Junit5 Test') { 
+            steps {
+                sh 'mvn test'
+            }
+        }
+
+        stage('Jacoco Coverage Report') {
+            steps {
+                echo 'TestCoverage'
+            }
+        }
+
+        stage('SonarQube') {
+            steps {
+                echo 'Sonar Code Scanning'
+            }    
+        }
+
         stage('Maven Build') { 
             steps {
                 sh 'mvn clean install'
-                  }
-            }
-        stage('Build Docker image'){
-           steps {
-                   	    sh 'docker build -t  foundly --build-arg VER=1.0 .'
-		         }
-             }
-        stage('Docker Login'){
-            steps {
-              echo "docker login from console"
-            }                
-        }
-        stage('Docker Push'){
-            steps {
-                bat 'docker push ancheroopa/foundly'
             }
         }
-        stage('Docker deploy'){
+
+        stage('Build Docker image') {
             steps {
-                bat 'docker run -itd -p  8080:8080 foundly'
-             }
+                sh 'docker build -t foundly --build-arg VER=1.0 .'
+            }
         }
-    
-     
+
+        stage('Docker Login') {
+            steps {
+                sh 'echo "Docker login from console"'
+                // Add actual login command using credentials if needed
+                // e.g. sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+            }
+        }
+
+        stage('Docker Push') {
+            steps {
+                sh 'docker push ancheroopa/foundly'
+            }
+        }
+
+        stage('Docker deploy') {
+            steps {
+                sh 'docker run -itd -p 8080:8080 foundly'
+            }
+        }
     }
 }
