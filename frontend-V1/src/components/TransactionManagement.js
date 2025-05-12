@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 function TransactionManagement() {
   const [transactions, setTransactions] = useState([]);
@@ -23,7 +26,7 @@ function TransactionManagement() {
       await axios.delete(`http://localhost:8080/api/transactions/${id}`);
       setTransactions(transactions.filter(tx => tx.transactionId !== id));
     } catch (err) {
-      alert('Failed to delete transaction');
+      toast.error('Failed to delete transaction');
     }
   };
 
@@ -73,6 +76,7 @@ function TransactionManagement() {
           </tbody>
         </table>
       )}
+      <ToastContainer position="top-center" autoClose={3000} />
     </div>
   );
 }

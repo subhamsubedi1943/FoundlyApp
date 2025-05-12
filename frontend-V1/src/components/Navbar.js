@@ -5,6 +5,7 @@ import { FaUserCircle } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import NotificationPanel from './NotificationPanel';
 import ProfileDropdown from './ProfileDropdown';
+import logo from '../assets/foundlylogo.png';
 
 function Navbar({ onAboutClick, activeSection }) {
   const { isLoggedIn, isAdmin, setShowAuthBox, handleLogout } = useAuth();
@@ -72,7 +73,7 @@ function Navbar({ onAboutClick, activeSection }) {
   return (
     <nav className="navbar">
       <div className="navbar-logo" onClick={handleHomeClick}>
-        Foundly
+        <img src={logo} alt="Foundly Logo" className="navbar-logo-img" />
       </div>
 
       <ul className="navbar-links">
