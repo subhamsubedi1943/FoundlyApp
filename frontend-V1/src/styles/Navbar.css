@@ -17,15 +17,11 @@
 }
 
 /* === LOGO === */
-.navbar-logo {
-  font-size: 1rem;
-  font-weight: bold;
-  margin: 0;
-  cursor: pointer;
-  color: white;
-  text-decoration: none;
-  transition: color 0.3s ease;
+.navbar-logo-img {
+  height: 20px;
+  width: auto;
 }
+
 
 /* === NAV LINKS === */
 .navbar-links {

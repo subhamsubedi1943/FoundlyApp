@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../styles/EditProfile.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 const EditProfile = () => {
   const userFromStorage = JSON.parse(localStorage.getItem('user'));
@@ -44,11 +47,11 @@ const EditProfile = () => {
   const handleUpdate = () => {
     axios.put('http://localhost:8080/api/users/profile/update', formData)
       .then(response => {
-        alert('Profile updated successfully!');
+        toast.success('Profile updated successfully!');
       })
       .catch(error => {
         console.error('Failed to update profile:', error);
-        alert(error.response?.data?.message || 'Update failed!');
+        toast.error(error.response?.data?.message || 'Update failed!');
       });
   };
   document.querySelector('.profile-icon').addEventListener('mousedown', function(e) {
@@ -134,6 +137,7 @@ const EditProfile = () => {
           </button>
         </div>
       </div>
+      <ToastContainer position="top-center" autoClose={3000} />
     </div>
   );
 };

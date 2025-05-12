@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import '../styles/ClaimModal.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 const ClaimModal = ({ itemId, requesterId: initialRequesterId, onClose }) => {
   const [requesterId, setRequesterId] = useState(initialRequesterId || '');
@@ -61,11 +64,11 @@ const ClaimModal = ({ itemId, requesterId: initialRequesterId, onClose }) => {
       });
 
       if (!response.ok) throw new Error('Failed to submit claim');
-      alert('Claim submitted successfully!');
+      toast.success('Claim submitted successfully!');
       onClose();
     } catch (err) {
       console.error('Submission error:', err);
-      alert('Failed to submit claim. Please try again.');
+      toast.error('Failed to submit claim. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -128,6 +131,7 @@ const ClaimModal = ({ itemId, requesterId: initialRequesterId, onClose }) => {
           </div>
         </form>
       </div>
+      <ToastContainer position="top-center" autoClose={3000} />
     </div>
   );
 };
