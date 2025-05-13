@@ -202,7 +202,7 @@ function HomePage() {
               <div className="member">
                 <img src={mem1} alt="Teammate 1" />
                 <h4>Akanksha</h4>
-                <p>Backend+Devops Engineer</p>
+                <p>Backend+Devops</p>
               </div>
               <div className="member">
                 <img src={mem2} alt="Teammate 2" />
