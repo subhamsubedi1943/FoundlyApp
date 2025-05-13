@@ -48,12 +48,12 @@ pipeline {
         }
         stage('Docker Push'){
             steps {
-                bat 'docker push ancheroopa/foundly'
+                sh 'docker push akanksha030503/foundly'
             }
         }
         stage('Docker deploy'){
             steps {
-                bat 'docker run -itd -p  8080:8080 foundly'
+                sh 'docker run -itd -p  8080:8080 foundly'
              }
         }
     
