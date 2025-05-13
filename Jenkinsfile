@@ -1,62 +1,76 @@
 pipeline {
     agent any
-	tools{
-		maven 'maven1'
-	}
+    
+    tools {
+        maven 'Maven'
+        jdk 'jdk-21'
+    }
+    
+    environment {
+        DOCKER_REGISTRY = "rakeshsridharahalu2004"
+        APP_NAME = "foundly-app2"
+        VERSION = "1.0.${BUILD_NUMBER}"
+        DOCKER_IMAGE = "${DOCKER_REGISTRY}/${APP_NAME}:${VERSION}"
+    }
     
     stages {
-            stage('Compile and Clean') { 
-                steps {
-                       sh 'mvn compile'
-                      }
-            }
-       
-	        stage('Junit5 Test') { 
-                 steps {
-	                sh 'mvn test'
-                  }
-            }
-
-	    stage('Jacoco Coverage Report') {
-        	     steps{
-            		//jacoco()
-            		echo 'TestCoverage'
-		          }
-	        }
-		stage('SonarQube'){
-			steps{
-			//	bat label: '', script: '''mvn sonar:sonar \
-			//	-Dsonar.host.url=http://CDLVDIDEVMAN500:9000 \
-			//	-Dsonar.login=c0909bf6713cd534393d47364d1da553431a220d'''
-			echo 'Sonar Code Scanning '
-				}	
-   			}
-        stage('Maven Build') { 
+        stage('Clone Repository') {
             steps {
-                sh 'mvn clean install'
-                  }
-            }
-        stage('Build Docker image'){
-           steps {
-                   	    sh 'docker build -t  foundly --build-arg VER=1.0 .'
-		         }
-             }
-        stage('Docker Login'){
-            steps {
-              echo "docker login from console"
-            }                
-        }
-        stage('Docker Push'){
-            steps {
-                bat 'docker push ancheroopa/foundly'
+                git branch: 'main',
+                    url: 'https://github.com/subhamsubedi1943/FoundlyApp.git'
+                bat 'dir'
             }
         }
-        stage('Docker deploy'){
+        
+        stage('Build Foundly') {
             steps {
-                bat 'docker run -itd -p  8080:8080 foundly'
-             }
+                dir('foundly-app2') {
+                    bat 'dir'
+                    bat 'mvn package -Dmaven.test.skip=true'
+                }
+            }
         }
-    
-     
+        
+        stage('Build Docker Image') {
+            steps {
+                dir('foundly-app2') {
+                    script {
+                        bat "docker build -t ${DOCKER_IMAGE} --build-arg JAR_FILE=target/*.jar ."
+                    }
+                }
+            }
+        }
+        
+        stage('Push to DockerHub') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                        bat "echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin"
+                        bat "docker push ${DOCKER_IMAGE}"
+                    }
+                }
+            }
+        }
+        
+        stage('Deploy') {
+            steps {
+                script {
+                   
+                    bat "docker run -d --name ${APP_NAME} -p 9090:9090 --restart always ${DOCKER_IMAGE}"
+                }
+            }
+        }
     }
-} 
+    
+    post {
+        success {
+            echo "Build successful! Image: ${DOCKER_IMAGE}"
+        }
+        failure {
+            echo "Build failed. Check logs for details."
+        }
+        always {
+            cleanWs()
+        }
+    }
+}
