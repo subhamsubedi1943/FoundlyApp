@@ -1,0 +1,81 @@
+pipeline {
+    agent any
+
+    tools {
+        maven 'Maven'
+        jdk 'jdk-21'
+    }
+
+    environment {
+        MAJOR_VERSION = "1"
+        MINOR_VERSION = "0"
+        VERSION = "${MAJOR_VERSION}.${MINOR_VERSION}.${BUILD_NUMBER}"
+
+        DOCKER_REGISTRY = "rakeshsridharahalu2004"
+        APP_NAME = "foundly"
+        DOCKER_IMAGE = "${DOCKER_REGISTRY}/${APP_NAME}:${VERSION}"
+
+        DEPLOY_PORT = "8080"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/subhamsubedi1943/FoundlyApp.git',
+                    changelog: true
+            }
+        }
+
+        stage('Build & Test') {
+            steps {
+                dir('foundly-app2') {
+                    bat 'mvn clean install -Dmaven.test.skip=true'
+                }
+            }
+        }
+
+        stage('List Built JAR') {
+            steps {
+                bat 'dir foundly-app2\\target'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+
+                bat """
+                   docker build -t %DOCKER_IMAGE% .
+
+
+                """
+            }
+        }
+
+        stage('Push to Docker Hub') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'docker-hub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    bat """
+                        docker login -u %DOCKER_USER% -p %DOCKER_PASS%
+                        docker push %DOCKER_IMAGE%
+                    """
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                bat """
+                    docker rm -f foundly || exit 0
+                    docker run -d ^
+                        --name foundly ^
+                        -p 8080:8080 ^
+                        --restart unless-stopped ^
+                        --memory=512m ^
+                        --cpus=1 ^
+                        %DOCKER_IMAGE%
+                """
+            }
+        }
+    }
+}
