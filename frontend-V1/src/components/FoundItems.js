@@ -35,7 +35,7 @@ const FoundItems = () => {
     const fetchFoundItems = async () => {
       try {
         const response = await axios.get('http://localhost:8080/api/items/found-items');
-        const sortedItems = response.data.sort((a, b) => new Date(b.dateReported) - new Date(a.dateReported));
+        const sortedItems = response.data.sort((a, b) => new Date(b.dateLostOrFound) - new Date(a.dateLostOrFound));
         setItems(sortedItems);
       } catch (error) {
         console.error('Error fetching found items:', error);
@@ -193,11 +193,11 @@ const filteredItems = items.filter((item) => {
                     </tr>
                     <tr>
                       <td><strong>Date</strong></td>
-                      <td>{new Date(item.dateReported).toLocaleDateString()}</td>
+                      <td>{new Date(item.dateLostOrFound).toLocaleDateString()}</td>
                     </tr>
                     <tr>
                       <td><strong>Time</strong></td>
-                      <td>{new Date(item.dateReported).toLocaleTimeString()}</td>
+                      <td>{new Date(item.dateLostOrFound).toLocaleTimeString()}</td>
                     </tr>
                     <tr>
                       <td colSpan="2"><strong>Description:</strong><br />{item.description}</td>

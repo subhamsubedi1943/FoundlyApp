@@ -69,76 +69,79 @@ const ReportItem = () => {
     }
   };
 
-  
 
-  const handleSubmit = async () => {
-    const dateTime = `${formData.date} ${formData.time}`;
-    const locationToSend =
-      formData.location === "Others" ? customLocation : formData.location;
+const handleSubmit = async () => {
+  const dateTime = `${formData.date} ${formData.time}`;
+  const locationToSend =
+    formData.location === "Others" ? customLocation : formData.location;
 
-    const payload = {
-      userId: parseInt(formData.userId),
-      name: formData.name,
-      location: locationToSend,
-      categoryId: parseInt(formData.categoryId),
-      itemName: formData.itemName,
-      description: formData.description,
-      dateLostOrFound: dateTime,
-      imageUrl: uploadedFiles.length ? uploadedFiles[0].base64 : "",
-      handoverToSecurity: itemType === "Found" && handoverOption === "security",
-      pickupMessage:
-        itemType === "Found" && handoverOption === "keep"
-          ? formData.pickupMessage
-          : null,
-      securityId:
-        itemType === "Found" && handoverOption === "security"
-          ? formData.securityId
-          : null,
-      securityName:
-        itemType === "Found" && handoverOption === "security"
-          ? formData.securityName
-          : null,
-    };
-
-    const endpoint = itemType === "Found" ? "/api/items/found" : "/api/items/lost";
-
-    try {
-      const response = await fetch(`http://localhost:8080${endpoint}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (response.ok) {
-        toast.success("Item reported successfully!");
-        setFormData({
-          userId: "",
-          name: "",
-          location: "",
-          categoryId: "",
-          itemName: "",
-          description: "",
-          date: "",
-          time: "",
-          pickupMessage: "",
-          securityId: "",
-          securityName: "",
-        });
-        setUploadedFiles([]);
-        setItemType("Found");
-        setHandoverOption("keep");
-        setCustomLocation("");
-        return true;
-      } else {
-        toast.error("Failed to report item.");
-        return false;
-      }
-    } catch (error) {
-      console.error("Error reporting item:", error);
-      toast.error("Something went wrong!");
-      return false;
-    }
+  const payload = {
+    userId: parseInt(formData.userId),
+    name: formData.name,
+    location: locationToSend,
+    categoryId: parseInt(formData.categoryId),
+    itemName: formData.itemName,
+    description: formData.description,
+    dateLostOrFound: dateTime,
+    imageUrl: uploadedFiles.length ? uploadedFiles[0].base64 : "",
+    handoverToSecurity: itemType === "Found" && handoverOption === "security",
+    pickupMessage:
+      itemType === "Found" && handoverOption === "keep"
+        ? formData.pickupMessage
+        : null,
+    securityId:
+      itemType === "Found" && handoverOption === "security"
+        ? formData.securityId
+        : null,
+    securityName:
+      itemType === "Found" && handoverOption === "security"
+        ? formData.securityName
+        : null,
   };
+
+  const endpoint = itemType === "Found" ? "/api/items/found" : "/api/items/lost";
+
+  try {
+    const response = await fetch(`http://localhost:8080${endpoint}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (response.ok) {
+      toast.success("Item reported successfully!");
+      setTimeout(() => {
+      // Reset form states
+      setFormData({
+        userId: "",
+        name: "",
+        location: "",
+        categoryId: "",
+        itemName: "",
+        description: "",
+        date: "",
+        time: "",
+        pickupMessage: "",
+        securityId: "",
+        securityName: "",
+      });
+      setUploadedFiles([]);
+      setItemType("Found");
+      setHandoverOption("keep");
+      setCustomLocation("");
+      // Navigate to home
+      navigate("/");
+    }, 2000);
+  }
+    else {
+      toast.error("Failed to report item.");
+    }
+  } catch (error) {
+    console.error("Error reporting item:", error);
+    toast.error("Something went wrong!");
+  }
+};
+
 
   return (
     <div className="report-container">

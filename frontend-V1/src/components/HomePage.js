@@ -1,7 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import Testimonials from '../components/Testimonials';
 import Navbar from '../components/Navbar';
 import '../styles/HomePage.css';
 import '../styles/AboutUs.css';
@@ -11,7 +10,7 @@ import mem3 from '../assets/member03.jpg';
 import mem4 from '../assets/member04.jpg';
 import mem5 from '../assets/member05.jpg';
 import logo from '../assets/foundlylogo.png';
-
+import bgvideo from '../assets/bgvideo.mp4';
 import backgroundImage from '../assets/img.png';
 import signupImg from '../assets/signup.jpg';
 import notifyImg from '../assets/notify.jpg';
@@ -51,6 +50,14 @@ function HomePage() {
       aboutRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   };
+
+  useEffect(() => {
+    if (location.state && location.state.scrollToAbout) {
+      scrollToAbout();
+      // Clear the state to prevent repeated scrolling
+      window.history.replaceState({}, document.title);
+    }
+  }, [location]);
 
   const handleProtectedClick = (path) => {
     if (isLoggedIn) {
@@ -141,7 +148,8 @@ function HomePage() {
         </div>
       </header>
 
-      <section ref={aboutRef} className="about-us-page">
+
+      <section ref={aboutRef} className="about-us-page" id="about">
         <div className="about-flow">
           <div className="text-section right">
             <h2>What is Foundly?</h2>
@@ -194,7 +202,7 @@ function HomePage() {
               <div className="member">
                 <img src={mem1} alt="Teammate 1" />
                 <h4>Akanksha</h4>
-                <p>Devops Engineer</p>
+                <p>Backend+Devops Engineer</p>
               </div>
               <div className="member">
                 <img src={mem2} alt="Teammate 2" />
@@ -221,63 +229,36 @@ function HomePage() {
         </div>
       </section>
 
-      <section className="content-section">
-        <h2 className="section-heading">What users say</h2>
-        <Testimonials testimonials={feedbacks} />
-        <button className="feedback-button" onClick={() => setShowForm(true)}>
-          Share Your Experience
-        </button>
-      </section>
-
-      {showForm && (
-        <div className="feedback-modal">
-          <div className="feedback-form-box">
-            <h3>Share your Success Story</h3>
-            <form className="feedbackform-container" onSubmit={handleFormSubmit}>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                placeholder="Your Name"
-                required
-              />
-              <textarea
-                name="story"
-                value={formData.story}
-                onChange={handleInputChange}
-                placeholder="Your experience using Foundly"
-                required
-              ></textarea>
-              <div className="feedback-button-group">
-                <button type="button" className="fbcancel-button" onClick={() => setShowForm(false)}>Cancel</button>
-                <button type="submit" className="fbsubmit-button">Submit</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
       <footer className="footer">
-        <div className="footer-content">
-          <div className="footer-logo">
-            <img src={logo} alt="Foundly Logo" className="footer-logo-img" />
-          </div>
+  <div className="footer-content">
+    <div className="footer-logo">
+      <img src={logo} alt="Foundly Logo" className="footer-logo-img" />
+    </div>
 
-          <div className="footer-links">
-            <a href="/">Home</a>
-            <a href="/dashboard">Dashboard</a>
-            <a href="#about">About us</a>
-          </div>
-          <div className="footer-contact">
-            <p>Contact : +91 8734629540</p>
-            <p>Email : support@insightglobal.com</p>
-          </div>
-        </div>
-        <div className="footer-copyright">
-          ©2025 Insight Global, A Staffing Services Company. All rights reserved.
-        </div>
-      </footer>
+    <div className="footer-links">
+      <a href="/">Home</a>
+      <a href="/dashboard">Dashboard</a>
+      <a href="#about">About us</a>
+      <a
+        href="https://docs.google.com/forms/d/e/1FAIpQLSdkvSTOdvFt7EY5ICngh0ua216HbJ4PWI_7z9J8qe7_bUZxAg/viewform?usp=sharing"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Feedback
+      </a>
+    </div>
+
+    <div className="footer-contact">
+      <p>Contact : +91 8734629540</p>
+      <p>Email : support@insightglobal.com</p>
+    </div>
+  </div>
+
+  <div className="footer-copyright">
+    ©2025 Insight Global, A Staffing Services Company. All rights reserved.
+  </div>
+</footer>
+
     </div>
   );
 }

@@ -123,9 +123,7 @@ function AuthBox({ isOpen, onClose, onAuthSuccess }) {
                 required
               />
             </div>
-            <div className="forgot-link">
-              <a onClick={handleForgotPassword}>Forgot password?</a>
-            </div>
+
             <button type="submit" className="btn login-btn">Login</button>
           </form>
         </div>
