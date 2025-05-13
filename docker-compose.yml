@@ -1,0 +1,38 @@
+version: '3.8'
+services:
+  mysql-db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: foundly_manager
+    ports:
+      - "3308:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+  spring-app:
+    build: ./foundly-app2
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql-db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/foundly_manager?useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+  frontend:
+   build: ./frontend-V1
+   container_name: frontend
+   restart: always
+   depends_on:
+    - spring-app
+   ports:
+   - "3000:3000"
+   environment:
+      - NODE_OPTIONS=--openssl-legacy-provider
+   stdin_open: true
+   tty: true
+
+volumes:
+ mysql_data:
